@@ -1,0 +1,7 @@
+.env
+__pycache__/
+.playwright-mcp/
+
+# Generated on each run (locally and in Actions)
+data/
+site/

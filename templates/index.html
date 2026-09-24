@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PresaleWatch · Upcoming Concert Presales</title>
+<meta name="description" content="Upcoming US concert presales from Ticketmaster: who, when it opens, and how to get access.">
+<meta name="theme-color" content="#16122b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c3aed'/%3E%3Cpath d='M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f5f5fa;
+  --surface: #ffffff;
+  --surface-2: #f7f6fc;
+  --text: #17142a;
+  --muted: #5f5b76;
+  --faint: #8e8aa6;
+  --border: #e6e4f0;
+  --accent: #6d28d9;
+  --accent-2: #db2777;
+  --accent-soft: #efe9fd;
+  --live: #15803d;
+  --live-soft: #dcfce7;
+  --soon: #b45309;
+  --soon-soft: #fef3c7;
+  --later: #4c4a63;
+  --later-soft: #eeedf5;
+  --ended: #8e8aa6;
+  --shadow: 0 1px 2px rgba(23,20,42,.06), 0 4px 16px rgba(23,20,42,.06);
+  --shadow-hover: 0 2px 4px rgba(23,20,42,.08), 0 12px 32px rgba(23,20,42,.12);
+  --hero: linear-gradient(135deg, #16122b 0%, #2a1657 55%, #4a1a5c 100%);
+  --radius: 16px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0d1a;
+    --surface: #1a1729;
+    --surface-2: #221e35;
+    --text: #f1effa;
+    --muted: #aaa5c4;
+    --faint: #7c7797;
+    --border: #2e2a45;
+    --accent: #a78bfa;
+    --accent-2: #f472b6;
+    --accent-soft: #2c2350;
+    --live: #4ade80;
+    --live-soft: #153324;
+    --soon: #fbbf24;
+    --soon-soft: #3a2c0d;
+    --later: #c9c5de;
+    --later-soft: #2a2640;
+    --ended: #7c7797;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    --shadow-hover: 0 2px 4px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.4);
+    --hero: linear-gradient(135deg, #0b0916 0%, #1d1240 55%, #34123f 100%);
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* Header */
+.hero { background: var(--hero); color: #fff; padding: 28px 0 22px; }
+.brand { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.brand svg { flex: none; }
+.brand span { background: linear-gradient(90deg, #fff, #f5c2e7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tagline { margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: 15px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; font-size: 13px; color: rgba(255,255,255,.72); }
+.stats b { color: #fff; font-weight: 650; }
+.stats .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #4ade80; margin-right: 6px; box-shadow: 0 0 0 3px rgba(74,222,128,.2); vertical-align: 1px; }
+
+/* Toolbar */
+.toolbar { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--border); }
+.toolbar .wrap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 12px; padding-bottom: 12px; }
+.search { position: relative; flex: 1 1 280px; min-width: 0; }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+.search input { width: 100%; height: 42px; padding: 0 36px 0 38px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; font-size: 16px; outline: none; transition: border-color .15s, box-shadow .15s; }
+.search input::placeholder { color: var(--faint); }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search input::-webkit-search-cancel-button { display: none; }
+.clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--faint); font-size: 18px; cursor: pointer; display: none; }
+.clear:hover { background: var(--surface-2); color: var(--text); }
+.search.has-value .clear { display: block; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.seg::-webkit-scrollbar { display: none; }
+.seg button { flex: none; height: 34px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 550; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s; }
+.seg button:hover { color: var(--text); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .seg button[aria-pressed="true"] { color: #150f2b; } }
+.select { position: relative; }
+.select select { height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; appearance: none; -webkit-appearance: none; cursor: pointer; max-width: 200px; }
+.select select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.select::after { content: ""; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; border-right: 2px solid var(--faint); border-bottom: 2px solid var(--faint); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.count { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+@media (max-width: 640px) {
+  /* Three rows of controls is too much screen to pin on a phone. */
+  .toolbar { position: static; }
+  .toolbar .wrap { gap: 8px; }
+  .search { flex-basis: 100%; }
+  .seg { flex: 1 1 100%; }
+  .seg button { flex: 1 0 auto; padding: 0 10px; font-size: 13.5px; }
+  .select select { max-width: 190px; }
+}
+
+/* Grid + cards */
+main { padding: 20px 0 40px; }
+.grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+@media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
+.card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: box-shadow .2s, transform .2s; }
+.card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.media { position: relative; display: block; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #2a1657, #6d28d9 60%, #db2777); overflow: hidden; }
+.media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+.card:hover .media img { transform: scale(1.03); }
+.media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.35)); pointer-events: none; }
+.media .badge { position: absolute; left: 12px; bottom: 12px; z-index: 1; }
+.badge { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: .01em; white-space: nowrap; font-variant-numeric: tabular-nums; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.badge.live { background: #16a34a; color: #fff; }
+.badge.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: pulse 1.6s infinite; }
+.badge.soon { background: #f59e0b; color: #1f1300; }
+.badge.later { background: rgba(255,255,255,.92); color: #17142a; }
+.badge.ended { background: rgba(40,38,55,.85); color: #d6d3e4; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.7); } 70% { box-shadow: 0 0 0 7px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
+@media (prefers-reduced-motion: reduce) { .badge.live::before { animation: none; } .card, .media img { transition: none; } .card:hover { transform: none; } }
+
+.body { display: flex; flex-direction: column; flex: 1; padding: 14px 16px 16px; }
+.artist { margin: 0; font-size: 19px; line-height: 1.25; font-weight: 750; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.event-name { margin: 3px 0 0; font-size: 13.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.meta { margin: 10px 0 0; display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+.meta div { display: flex; gap: 8px; align-items: flex-start; }
+.meta svg { flex: none; margin-top: 2px; color: var(--faint); }
+.meta b { color: var(--text); font-weight: 600; }
+
+.presales { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.ps { padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid transparent; }
+.ps.primary { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 25%, transparent); }
+.ps.ended { opacity: .6; }
+.ps-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.ps-name { font-weight: 650; font-size: 14px; overflow-wrap: anywhere; }
+.pill { flex: none; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pill.live { background: var(--live-soft); color: var(--live); }
+.pill.soon { background: var(--soon-soft); color: var(--soon); }
+.pill.later { background: var(--later-soft); color: var(--later); }
+.pill.ended { background: var(--later-soft); color: var(--ended); }
+.ps-when { margin-top: 3px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ps-desc { margin-top: 5px; font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ps-link { display: inline-block; margin-top: 5px; font-size: 13px; font-weight: 600; text-decoration: none; }
+.ps-link:hover { text-decoration: underline; }
+.ps.extra { display: none; }
+.card.expanded .ps.extra { display: block; }
+.more { margin-top: 8px; align-self: flex-start; padding: 4px 0; border: 0; background: none; color: var(--accent); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.more:hover { text-decoration: underline; }
+
+.foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; }
+.onsale { font-size: 13px; color: var(--muted); }
+.onsale small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 650; }
+.onsale span { color: var(--text); font-weight: 550; font-variant-numeric: tabular-nums; }
+.btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 11px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); transition: filter .15s, transform .15s; }
+@media (prefers-color-scheme: dark) { .btn { background: linear-gradient(135deg, #7c3aed, #db2777); } }
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: scale(.98); }
+.body > .spacer { flex: 1; }
+
+.empty { display: none; text-align: center; padding: 60px 16px; color: var(--muted); }
+.empty.show { display: block; }
+.empty h2 { margin: 0 0 6px; color: var(--text); font-size: 18px; }
+.empty button { margin-top: 14px; height: 38px; padding: 0 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+
+footer { border-top: 1px solid var(--border); padding: 22px 0 36px; font-size: 13px; color: var(--faint); }
+footer p { margin: 4px 0; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1 class="brand">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#7c3aed"/><path d="M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z" fill="#fff"/></svg>
+      <span>PresaleWatch</span>
+    </h1>
+    <p class="tagline">Upcoming US concert presales: who, when it opens, and how to get in.</p>
+    <div class="stats">
+      <div><span class="dot"></span>Last updated <b id="updated"></b></div>
+      <div><b id="total-events"></b> events · <b id="total-presales"></b> presales</div>
+      <div>All times Eastern (ET)</div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap">
+    <label class="search" id="search-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search artist, city, or venue" autocomplete="off" spellcheck="false" aria-label="Search artist, city, or venue">
+      <button class="clear" id="clear" type="button" aria-label="Clear search">×</button>
+    </label>
+    <div class="seg" role="group" aria-label="When">
+      <button type="button" data-when="live" aria-pressed="false">Live now</button>
+      <button type="button" data-when="today" aria-pressed="false">Opening today</button>
+      <button type="button" data-when="week" aria-pressed="false">This week</button>
+      <button type="button" data-when="all" aria-pressed="true">All</button>
+    </div>
+    <div class="select">
+      <select id="state" aria-label="State"><option value="">All states</option></select>
+    </div>
+    <div class="count" id="count" aria-live="polite"></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty">
+      <h2>No presales match</h2>
+      <p>Try a different spelling, another state, or a wider time range.</p>
+      <button type="button" id="reset">Reset filters</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Presale data from the Ticketmaster Discovery API, refreshed every few hours. Times can change, so always confirm on Ticketmaster before a sale.</p>
+    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster or Live Nation.</p>
+  </div>
+</footer>
+
+<script id="presale-data" type="application/json">__PRESALE_DATA__</script>
+<script>
+(function () {
+  "use strict";
+
+  var DATA = JSON.parse(document.getElementById("presale-data").textContent);
+  var DAY = 864e5;
+  var SOON_MS = DAY; // "soon" styling when opening within 24h
+
+  var STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",PR:"Puerto Rico",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+
+  // ---- Formatting -------------------------------------------------------
+  var TZ = "America/New_York";
+  var fmtDayTime = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  var fmtTime = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+  var fmtDayKey = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
+  var fmtYear = new Intl.DateTimeFormat("en-US", { timeZone: TZ, year: "numeric" });
+  var fmtEventDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  var fmtEventTime = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", hour: "numeric", minute: "2-digit" });
+
+  function dayKey(ms) { return fmtDayKey.format(ms); }
+  function withYear(ms, s) {
+    // Add the year only when it isn't the current one.
+    var y = fmtYear.format(ms);
+    return y === fmtYear.format(Date.now()) ? s : s + ", " + y;
+  }
+  function etDateTime(ms) { return withYear(ms, fmtDayTime.format(ms)); }
+  function windowText(start, end) {
+    if (dayKey(start) === dayKey(end)) return etDateTime(start) + " – " + fmtTime.format(end) + " ET";
+    return etDateTime(start) + " – " + etDateTime(end) + " ET";
+  }
+  function eventDateText(ev) {
+    if (!ev.date) return "Date TBA";
+    var p = ev.date.split("-").map(Number);
+    var s = fmtEventDate.format(Date.UTC(p[0], p[1] - 1, p[2]));
+    if (ev.time) {
+      var t = ev.time.split(":").map(Number);
+      s += " · " + fmtEventTime.format(Date.UTC(2000, 0, 1, t[0], t[1]));
+    }
+    return s;
+  }
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function duration(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+    if (d > 0) return d + "d " + h + "h";
+    if (h > 0) return h + "h " + m + "m";
+    if (m > 0) return m + "m " + pad(s % 60) + "s";
+    return (s % 60) + "s";
+  }
+  function relAgo(ms) {
+    var m = Math.round((Date.now() - ms) / 6e4);
+    if (m < 1) return "just now";
+    if (m < 60) return m + "m ago";
+    var h = Math.round(m / 60);
+    if (h < 48) return h + "h ago";
+    return Math.round(h / 24) + "d ago";
+  }
+  function norm(s) {
+    return (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function safeUrl(u) { return typeof u === "string" && /^https?:\/\//i.test(u) ? u : null; }
+
+  // ---- Status -------------------------------------------------------------
+  function status(p, now) {
+    if (now < p.start) return "upcoming";
+    if (now < p.end) return "live";
+    return "ended";
+  }
+  function badge(p, now, long) {
+    var st = status(p, now);
+    if (st === "live") return { cls: "live", text: long ? "Live now · ends in " + duration(p.end - now) : "Live now" };
+    if (st === "ended") return { cls: "ended", text: "Ended" };
+    var left = p.start - now;
+    return { cls: left <= SOON_MS ? "soon" : "later", text: "Opens in " + duration(left) };
+  }
+
+  // ---- DOM helpers --------------------------------------------------------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  var ICONS = {
+    pin: '<path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    arrow: '<path d="M7 17 17 7M9 7h8v8"/>'
+  };
+  function icon(name, size) {
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("width", size || 16); s.setAttribute("height", size || 16);
+    s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none");
+    s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", "2");
+    s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round");
+    s.setAttribute("aria-hidden", "true");
+    s.innerHTML = ICONS[name];
+    return s;
+  }
+  function link(href, cls, text) {
+    var a = el("a", cls, text);
+    a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer";
+    return a;
+  }
+
+  // ---- Build cards once ----------------------------------------------------
+  var grid = document.getElementById("grid");
+  var MAX_ROWS = 2; // presale rows shown before "Show all"
+
+  var cards = DATA.events.map(function (ev) {
+    ev.presales.forEach(function (p) { p.start = Date.parse(p.start); p.end = Date.parse(p.end); });
+    var url = safeUrl(ev.url);
+    var card = el("article", "card");
+
+    var media = url ? link(url, "media") : el("div", "media");
+    media.setAttribute("aria-label", ev.artist + " on Ticketmaster");
+    if (safeUrl(ev.image)) {
+      var img = el("img");
+      img.src = ev.image; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
+      img.onerror = function () { img.remove(); };
+      media.appendChild(img);
+    }
+    var topBadge = el("span", "badge");
+    media.appendChild(topBadge);
+    card.appendChild(media);
+
+    var body = el("div", "body");
+    body.appendChild(el("h2", "artist", ev.artist));
+    if (ev.name && norm(ev.name) !== norm(ev.artist)) body.appendChild(el("p", "event-name", ev.name));
+
+    var meta = el("div", "meta");
+    var where = el("div"); where.appendChild(icon("pin"));
+    var whereText = el("span"); whereText.appendChild(el("b", null, ev.venue || "Venue TBA"));
+    var place = [ev.city, ev.state].filter(Boolean).join(", ");
+    if (place) whereText.appendChild(document.createTextNode(" · " + place));
+    where.appendChild(whereText); meta.appendChild(where);
+    var when = el("div"); when.appendChild(icon("cal")); when.appendChild(el("span", null, eventDateText(ev)));
+    meta.appendChild(when);
+    body.appendChild(meta);
+
+    var list = el("ul", "presales");
+    var rows = ev.presales.map(function (p) {
+      var li = el("li", "ps");
+      var top = el("div", "ps-top");
+      top.appendChild(el("span", "ps-name", p.name));
+      var pill = el("span", "pill");
+      top.appendChild(pill);
+      li.appendChild(top);
+      li.appendChild(el("div", "ps-when", windowText(p.start, p.end)));
+      if (p.desc) li.appendChild(el("div", "ps-desc", p.desc));
+      var pu = safeUrl(p.url);
+      if (pu) {
+        var a = link(pu, "ps-link", (p.link || "How to get access") + " ");
+        a.appendChild(document.createTextNode("↗"));
+        li.appendChild(a);
+      }
+      list.appendChild(li);
+      return { p: p, li: li, pill: pill, lastCls: "" };
+    });
+    body.appendChild(list);
+
+    var more = el("button", "more");
+    more.type = "button";
+    more.addEventListener("click", function () {
+      card.classList.toggle("expanded");
+      updateMore(c);
+    });
+    body.appendChild(more);
+
+    var foot = el("div", "foot");
+    var onsale = el("div", "onsale");
+    onsale.appendChild(el("small", null, "Public on-sale"));
+    onsale.appendChild(el("span", null, ev.onsale ? etDateTime(Date.parse(ev.onsale)) + " ET" : "TBA"));
+    foot.appendChild(onsale);
+    if (url) {
+      var btn = link(url, "btn", "Get Tickets");
+      btn.appendChild(icon("arrow", 15));
+      foot.appendChild(btn);
+    }
+    body.appendChild(foot);
+    card.appendChild(body);
+
+    var c = {
+      ev: ev, el: card, rows: rows, badge: topBadge, more: more, primary: null, extraCount: 0,
+      text: norm([ev.artist, ev.name, ev.venue, ev.city, ev.state, STATE_NAMES[ev.state]].join(" "))
+    };
+    return c;
+  });
+
+  function updateMore(c) {
+    var expanded = c.el.classList.contains("expanded");
+    c.more.hidden = c.extraCount === 0;
+    c.more.textContent = expanded ? "Show fewer" : "Show " + c.extraCount + " more presale" + (c.extraCount === 1 ? "" : "s");
+  }
+
+  // ---- Filters -------------------------------------------------------------
+  var state = { q: "", when: "all", st: "" };
+  var qInput = document.getElementById("q");
+  var stateSel = document.getElementById("state");
+  var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg button"));
+  var countEl = document.getElementById("count");
+  var emptyEl = document.getElementById("empty");
+
+  function matchesWhen(p, now, when) {
+    var st = status(p, now);
+    if (st === "ended") return false;
+    if (when === "all") return true;
+    if (when === "live") return st === "live";
+    var today = dayKey(now), startDay = dayKey(p.start);
+    if (when === "today") return startDay === today;
+    // week: opens today or within the next 7 days
+    return startDay >= today && p.start - now <= 7 * DAY;
+  }
+
+  // Live presales sort by closing time (most urgent first), upcoming by opening time.
+  function sortKey(p, now) { return status(p, now) === "live" ? [0, p.end] : [1, p.start]; }
+
+  var visible = [];
+  function apply() {
+    var now = Date.now();
+    var terms = norm(state.q).split(" ").filter(Boolean);
+    visible = [];
+    cards.forEach(function (c) {
+      c.primary = null;
+      if (state.st && c.ev.state !== state.st) return;
+      if (terms.length && !terms.every(function (t) { return c.text.indexOf(t) !== -1; })) return;
+      var best = null, bestKey = null;
+      c.rows.forEach(function (r) {
+        if (!matchesWhen(r.p, now, state.when)) return;
+        var k = sortKey(r.p, now);
+        if (!best || k[0] < bestKey[0] || (k[0] === bestKey[0] && k[1] < bestKey[1])) { best = r; bestKey = k; }
+      });
+      if (!best) return;
+      c.primary = best; c.key = bestKey;
+      visible.push(c);
+    });
+    visible.sort(function (a, b) {
+      return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.ev.artist.localeCompare(b.ev.artist);
+    });
+
+    var frag = document.createDocumentFragment();
+    visible.forEach(function (c) {
+      // Primary presale first, then the rest in time order, ended last.
+      var shown = 0, extra = 0;
+      var ordered = c.rows.slice().sort(function (a, b) {
+        if (a === c.primary) return -1;
+        if (b === c.primary) return 1;
+        var ea = status(a.p, now) === "ended", eb = status(b.p, now) === "ended";
+        return (ea - eb) || a.p.start - b.p.start;
+      });
+      var list = c.rows[0].li.parentNode;
+      ordered.forEach(function (r) {
+        list.appendChild(r.li);
+        r.li.classList.toggle("primary", r === c.primary);
+        var isExtra = shown >= MAX_ROWS;
+        r.li.classList.toggle("extra", isExtra);
+        if (isExtra) extra++; else shown++;
+      });
+      c.extraCount = extra;
+      updateMore(c);
+      frag.appendChild(c.el);
+    });
+    grid.textContent = "";
+    grid.appendChild(frag);
+
+    var n = visible.length;
+    countEl.textContent = n === cards.length ? n.toLocaleString() + " events" : "Showing " + n.toLocaleString() + " of " + cards.length.toLocaleString() + " events";
+    emptyEl.classList.toggle("show", n === 0);
+    tick();
+    saveHash();
+  }
+
+  // ---- Countdown tick ------------------------------------------------------
+  var lastStatusSig = "";
+  function tick() {
+    var now = Date.now();
+    var sig = "";
+    visible.forEach(function (c) {
+      var b = badge(c.primary.p, now, true);
+      if (c.badge.className !== "badge " + b.cls) c.badge.className = "badge " + b.cls;
+      if (c.badge.textContent !== b.text) c.badge.textContent = b.text;
+      c.rows.forEach(function (r) {
+        var rb = badge(r.p, now, false);
+        if (r.lastCls !== rb.cls) {
+          r.pill.className = "pill " + rb.cls;
+          r.li.classList.toggle("ended", rb.cls === "ended");
+          r.lastCls = rb.cls;
+        }
+        if (r.pill.textContent !== rb.text) r.pill.textContent = rb.text;
+        sig += rb.cls === "live" ? "l" : rb.cls === "ended" ? "e" : "u";
+      });
+    });
+    // A presale opened or closed: re-run filters so order and counts stay right.
+    if (lastStatusSig && sig !== lastStatusSig) { lastStatusSig = ""; apply(); return; }
+    lastStatusSig = sig;
+  }
+
+  // ---- URL hash (shareable filter state) ------------------------------------
+  function saveHash() {
+    var parts = [];
+    if (state.q) parts.push("q=" + encodeURIComponent(state.q));
+    if (state.when !== "all") parts.push("when=" + state.when);
+    if (state.st) parts.push("state=" + state.st);
+    var h = parts.length ? "#" + parts.join("&") : "";
+    if (h !== location.hash && history.replaceState) history.replaceState(null, "", h || location.pathname + location.search);
+  }
+  function loadHash() {
+    location.hash.replace(/^#/, "").split("&").forEach(function (kv) {
+      var i = kv.indexOf("="); if (i < 0) return;
+      var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
+      if (k === "q") state.q = v;
+      if (k === "when" && /^(live|today|week|all)$/.test(v)) state.when = v;
+      if (k === "state" && /^[A-Z]{2}$/.test(v)) state.st = v;
+    });
+  }
+
+  // ---- Wire up ---------------------------------------------------------------
+  var counts = {};
+  DATA.events.forEach(function (e) { if (e.state) counts[e.state] = (counts[e.state] || 0) + 1; });
+  Object.keys(counts).sort(function (a, b) { return (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b); }).forEach(function (code) {
+    var o = el("option", null, (STATE_NAMES[code] || code) + " (" + counts[code] + ")");
+    o.value = code;
+    stateSel.appendChild(o);
+  });
+
+  loadHash();
+  if (state.st && !counts[state.st]) state.st = "";
+  qInput.value = state.q;
+  stateSel.value = state.st;
+  var searchWrap = document.getElementById("search-wrap");
+  function syncControls() {
+    searchWrap.classList.toggle("has-value", !!qInput.value);
+    segButtons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.when === state.when)); });
+  }
+
+  var qTimer;
+  qInput.addEventListener("input", function () {
+    syncControls();
+    clearTimeout(qTimer);
+    qTimer = setTimeout(function () { state.q = qInput.value; apply(); window.scrollTo({ top: 0 }); }, 80);
+  });
+  document.getElementById("clear").addEventListener("click", function () {
+    qInput.value = ""; state.q = ""; syncControls(); apply(); qInput.focus();
+  });
+  segButtons.forEach(function (b) {
+    b.addEventListener("click", function () { state.when = b.dataset.when; syncControls(); apply(); });
+  });
+  stateSel.addEventListener("change", function () { state.st = stateSel.value; apply(); });
+  document.getElementById("reset").addEventListener("click", function () {
+    state = { q: "", when: "all", st: "" };
+    qInput.value = ""; stateSel.value = ""; syncControls(); apply();
+  });
+
+  var generated = Date.parse(DATA.generated_at);
+  var updatedEl = document.getElementById("updated");
+  function renderUpdated() { updatedEl.textContent = etDateTime(generated) + " ET (" + relAgo(generated) + ")"; }
+  document.getElementById("total-events").textContent = DATA.events.length.toLocaleString();
+  document.getElementById("total-presales").textContent = DATA.events.reduce(function (n, e) { return n + e.presales.length; }, 0).toLocaleString();
+
+  window.addEventListener("hashchange", function () {
+    state = { q: "", when: "all", st: "" };
+    loadHash();
+    if (state.st && !counts[state.st]) state.st = "";
+    qInput.value = state.q; stateSel.value = state.st;
+    syncControls(); apply();
+  });
+
+  syncControls();
+  renderUpdated();
+  apply();
+  setInterval(tick, 1000);
+  setInterval(renderUpdated, 60000);
+})();
+</script>
+</body>
+</html>
