@@ -9,15 +9,17 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
+env:
+  CF_PROJECT: presalewatch
+  WRANGLER_VERSION: "4.140.0"
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -36,18 +38,24 @@ jobs:
           TM_API_KEY: ${{ secrets.TM_API_KEY }}  # lets build.py verify the key is not in the page
         run: python build.py
 
-      - uses: actions/configure-pages@v6
+      - name: Create Cloudflare Pages project if missing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$CF_PROJECT")
+          case "$status" in
+            200) echo "Pages project $CF_PROJECT exists" ;;
+            404) npx --yes "wrangler@$WRANGLER_VERSION" pages project create "$CF_PROJECT" --production-branch=main ;;
+            *) echo "::error::Cloudflare API returned HTTP $status. Check the token's Cloudflare Pages: Edit permission and the account ID."; exit 1 ;;
+          esac
 
-      - uses: actions/upload-pages-artifact@v5
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
         with:
-          path: site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          command: pages deploy site --project-name=presalewatch --branch=main

@@ -6,7 +6,7 @@ See [SPEC.md](SPEC.md) for the product scope.
 
 - `fetch_presales.py` pulls presales and writes `data/presales.json`
 - `build.py` renders `site/index.html`, one self-contained file with the data inlined
-- `.github/workflows/deploy.yml` refreshes the data every 6 hours and deploys to GitHub Pages
+- `.github/workflows/deploy.yml` refreshes the data every 6 hours and deploys to Cloudflare Pages
 
 Both scripts use only the Python standard library, so there is nothing to `pip install`.
 
@@ -45,36 +45,56 @@ A fetch uses about a dozen API calls (the free tier allows ~5,000/day).
 To edit the page, change `templates/index.html` and rerun `python build.py`.
 Don't edit `site/index.html` directly, because the build overwrites it.
 
-## Deploy to GitHub Pages
+## Deploy to Cloudflare Pages
+
+GitHub Actions fetches and builds the page, then uploads `site/` to Cloudflare
+Pages with Wrangler. The repo can be public or private.
 
 One-time setup:
 
-1. Create a **public** GitHub repo and push this project to the `main` branch.
-   (GitHub Pages on a free account requires a public repo. The API key is
-   never in the code or the page, so this is safe.)
-2. **Settings → Secrets and variables → Actions → New repository secret**:
-   name `TM_API_KEY`, value = your key.
-3. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-4. **Actions → Refresh and deploy → Run workflow**.
+1. **Create a Cloudflare API token.** In the Cloudflare dashboard go to
+   **My Profile → API Tokens → Create Token → Create Custom Token**, and add the
+   permission **Account → Cloudflare Pages → Edit**. Copy the token.
+2. **Find your account ID.** It's under **Workers & Pages** in the dashboard
+   (right-hand sidebar, "Account ID").
+3. **Add three repo secrets** under **Settings → Secrets and variables → Actions**:
 
-When it finishes, the site is at `https://<your-username>.github.io/<repo-name>/`
-(the link is also shown on the workflow run).
+   | Name | Value |
+   | --- | --- |
+   | `TM_API_KEY` | your Ticketmaster key |
+   | `CLOUDFLARE_API_TOKEN` | the token from step 1 |
+   | `CLOUDFLARE_ACCOUNT_ID` | the ID from step 2 |
 
-Or do all of it from PowerShell with the [GitHub CLI](https://cli.github.com/)
-after `gh auth login`:
+   Or from PowerShell with the [GitHub CLI](https://cli.github.com/), pasting each value when prompted:
+
+   ```powershell
+   gh secret set TM_API_KEY
+   gh secret set CLOUDFLARE_API_TOKEN
+   gh secret set CLOUDFLARE_ACCOUNT_ID
+   ```
+
+4. **Run it:** **Actions → Refresh and deploy → Run workflow**, or `gh workflow run deploy.yml`.
+
+The first run creates the `presalewatch` Pages project if it doesn't exist yet,
+so there's nothing to set up in Cloudflare beyond the token. If you'd rather
+create it yourself (this needs [Node.js](https://nodejs.org/)):
 
 ```powershell
-gh repo create presalewatch --public --source . --push
-gh secret set TM_API_KEY          # paste your key when prompted
-gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow
-gh workflow run deploy.yml
+$env:CLOUDFLARE_ACCOUNT_ID = "your_account_id"
+npx wrangler pages project create presalewatch --production-branch=main
 ```
+
+(Without `CLOUDFLARE_API_TOKEN` set, Wrangler opens a browser to log you in.)
+
+The site is served at `https://presalewatch.pages.dev`. If that name is already
+taken on Cloudflare, you'll get a suffixed subdomain instead; the exact URL is
+printed in the deploy step's log and shown under **Workers & Pages** in the dashboard.
 
 ### How the refresh works
 
 The workflow runs every 6 hours, on every push to `main`, and on demand from
-the Actions tab. Each run fetches fresh data, builds the page, and publishes
-`site/` to Pages. Nothing is committed back to the repo. If a fetch fails, the
+the Actions tab. Each run fetches fresh data, builds the page, and uploads
+`site/` to Cloudflare Pages. Nothing is committed back to the repo. If a fetch fails, the
 run fails and the previous version of the site stays live.
 
 GitHub pauses scheduled workflows after 60 days with no repo activity. If the
