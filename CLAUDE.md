@@ -93,8 +93,9 @@ To see a design change without new data, edit `templates/index.html` and run
 Two people work on this repo: Tyler (owner) and his partner.
 
 - Always `git pull` before starting work.
-- **Never commit or push directly to `main`.** Changes reach `main` only
-  through a reviewed pull request.
+- **Never commit or push directly to `main`.** It's protected: changes
+  reach `main` only through a pull request with one approving review.
+  Only Tyler (as admin) can bypass this.
 - Put each change on its own branch named for the change, for example
   `add-sort-by-date`, then open a pull request into `main`.
 - Tyler reviews and merges every pull request.
