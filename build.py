@@ -35,6 +35,7 @@ def compact(data: dict) -> dict:
                 "a": r["artist"],
                 "n": r["event_name"] if r["event_name"].strip().lower() != r["artist"].strip().lower() else None,
                 "u": r["url"],
+                "i": r.get("image"),
                 "v": r["venue"],
                 "c": r["city"],
                 "s": r["state"],
