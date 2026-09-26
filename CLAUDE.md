@@ -81,7 +81,9 @@ To see a design change without new data, edit `templates/index.html` and run
 
 ## 6. Hosting
 
-- The GitHub repo is private.
+- The GitHub repo is public, so anyone can read the code. Never commit API
+  keys or passwords. Keys go in `.env` (which Git ignores) locally, and in
+  GitHub repo secrets for the automatic job.
 - The site is hosted on Cloudflare Pages at https://presalewatch.pages.dev.
 - Every merge to `main` goes live automatically. The same job also refreshes
   the data every 6 hours.
@@ -91,9 +93,8 @@ To see a design change without new data, edit `templates/index.html` and run
 Two people work on this repo: Tyler (owner) and his partner.
 
 - Always `git pull` before starting work.
-- **Never commit or push directly to `main`.** Treat it as protected.
-  GitHub can't enforce this on a free private repo, so everyone has to
-  follow it.
+- **Never commit or push directly to `main`.** Changes reach `main` only
+  through a reviewed pull request.
 - Put each change on its own branch named for the change, for example
   `add-sort-by-date`, then open a pull request into `main`.
 - Tyler reviews and merges every pull request.
