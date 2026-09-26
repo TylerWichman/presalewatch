@@ -1,0 +1,43 @@
+{
+  "_note": "Edge model settings. Weights, tier cutoffs, and multiple ranges are placeholders until calibrate.py --refit replaces them.",
+  "fees": {
+    "seller_fee": 0.15,
+    "primary_fee_pct": 0.25
+  },
+  "face_basis": "mid",
+  "live_min_listings": 10,
+  "weights": {
+    "popularity": 0.35,
+    "followers_capacity": 0.30,
+    "scarcity": 0.20,
+    "market": 0.15
+  },
+  "followers_capacity_log10_max": 4.0,
+  "missing_signal_value": 0.5,
+  "market": {
+    "top_market_ids": ["35", "55", "27", "3"],
+    "top": 1.0,
+    "other": 0.5
+  },
+  "tiers": [
+    {"name": "High", "min_score": 0.70, "multiple_low": 1.8, "multiple_high": 3.0},
+    {"name": "Med", "min_score": 0.45, "multiple_low": 1.2, "multiple_high": 1.8},
+    {"name": "Low", "min_score": 0.0, "multiple_low": 0.7, "multiple_high": 1.2}
+  ],
+  "refresh": {
+    "spotify_ttl_hours": 72,
+    "spotify_max_calls": 1500,
+    "seatgeek_research_hours": 24,
+    "seatgeek_max_searches": 1000,
+    "snapshot_max_age_hours": 24
+  },
+  "calibration": {
+    "min_scored_for_refit": 50,
+    "review_every_scored": 25,
+    "review_every_days": 30,
+    "snapshot_window_hours": 36,
+    "range_quantiles": [0.15, 0.85]
+  },
+  "calibrated_at": null,
+  "calibrated_on_events": 0
+}

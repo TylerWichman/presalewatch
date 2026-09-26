@@ -2,13 +2,15 @@ name: Refresh and deploy
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours (UTC)
+    # Every 6 hours (UTC). Off the top of the hour, where GitHub delays or
+    # drops scheduled runs most often.
+    - cron: "17 */6 * * *"
   workflow_dispatch:         # "Run workflow" button in the Actions tab
   push:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write            # pushes refreshed data to the `data` branch (never to main)
 
 concurrency:
   group: deploy
@@ -23,19 +25,69 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
-      - name: Fetch presales
+      - name: Unit tests
+        run: python -m unittest
+
+      # Generated tables and presales.json live on the `data` branch, so the
+      # job never commits to main (which is protected).
+      - name: Load data branch
+        run: |
+          if git fetch --depth=1 origin data; then
+            git worktree add --detach _data FETCH_HEAD
+            for d in db data; do
+              if [ -d "_data/$d" ]; then cp -r "_data/$d" .; fi
+            done
+          else
+            echo "No data branch yet; starting fresh"
+            git worktree add --orphan -b data _data
+          fi
+
+      # Scheduled and manual runs refresh the data. A push just redeploys
+      # the latest saved data, unless there is none yet.
+      - name: Run pipeline
+        id: pipeline
+        if: github.event_name != 'push' || hashFiles('data/presales.json') == ''
         env:
           TM_API_KEY: ${{ secrets.TM_API_KEY }}
-        run: python fetch_presales.py
+          SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
+          SEATGEEK_CLIENT_SECRET: ${{ secrets.SEATGEEK_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        run: |
+          python pipeline.py
+          python calibrate.py
+
+      - name: Save data to the data branch
+        if: steps.pipeline.outcome == 'success'
+        working-directory: _data
+        run: |
+          rm -rf db data
+          cp -r ../db ../data .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No data changes"
+            exit 0
+          fi
+          git commit -q -m "Refresh presale data $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin HEAD:data
 
       - name: Build page
         env:
-          TM_API_KEY: ${{ secrets.TM_API_KEY }}  # lets build.py verify the key is not in the page
+          # Lets build.py verify no key ends up in the page.
+          TM_API_KEY: ${{ secrets.TM_API_KEY }}
+          SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
+          SEATGEEK_CLIENT_SECRET: ${{ secrets.SEATGEEK_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         run: python build.py
 
       - name: Create Cloudflare Pages project if missing
@@ -58,4 +110,9 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: ${{ env.WRANGLER_VERSION }}
-          command: pages deploy site --project-name=presalewatch --branch=main
+          command: pages deploy site --project-name=presalewatch --branch=main --commit-dirty=true
+
+      - name: Show the live URL
+        run: |
+          echo "Live site: https://$CF_PROJECT.pages.dev (the hash URL above is a frozen snapshot of this one deploy)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Live site: https://$CF_PROJECT.pages.dev"
