@@ -1,7 +1,11 @@
 .env
 __pycache__/
 .playwright-mcp/
+*.tmp
 
-# Generated on each run (locally and in Actions)
+# Generated. The scheduled job keeps db/ and data/ on the `data` branch;
+# site/ is rebuilt on every run.
+db/
 data/
+_data/
 site/

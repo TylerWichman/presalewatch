@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PresaleWatch · Upcoming Concert Presales</title>
-<meta name="description" content="Upcoming US concert presales from Ticketmaster: who, when it opens, and how to get access.">
+<title>PresaleWatch · Presale Edge</title>
+<meta name="description" content="Upcoming US concert presales ranked by expected resale profit after fees.">
 <meta name="theme-color" content="#16122b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c3aed'/%3E%3Cpath d='M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z' fill='%23fff'/%3E%3C/svg%3E">
 <style>
@@ -30,6 +30,12 @@
   --shadow-hover: 0 2px 4px rgba(23,20,42,.08), 0 12px 32px rgba(23,20,42,.12);
   --hero: linear-gradient(135deg, #16122b 0%, #2a1657 55%, #4a1a5c 100%);
   --radius: 16px;
+  --seg-on: #fff;
+  --btn-bg: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --neg: #b91c1c;
+  --neg-soft: #fee2e2;
+  --tip-bg: #17142a;
+  --tip-text: #f1effa;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -54,6 +60,12 @@
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
     --shadow-hover: 0 2px 4px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.4);
     --hero: linear-gradient(135deg, #0b0916 0%, #1d1240 55%, #34123f 100%);
+    --seg-on: #150f2b;
+    --btn-bg: linear-gradient(135deg, #7c3aed, #db2777);
+    --neg: #f87171;
+    --neg-soft: #3b1818;
+    --tip-bg: #f1effa;
+    --tip-text: #17142a;
     color-scheme: dark;
   }
 }
@@ -95,8 +107,7 @@ a { color: var(--accent); }
 .seg::-webkit-scrollbar { display: none; }
 .seg button { flex: none; height: 34px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 550; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s; }
 .seg button:hover { color: var(--text); }
-.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-@media (prefers-color-scheme: dark) { .seg button[aria-pressed="true"] { color: #150f2b; } }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--seg-on); }
 .select { position: relative; }
 .select select { height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; appearance: none; -webkit-appearance: none; cursor: pointer; max-width: 200px; }
 .select select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -164,8 +175,7 @@ main { padding: 20px 0 40px; }
 .onsale { font-size: 13px; color: var(--muted); }
 .onsale small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 650; }
 .onsale span { color: var(--text); font-weight: 550; font-variant-numeric: tabular-nums; }
-.btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 11px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); transition: filter .15s, transform .15s; }
-@media (prefers-color-scheme: dark) { .btn { background: linear-gradient(135deg, #7c3aed, #db2777); } }
+.btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 11px; background: var(--btn-bg); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); transition: filter .15s, transform .15s; }
 .btn:hover { filter: brightness(1.08); }
 .btn:active { transform: scale(.98); }
 .body > .spacer { flex: 1; }
@@ -177,6 +187,50 @@ main { padding: 20px 0 40px; }
 
 footer { border-top: 1px solid var(--border); padding: 22px 0 36px; font-size: 13px; color: var(--faint); }
 footer p { margin: 4px 0; }
+
+/* Edge */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); cursor: pointer; font-weight: 550; user-select: none; white-space: nowrap; }
+.toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--live); }
+.edge-strip { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
+.edge-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
+.edge { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.edge.range { font-size: 17px; }
+.pos { color: var(--live); }
+.neg { color: var(--neg); }
+.edge-side { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.tier-High { background: var(--live-soft); color: var(--live); }
+.tier-Med { background: var(--soon-soft); color: var(--soon); }
+.tier-Low { background: var(--later-soft); color: var(--later); }
+.conf { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: help; text-align: right; }
+.conf:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 999px; }
+.chip.is-live { background: var(--live-soft); color: var(--live); }
+.chip.is-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.is-est { background: var(--later-soft); color: var(--later); border: 1px dashed color-mix(in srgb, var(--later) 45%, transparent); }
+.conf small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
+.prices b { font-variant-numeric: tabular-nums; }
+.flag { margin-left: 4px; height: 20px; font-size: 11px; background: var(--soon-soft); color: var(--soon); vertical-align: 1px; }
+.ps-type { height: 19px; padding: 0 7px; font-size: 11px; background: var(--accent-soft); color: var(--accent); margin-right: 6px; vertical-align: 1px; }
+.ps-code { margin-top: 3px; font-size: 12.5px; color: var(--muted); }
+.method { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 28px; }
+.method section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.method h3 { margin: 0 0 6px; font-size: 14px; }
+.method p { margin: 0; color: var(--muted); font-size: 13px; }
+.method code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; color: var(--text); }
+.stale .dot { background: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.2); }
+.stale b { color: #fde68a; }
+#tip { position: fixed; left: 0; top: 0; z-index: 50; width: max-content; max-width: min(320px, calc(100vw - 16px)); padding: 10px 12px; border-radius: 10px; background: var(--tip-bg); color: var(--tip-text); font-size: 12.5px; line-height: 1.5; box-shadow: 0 8px 28px rgba(0,0,0,.25); pointer-events: none; opacity: 0; transition: opacity .12s; }
+#tip.show { opacity: 1; }
+#tip h4 { margin: 0 0 4px; font-size: 12.5px; }
+#tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin: 0; }
+#tip dt { opacity: .7; }
+#tip dd { margin: 0; font-variant-numeric: tabular-nums; }
+#tip p { margin: 6px 0 0; opacity: .75; }
+@media (max-width: 640px) {
+  .filters .select { flex: 1 1 140px; }
+  .filters .select select { width: 100%; max-width: none; }
+}
 </style>
 </head>
 <body>
@@ -186,10 +240,11 @@ footer p { margin: 4px 0; }
       <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#7c3aed"/><path d="M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z" fill="#fff"/></svg>
       <span>PresaleWatch</span>
     </h1>
-    <p class="tagline">Upcoming US concert presales: who, when it opens, and how to get in.</p>
+    <p class="tagline">Upcoming US concert presales, ranked by edge: the expected resale profit after fees.</p>
     <div class="stats">
-      <div><span class="dot"></span>Last updated <b id="updated"></b></div>
-      <div><b id="total-events"></b> events · <b id="total-presales"></b> presales</div>
+      <div id="updated-wrap"><span class="dot"></span>Last updated <b id="updated"></b></div>
+      <div><b id="total-events"></b> events · <b id="total-presales"></b> presales · <b id="total-live"></b> with live resale</div>
+      <div id="fees"></div>
       <div>All times Eastern (ET)</div>
     </div>
   </div>
@@ -208,10 +263,29 @@ footer p { margin: 4px 0; }
       <button type="button" data-when="week" aria-pressed="false">This week</button>
       <button type="button" data-when="all" aria-pressed="true">All</button>
     </div>
-    <div class="select">
-      <select id="state" aria-label="State"><option value="">All states</option></select>
+    <div class="filters">
+      <div class="select"><select id="sort" aria-label="Sort by">
+        <option value="edge">Sort: Highest edge</option>
+        <option value="soon">Sort: Opening soonest</option>
+      </select></div>
+      <div class="select"><select id="min-edge" aria-label="Minimum edge">
+        <option value="">Any edge</option>
+        <option value="0">Edge ≥ 0%</option>
+        <option value="0.25">Edge ≥ +25%</option>
+        <option value="0.5">Edge ≥ +50%</option>
+        <option value="1">Edge ≥ +100%</option>
+      </select></div>
+      <div class="select"><select id="tier" aria-label="Demand tier">
+        <option value="">All demand</option>
+        <option value="High">High demand</option>
+        <option value="Med">Med demand</option>
+        <option value="Low">Low demand</option>
+      </select></div>
+      <div class="select"><select id="state" aria-label="State"><option value="">All states</option></select></div>
+      <div class="select"><select id="platform" aria-label="Presale platform"><option value="">All platforms</option></select></div>
+      <label class="toggle"><input type="checkbox" id="live-only"> Live only</label>
+      <div class="count" id="count" aria-live="polite"></div>
     </div>
-    <div class="count" id="count" aria-live="polite"></div>
   </div>
 </div>
 
@@ -220,18 +294,34 @@ footer p { margin: 4px 0; }
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty">
       <h2>No presales match</h2>
-      <p>Try a different spelling, another state, or a wider time range.</p>
+      <p id="empty-hint">Try a different spelling, a lower minimum edge, or a wider time range.</p>
       <button type="button" id="reset">Reset filters</button>
+    </div>
+    <div class="method">
+      <section>
+        <h3>Edge = Profit %</h3>
+        <p><code>(resale × (1 − seller fee) − (face + primary fees)) ÷ (face + primary fees)</code>, per ticket. It ranks by upside only and doesn't account for the odds of actually getting tickets. The events with the highest edge are usually the hardest to buy.</p>
+      </section>
+      <section>
+        <h3>Live vs Estimated</h3>
+        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Spotify popularity, followers per venue seat, tour size, market) and shows a range. Estimated events sort by the midpoint of their range.</p>
+      </section>
+      <section>
+        <h3 id="calib-title">Estimates are uncalibrated</h3>
+        <p id="calib">Tier weights and multiple ranges are placeholder guesses until enough predictions have been scored against real resale prices. Hover or tap a Live or Estimated label to see the inputs behind each number.</p>
+      </section>
     </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap">
-    <p>Presale data from the Ticketmaster Discovery API, refreshed every few hours. Times can change, so always confirm on Ticketmaster before a sale.</p>
-    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster or Live Nation.</p>
+    <p>Presales and face values from the Ticketmaster Discovery API, live resale from SeatGeek, artist popularity from Spotify. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
+    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Spotify. Nothing here is financial advice.</p>
   </div>
 </footer>
+
+<div id="tip" role="tooltip"></div>
 
 <script id="presale-data" type="application/json">__PRESALE_DATA__</script>
 <script>
@@ -239,10 +329,20 @@ footer p { margin: 4px 0; }
   "use strict";
 
   var DATA = JSON.parse(document.getElementById("presale-data").textContent);
+  var FEES = DATA.fees;
+  var ASK_DISCOUNT = DATA.ask_discount || 0;
   var DAY = 864e5;
   var SOON_MS = DAY; // "soon" styling when opening within 24h
 
   var STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",PR:"Puerto Rico",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+
+  // Presale rows arrive flat; group them back under their event.
+  var EVENTS = DATA.events;
+  EVENTS.forEach(function (ev) { ev.presales = []; });
+  DATA.rows.forEach(function (r) {
+    EVENTS[r.e].presales.push({ name: r.n, type: r.ty, code: r.cs, desc: r.ds, url: r.u, link: r.lt, start: Date.parse(r.st), end: Date.parse(r.en) });
+  });
+  EVENTS.forEach(function (ev) { ev.presales.sort(function (a, b) { return a.start - b.start; }); });
 
   // ---- Formatting -------------------------------------------------------
   var TZ = "America/New_York";
@@ -265,11 +365,11 @@ footer p { margin: 4px 0; }
     return etDateTime(start) + " – " + etDateTime(end) + " ET";
   }
   function eventDateText(ev) {
-    if (!ev.date) return "Date TBA";
-    var p = ev.date.split("-").map(Number);
+    if (!ev.d) return "Date TBA";
+    var p = ev.d.split("-").map(Number);
     var s = fmtEventDate.format(Date.UTC(p[0], p[1] - 1, p[2]));
-    if (ev.time) {
-      var t = ev.time.split(":").map(Number);
+    if (ev.t) {
+      var t = ev.t.split(":").map(Number);
       s += " · " + fmtEventTime.format(Date.UTC(2000, 0, 1, t[0], t[1]));
     }
     return s;
@@ -291,8 +391,16 @@ footer p { margin: 4px 0; }
     if (h < 48) return h + "h ago";
     return Math.round(h / 24) + "d ago";
   }
+  function pct(x) {
+    var n = Math.round(Math.abs(x) * 100);
+    return (n === 0 ? "" : x > 0 ? "+" : "−") + n + "%";
+  }
+  function sign(x) { return x > 0.0005 ? "pos" : x < -0.0005 ? "neg" : ""; }
+  function money(x) { return "$" + (x >= 100 ? Math.round(x).toLocaleString() : (Math.round(x * 100) / 100).toFixed(x % 1 ? 2 : 0)); }
+  function mult(x) { return (Math.round(x * 100) / 100) + "×"; }
+  function big(n) { return n >= 1e6 ? (Math.round(n / 1e5) / 10) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n); }
   function norm(s) {
-    return (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
   }
   function safeUrl(u) { return typeof u === "string" && /^https?:\/\//i.test(u) ? u : null; }
 
@@ -320,6 +428,7 @@ footer p { margin: 4px 0; }
   var ICONS = {
     pin: '<path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
     cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    tag: '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
     arrow: '<path d="M7 17 17 7M9 7h8v8"/>'
   };
   function icon(name, size) {
@@ -338,20 +447,119 @@ footer p { margin: 4px 0; }
     return a;
   }
 
+  // ---- Inputs tooltip -------------------------------------------------------
+  var SIGNAL_NAMES = { popularity: "Spotify popularity", followers_capacity: "Followers per seat", scarcity: "Tour scarcity", market: "Market" };
+  function tipContent(ev) {
+    var inp = ev["in"] || {};
+    var box = document.createDocumentFragment();
+    var items = [];
+    if (ev.m === "live") {
+      box.appendChild(el("h4", null, "Live: " + pct(ev.p) + " based on asking prices"));
+      items.push(["Median ask", money(ev.rm) + " (" + ev.rn + " listings)"]);
+      items.push(["Sale price used", money(ev.rm * (1 - ASK_DISCOUNT)) + " (ask less " + Math.round(ASK_DISCOUNT * 100) + "%)"]);
+      if (ev.rl != null) items.push(["Lowest / avg", money(ev.rl) + " / " + (ev.ra != null ? money(ev.ra) : "—")]);
+      items.push(["Face used", money(inp.face) + (ev.fi ? " (fees included)" : "")]);
+      items.push(["Resale multiple", mult(ev.ml)]);
+      if (ev.rc) items.push(["Captured", relAgo(Date.parse(ev.rc)) + " · SeatGeek"]);
+    } else {
+      box.appendChild(el("h4", null, "Estimated · " + ev.cf + " confidence"));
+      items.push(["Demand score", ev.ds.toFixed(2) + " → " + ev.tr + " tier"]);
+      items.push(["Resale multiple", mult(ev.ml) + "–" + mult(ev.mh) + " face"]);
+      items.push(["Spotify", inp.pop != null ? "popularity " + inp.pop + (inp.fol != null ? ", " + big(inp.fol) + " followers" : "") : "not available"]);
+      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() : "unknown"]);
+      items.push(["Tour dates", inp.tour != null ? String(inp.tour) : "unknown"]);
+      items.push(["Market", inp.mkt === 1 ? "NYC / LA / Chicago" : "Other metro"]);
+      items.push(["Face used", inp.face != null ? money(inp.face) : "not listed (range is face-independent)"]);
+      items.push(["SeatGeek", inp.sgn != null ? inp.sgn + " listings (need " + DATA.min_listings + ")" : "no listings found"]);
+    }
+    items.push(["Fees", Math.round(FEES.seller_fee * 100) + "% seller, " + (ev.fi ? "included in face" : Math.round(FEES.primary_fee_pct * 100) + "% primary")]);
+    var dl = el("dl");
+    items.forEach(function (it) { dl.appendChild(el("dt", null, it[0])); dl.appendChild(el("dd", null, it[1])); });
+    box.appendChild(dl);
+    if (ev.m !== "live" && inp.miss) {
+      box.appendChild(el("p", null, "Missing: " + inp.miss.map(function (k) { return SIGNAL_NAMES[k] || k; }).join(", ") + ". Filled with a neutral value, so confidence is Low."));
+    }
+    return box;
+  }
+  var tip = document.getElementById("tip");
+  var tipOwner = null;
+  function showTip(btn, ev) {
+    tipOwner = btn;
+    tip.textContent = "";
+    tip.appendChild(tipContent(ev));
+    tip.style.left = "0px"; tip.style.top = "0px";  // measure at full width, not squeezed at the edge
+    tip.classList.add("show");
+    var r = btn.getBoundingClientRect();
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8) + "px";
+    var top = r.bottom + 6;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+    tip.style.top = top + "px";
+  }
+  function hideTip() { tipOwner = null; tip.classList.remove("show"); }
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  function edgeStrip(ev) {
+    var strip = el("div", "edge-strip");
+    var left = el("div");
+    left.appendChild(el("span", "edge-label", ev.m === "live" ? "Edge" : "Estimated edge"));
+    if (ev.m === "live") {
+      left.appendChild(el("span", "edge " + sign(ev.p), pct(ev.p)));
+    } else {
+      var rng = el("span", "edge range");
+      rng.appendChild(el("span", sign(ev.pl), pct(ev.pl)));
+      rng.appendChild(document.createTextNode(" to "));
+      rng.appendChild(el("span", sign(ev.ph), pct(ev.ph)));
+      left.appendChild(rng);
+    }
+    strip.appendChild(left);
+
+    var side = el("div", "edge-side");
+    var btn = el("button", "conf");
+    btn.type = "button";
+    btn.setAttribute("aria-label", (ev.m === "live" ? "Live" : "Estimated") + " edge, show inputs");
+    btn.appendChild(el("span", "chip " + (ev.m === "live" ? "is-live" : "is-est"), ev.m === "live" ? "Live" : "Estimated"));
+    btn.appendChild(el("small", null, ev.m === "live" ? "based on asking prices" : ev.cf + " confidence"));
+    btn.addEventListener("mouseenter", function () { showTip(btn, ev); });
+    btn.addEventListener("mouseleave", hideTip);
+    btn.addEventListener("focus", function () { showTip(btn, ev); });
+    btn.addEventListener("blur", hideTip);
+    btn.addEventListener("click", function () { if (tipOwner === btn) hideTip(); else showTip(btn, ev); });
+    side.appendChild(btn);
+    if (ev.m !== "live") side.appendChild(el("span", "chip tier-" + ev.tr, ev.tr + " demand"));
+    strip.appendChild(side);
+    return strip;
+  }
+
+  function pricesLine(ev) {
+    var row = el("div", "prices");
+    row.appendChild(icon("tag"));
+    var text = el("span");
+    text.appendChild(document.createTextNode("Face "));
+    text.appendChild(el("b", null, ev.f0 != null ? (ev.f1 != null && ev.f1 !== ev.f0 ? money(ev.f0) + "–" + money(ev.f1) : money(ev.f0)) : "not listed yet"));
+    if (ev.m === "live") {
+      text.appendChild(document.createTextNode(" · Resale "));
+      text.appendChild(el("b", null, money(ev.rm)));
+      text.appendChild(document.createTextNode(" median ask (" + ev.rn.toLocaleString() + " listings)"));
+    }
+    if (ev.dp) text.appendChild(el("span", "chip flag", "Dynamic pricing"));
+    row.appendChild(text);
+    return row;
+  }
+
   // ---- Build cards once ----------------------------------------------------
   var grid = document.getElementById("grid");
   var MAX_ROWS = 2; // presale rows shown before "Show all"
 
-  var cards = DATA.events.map(function (ev) {
-    ev.presales.forEach(function (p) { p.start = Date.parse(p.start); p.end = Date.parse(p.end); });
-    var url = safeUrl(ev.url);
+  var cards = EVENTS.map(function (ev) {
+    var url = safeUrl(ev.u);
     var card = el("article", "card");
 
     var media = url ? link(url, "media") : el("div", "media");
-    media.setAttribute("aria-label", ev.artist + " on Ticketmaster");
-    if (safeUrl(ev.image)) {
+    media.setAttribute("aria-label", ev.a + " on Ticketmaster");
+    if (safeUrl(ev.i)) {
       var img = el("img");
-      img.src = ev.image; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
+      img.src = ev.i; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
       img.onerror = function () { img.remove(); };
       media.appendChild(img);
     }
@@ -360,28 +568,34 @@ footer p { margin: 4px 0; }
     card.appendChild(media);
 
     var body = el("div", "body");
-    body.appendChild(el("h2", "artist", ev.artist));
-    if (ev.name && norm(ev.name) !== norm(ev.artist)) body.appendChild(el("p", "event-name", ev.name));
+    body.appendChild(el("h2", "artist", ev.a));
+    if (ev.n && norm(ev.n) !== norm(ev.a)) body.appendChild(el("p", "event-name", ev.n));
+    body.appendChild(edgeStrip(ev));
 
     var meta = el("div", "meta");
     var where = el("div"); where.appendChild(icon("pin"));
-    var whereText = el("span"); whereText.appendChild(el("b", null, ev.venue || "Venue TBA"));
-    var place = [ev.city, ev.state].filter(Boolean).join(", ");
+    var whereText = el("span"); whereText.appendChild(el("b", null, ev.v || "Venue TBA"));
+    var place = [ev.c, ev.s].filter(Boolean).join(", ");
     if (place) whereText.appendChild(document.createTextNode(" · " + place));
     where.appendChild(whereText); meta.appendChild(where);
     var when = el("div"); when.appendChild(icon("cal")); when.appendChild(el("span", null, eventDateText(ev)));
     meta.appendChild(when);
+    meta.appendChild(pricesLine(ev));
     body.appendChild(meta);
 
     var list = el("ul", "presales");
     var rows = ev.presales.map(function (p) {
       var li = el("li", "ps");
       var top = el("div", "ps-top");
-      top.appendChild(el("span", "ps-name", p.name));
+      var name = el("span", "ps-name");
+      name.appendChild(el("span", "chip ps-type", p.type));
+      name.appendChild(document.createTextNode(p.name));
+      top.appendChild(name);
       var pill = el("span", "pill");
       top.appendChild(pill);
       li.appendChild(top);
       li.appendChild(el("div", "ps-when", windowText(p.start, p.end)));
+      li.appendChild(el("div", "ps-code", "Code: " + p.code));
       if (p.desc) li.appendChild(el("div", "ps-desc", p.desc));
       var pu = safeUrl(p.url);
       if (pu) {
@@ -405,7 +619,7 @@ footer p { margin: 4px 0; }
     var foot = el("div", "foot");
     var onsale = el("div", "onsale");
     onsale.appendChild(el("small", null, "Public on-sale"));
-    onsale.appendChild(el("span", null, ev.onsale ? etDateTime(Date.parse(ev.onsale)) + " ET" : "TBA"));
+    onsale.appendChild(el("span", null, ev.o ? etDateTime(Date.parse(ev.o)) + " ET" : "TBA"));
     foot.appendChild(onsale);
     if (url) {
       var btn = link(url, "btn", "Get Tickets");
@@ -417,7 +631,7 @@ footer p { margin: 4px 0; }
 
     var c = {
       ev: ev, el: card, rows: rows, badge: topBadge, more: more, primary: null, extraCount: 0,
-      text: norm([ev.artist, ev.name, ev.venue, ev.city, ev.state, STATE_NAMES[ev.state]].join(" "))
+      text: norm([ev.a, ev.n, ev.v, ev.c, ev.s, STATE_NAMES[ev.s]].join(" "))
     };
     return c;
   });
@@ -429,9 +643,15 @@ footer p { margin: 4px 0; }
   }
 
   // ---- Filters -------------------------------------------------------------
-  var state = { q: "", when: "all", st: "" };
+  var DEFAULT = { q: "", when: "all", st: "", sort: "edge", min: "", tier: "", plat: "", live: false };
+  var state = Object.assign({}, DEFAULT);
   var qInput = document.getElementById("q");
   var stateSel = document.getElementById("state");
+  var sortSel = document.getElementById("sort");
+  var minSel = document.getElementById("min-edge");
+  var tierSel = document.getElementById("tier");
+  var platSel = document.getElementById("platform");
+  var liveBox = document.getElementById("live-only");
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg button"));
   var countEl = document.getElementById("count");
   var emptyEl = document.getElementById("empty");
@@ -454,14 +674,20 @@ footer p { margin: 4px 0; }
   function apply() {
     var now = Date.now();
     var terms = norm(state.q).split(" ").filter(Boolean);
+    var min = state.min === "" ? null : Number(state.min);
     visible = [];
     cards.forEach(function (c) {
+      var ev = c.ev;
       c.primary = null;
-      if (state.st && c.ev.state !== state.st) return;
+      if (state.st && ev.s !== state.st) return;
+      if (state.live && ev.m !== "live") return;
+      if (min != null && ev.es < min) return;
+      if (state.tier && ev.tr !== state.tier) return;
       if (terms.length && !terms.every(function (t) { return c.text.indexOf(t) !== -1; })) return;
       var best = null, bestKey = null;
       c.rows.forEach(function (r) {
         if (!matchesWhen(r.p, now, state.when)) return;
+        if (state.plat && r.p.type !== state.plat) return;
         var k = sortKey(r.p, now);
         if (!best || k[0] < bestKey[0] || (k[0] === bestKey[0] && k[1] < bestKey[1])) { best = r; bestKey = k; }
       });
@@ -470,7 +696,9 @@ footer p { margin: 4px 0; }
       visible.push(c);
     });
     visible.sort(function (a, b) {
-      return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.ev.artist.localeCompare(b.ev.artist);
+      // Edge sort: highest first (estimates by range midpoint); ties go to the sooner presale.
+      if (state.sort === "edge" && a.ev.es !== b.ev.es) return b.ev.es - a.ev.es;
+      return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.ev.a.localeCompare(b.ev.a);
     });
 
     var frag = document.createDocumentFragment();
@@ -501,6 +729,9 @@ footer p { margin: 4px 0; }
     var n = visible.length;
     countEl.textContent = n === cards.length ? n.toLocaleString() + " events" : "Showing " + n.toLocaleString() + " of " + cards.length.toLocaleString() + " events";
     emptyEl.classList.toggle("show", n === 0);
+    document.getElementById("empty-hint").textContent = state.live && liveCount === 0
+      ? "No event has " + DATA.min_listings + "+ resale listings yet, so every edge is still an estimate."
+      : "Try a different spelling, a lower minimum edge, or a wider time range.";
     tick();
     saveHash();
   }
@@ -531,46 +762,63 @@ footer p { margin: 4px 0; }
   }
 
   // ---- URL hash (shareable filter state) ------------------------------------
+  var HASH_KEYS = { q: "q", when: "when", st: "state", sort: "sort", min: "min", tier: "tier", plat: "plat", live: "live" };
   function saveHash() {
     var parts = [];
-    if (state.q) parts.push("q=" + encodeURIComponent(state.q));
-    if (state.when !== "all") parts.push("when=" + state.when);
-    if (state.st) parts.push("state=" + state.st);
+    Object.keys(HASH_KEYS).forEach(function (k) {
+      if (state[k] !== DEFAULT[k]) parts.push(HASH_KEYS[k] + "=" + encodeURIComponent(state[k] === true ? "1" : state[k]));
+    });
     var h = parts.length ? "#" + parts.join("&") : "";
-    if (h !== location.hash && history.replaceState) history.replaceState(null, "", h || location.pathname + location.search);
+    try {
+      if (h !== location.hash && history.replaceState) history.replaceState(null, "", h || location.pathname + location.search);
+    } catch (e) { /* some embedded viewers block history changes */ }
   }
   function loadHash() {
+    state = Object.assign({}, DEFAULT);
     location.hash.replace(/^#/, "").split("&").forEach(function (kv) {
       var i = kv.indexOf("="); if (i < 0) return;
       var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
       if (k === "q") state.q = v;
       if (k === "when" && /^(live|today|week|all)$/.test(v)) state.when = v;
       if (k === "state" && /^[A-Z]{2}$/.test(v)) state.st = v;
+      if (k === "sort" && /^(edge|soon)$/.test(v)) state.sort = v;
+      if (k === "min" && /^-?\d+(\.\d+)?$/.test(v)) state.min = v;
+      if (k === "tier" && /^(High|Med|Low)$/.test(v)) state.tier = v;
+      if (k === "plat") state.plat = v;
+      if (k === "live") state.live = v === "1";
     });
   }
 
   // ---- Wire up ---------------------------------------------------------------
-  var counts = {};
-  DATA.events.forEach(function (e) { if (e.state) counts[e.state] = (counts[e.state] || 0) + 1; });
+  var counts = {}, platCounts = {};
+  EVENTS.forEach(function (e) {
+    if (e.s) counts[e.s] = (counts[e.s] || 0) + 1;
+    e.presales.forEach(function (p) { platCounts[p.type] = (platCounts[p.type] || 0) + 1; });
+  });
   Object.keys(counts).sort(function (a, b) { return (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b); }).forEach(function (code) {
     var o = el("option", null, (STATE_NAMES[code] || code) + " (" + counts[code] + ")");
     o.value = code;
     stateSel.appendChild(o);
   });
+  Object.keys(platCounts).sort(function (a, b) { return platCounts[b] - platCounts[a] || a.localeCompare(b); }).forEach(function (t) {
+    var o = el("option", null, t + " (" + platCounts[t] + ")");
+    o.value = t;
+    platSel.appendChild(o);
+  });
 
-  loadHash();
-  if (state.st && !counts[state.st]) state.st = "";
-  qInput.value = state.q;
-  stateSel.value = state.st;
   var searchWrap = document.getElementById("search-wrap");
   function syncControls() {
+    if (state.st && !counts[state.st]) state.st = "";
+    if (state.plat && !platCounts[state.plat]) state.plat = "";
+    qInput.value = state.q; stateSel.value = state.st; sortSel.value = state.sort;
+    minSel.value = state.min; tierSel.value = state.tier; platSel.value = state.plat; liveBox.checked = state.live;
     searchWrap.classList.toggle("has-value", !!qInput.value);
     segButtons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.when === state.when)); });
   }
 
   var qTimer;
   qInput.addEventListener("input", function () {
-    syncControls();
+    searchWrap.classList.toggle("has-value", !!qInput.value);
     clearTimeout(qTimer);
     qTimer = setTimeout(function () { state.q = qInput.value; apply(); window.scrollTo({ top: 0 }); }, 80);
   });
@@ -580,26 +828,37 @@ footer p { margin: 4px 0; }
   segButtons.forEach(function (b) {
     b.addEventListener("click", function () { state.when = b.dataset.when; syncControls(); apply(); });
   });
-  stateSel.addEventListener("change", function () { state.st = stateSel.value; apply(); });
-  document.getElementById("reset").addEventListener("click", function () {
-    state = { q: "", when: "all", st: "" };
-    qInput.value = ""; stateSel.value = ""; syncControls(); apply();
+  [[stateSel, "st"], [sortSel, "sort"], [minSel, "min"], [tierSel, "tier"], [platSel, "plat"]].forEach(function (pair) {
+    pair[0].addEventListener("change", function () { state[pair[1]] = pair[0].value; apply(); });
   });
+  liveBox.addEventListener("change", function () { state.live = liveBox.checked; apply(); });
+  document.getElementById("reset").addEventListener("click", function () {
+    state = Object.assign({}, DEFAULT); syncControls(); apply();
+  });
+  window.addEventListener("hashchange", function () { loadHash(); syncControls(); apply(); });
 
+  var liveCount = EVENTS.filter(function (e) { return e.m === "live"; }).length;
   var generated = Date.parse(DATA.generated_at);
   var updatedEl = document.getElementById("updated");
-  function renderUpdated() { updatedEl.textContent = etDateTime(generated) + " ET (" + relAgo(generated) + ")"; }
-  document.getElementById("total-events").textContent = DATA.events.length.toLocaleString();
-  document.getElementById("total-presales").textContent = DATA.events.reduce(function (n, e) { return n + e.presales.length; }, 0).toLocaleString();
+  var STALE_MS = 12 * 36e5;  // refreshes run every 6h, so 12h means at least one was missed
+  function renderUpdated() {
+    var stale = Date.now() - generated > STALE_MS;
+    updatedEl.textContent = etDateTime(generated) + " ET (" + relAgo(generated) + ")" + (stale ? " · data may be out of date" : "");
+    document.getElementById("updated-wrap").classList.toggle("stale", stale);
+  }
+  document.getElementById("total-events").textContent = EVENTS.length.toLocaleString();
+  document.getElementById("total-presales").textContent = DATA.rows.length.toLocaleString();
+  document.getElementById("total-live").textContent = liveCount.toLocaleString();
+  document.getElementById("fees").textContent = "Fees: " + Math.round(FEES.seller_fee * 100) + "% seller, " + Math.round(FEES.primary_fee_pct * 100) + "% primary";
+  document.getElementById("min-listings").textContent = DATA.min_listings;
+  document.getElementById("ask-discount").textContent = Math.round(ASK_DISCOUNT * 100) + "%";
+  if (DATA.calibrated_at) {
+    document.getElementById("calib-title").textContent = "Estimates are calibrated monthly";
+    document.getElementById("calib").textContent = "Tier weights and ranges were last refit against scored resale outcomes on " +
+      fmtEventDate.format(Date.parse(DATA.calibrated_at)) + ". They are still estimates. Hover or tap a Live or Estimated label to see the inputs behind each number.";
+  }
 
-  window.addEventListener("hashchange", function () {
-    state = { q: "", when: "all", st: "" };
-    loadHash();
-    if (state.st && !counts[state.st]) state.st = "";
-    qInput.value = state.q; stateSel.value = state.st;
-    syncControls(); apply();
-  });
-
+  loadHash();
   syncControls();
   renderUpdated();
   apply();
