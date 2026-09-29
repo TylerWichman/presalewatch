@@ -1,9 +1,14 @@
+import csv
 import math
 import random
+import tempfile
 import unittest
 from datetime import datetime, timezone
+from pathlib import Path
+from unittest import mock
 
 import calibrate
+import common
 import edge
 import ticketmaster
 from common import load_config
@@ -13,6 +18,7 @@ class ProfitFormula(unittest.TestCase):
     def setUp(self):
         self.cfg = load_config()
         self.cfg["fees"] = {"seller_fee": 0.15, "primary_fee_pct": 0.25}
+        self.cfg["ask_to_sale_discount"] = 0.0
 
     def test_spec_formula(self):
         # $100 face + $25 fees = $125 cost; $200 resale nets $170 -> +36%.
@@ -40,6 +46,19 @@ class ProfitFormula(unittest.TestCase):
         self.assertAlmostEqual(res["profit"], (300 * 0.85 - 125) / 125, places=4)
         res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=snap, cfg=self.cfg)
         self.assertEqual(res["mode"], "predicted")
+
+    def test_live_discounts_asking_price(self):
+        self.cfg["ask_to_sale_discount"] = 0.15
+        signals = dict.fromkeys(edge.SIGNALS, 0.5)
+        snap = {"listing_count": 10, "median": 300.0}
+        res = edge.evaluate(face_min=100, face_max=100, fee_included=False, signals=signals, snapshot=snap, cfg=self.cfg)
+        # $300 ask sells for about $255; $255 * 0.85 = $216.75 net on $125 cost -> +73.4%.
+        self.assertAlmostEqual(res["resale"], 255.0)
+        self.assertAlmostEqual(res["multiple_low"], 2.55)
+        self.assertAlmostEqual(res["profit"], (300 * 0.85 * 0.85 - 125) / 125, places=4)
+
+    def test_default_discount_is_configured(self):
+        self.assertEqual(load_config()["ask_to_sale_discount"], 0.15)
 
     def test_tier_cutoffs(self):
         self.assertEqual(edge.tier_for(0.70, self.cfg)["name"], "High")
@@ -69,6 +88,28 @@ class PresaleTypes(unittest.TestCase):
         }
         for name, kind in cases.items():
             self.assertEqual(ticketmaster.presale_type(name)[0], kind, name)
+
+
+class Scoring(unittest.TestCase):
+    def test_actual_multiple_uses_sale_basis(self):
+        cfg = load_config()
+        cfg["ask_to_sale_discount"] = 0.15
+        tables = {
+            "events": [{"event_id": "e1", "artist": "A", "onsale_date": "2026-09-01T14:00:00Z", "face_min": "100", "face_max": "100"}],
+            "predictions": [{"event_id": "e1", "mode": "predicted", "predicted_at": "2026-08-30T00:00:00Z", "tier": "Med",
+                             "demand_score": "0.5", "multiple_low": "1.2", "multiple_high": "1.8", "face": "100"}],
+            "resale_snapshots": [{"event_id": "e1", "captured_at": "2026-09-08T14:00:00Z", "median": "200", "listing_count": "40"}],
+        }
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(common, "DB_DIR", Path(tmp)):
+            for name, rows in tables.items():
+                with open(Path(tmp) / f"{name}.csv", "w", newline="", encoding="utf-8") as fh:
+                    writer = csv.DictWriter(fh, fieldnames=list(rows[0]))
+                    writer.writeheader()
+                    writer.writerows(rows)
+            rows = calibrate.score(datetime(2026, 9, 9, tzinfo=timezone.utc), cfg)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["median_d7"], 200)
+        self.assertAlmostEqual(rows[0]["multiple_d7"], 1.7)  # $200 ask * 0.85 / $100 face
 
 
 class Refit(unittest.TestCase):

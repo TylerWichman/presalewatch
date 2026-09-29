@@ -4,6 +4,7 @@
     "seller_fee": 0.15,
     "primary_fee_pct": 0.25
   },
+  "ask_to_sale_discount": 0.15,
   "face_basis": "mid",
   "live_min_listings": 10,
   "weights": {

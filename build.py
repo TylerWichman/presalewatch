@@ -91,6 +91,7 @@ def compact(data: dict) -> dict:
         "generated_at": data["generated_at"],
         "fees": data["fees"],
         "min_listings": data["live_min_listings"],
+        "ask_discount": data.get("ask_to_sale_discount"),
         "calibrated_at": data.get("calibrated_at"),
         "events": events,
         "rows": rows,

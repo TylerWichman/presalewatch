@@ -353,6 +353,7 @@ def main() -> None:
         "generated_at": iso(now),
         "fees": cfg["fees"],
         "live_min_listings": cfg["live_min_listings"],
+        "ask_to_sale_discount": cfg.get("ask_to_sale_discount", 0.0),
         "calibrated_at": cfg.get("calibrated_at"),
         "event_count": len(parsed),
         "presale_count": len(rows),

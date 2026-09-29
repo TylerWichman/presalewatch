@@ -5,7 +5,9 @@ Pure functions only, so the math is easy to test and to reuse in calibration.
     Profit% = (P_resale * (1 - f_seller) - (P_face + F_primary)) / (P_face + F_primary)
 
 Mode A (live): P_resale is the median SeatGeek listing when at least
-`live_min_listings` listings exist and face value is known.
+`live_min_listings` listings exist and face value is known, less
+`ask_to_sale_discount`: listings are asking prices, and resale usually clears
+below the ask.
 Mode B (predicted): P_resale = P_face * multiple, where the multiple range
 comes from the demand tier. The result is a margin range, not a point.
 """
@@ -26,6 +28,11 @@ def profit_pct(resale: float, face: float, cfg: dict, fee_included: bool = False
     """Expected return per dollar spent, net of seller and primary fees."""
     cost = all_in_cost(face, cfg, fee_included)
     return (resale * (1 - cfg["fees"]["seller_fee"]) - cost) / cost
+
+
+def sale_price(ask: float, cfg: dict) -> float:
+    """Expected sale price from a resale asking price."""
+    return ask * (1 - cfg.get("ask_to_sale_discount", 0.0))
 
 
 def face_price(face_min: float | None, face_max: float | None, cfg: dict) -> float | None:
@@ -95,12 +102,14 @@ def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bo
     listings = (snapshot or {}).get("listing_count")
     median = (snapshot or {}).get("median")
     if face and median and listings is not None and listings >= cfg["live_min_listings"]:
-        profit = profit_pct(median, face, cfg, fee_included)
+        resale = sale_price(median, cfg)
+        profit = profit_pct(resale, face, cfg, fee_included)
         result.update({
             "mode": "live",
             "confidence": "High",
-            "multiple_low": round(median / face, 4),
-            "multiple_high": round(median / face, 4),
+            "resale": round(resale, 2),
+            "multiple_low": round(resale / face, 4),
+            "multiple_high": round(resale / face, 4),
             "profit": round(profit, 4),
             "profit_low": round(profit, 4),
             "profit_high": round(profit, 4),

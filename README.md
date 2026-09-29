@@ -26,7 +26,10 @@ Profit % = (resale × (1 − seller fee) − (face + primary fees)) ÷ (face + p
 Fees default to 15% seller and 25% of face for primary (`config/model.json`).
 
 - **Live (Mode A):** when SeatGeek has 10+ listings and Ticketmaster lists a face
-  value, resale is the median listing, giving an exact Profit %.
+  value, resale is the median listing less `ask_to_sale_discount` (default 15%),
+  giving an exact Profit %. Listings are asking prices and tickets usually sell
+  below the ask, so the page labels Live edges "based on asking prices".
+  Calibration applies the same discount to the SeatGeek medians it scores against.
 - **Estimated (Mode B):** otherwise a demand score (Spotify popularity, followers per
   venue seat, 1 ÷ tour dates, NYC/LA/Chicago market) picks a High/Med/Low tier and a
   resale multiple range, shown as a margin range such as "+22% to +104%". Confidence is
@@ -113,6 +116,9 @@ the printed tiers, then open a pull request with the new `config/model.json`.
 
 To edit the page, change `templates/index.html` and rerun `python build.py`.
 Don't edit `site/index.html` directly, because the build overwrites it.
+
+Pull requests to `main` run the unit tests (`.github/workflows/tests.yml`).
+They need no API keys or secrets.
 
 ## Deploy to Cloudflare Pages
 

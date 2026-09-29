@@ -1,0 +1,23 @@
+name: Tests
+
+# Runs the unit tests on pull requests to main. No secrets, no data branch
+# access, no deploy: the tests need no API keys.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Unit tests
+        run: python -m unittest -v

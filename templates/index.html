@@ -304,7 +304,7 @@ footer p { margin: 4px 0; }
       </section>
       <section>
         <h3>Live vs Estimated</h3>
-        <p><b>Live</b> uses the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist. <b>Estimated</b> predicts a resale multiple of face from a demand score (Spotify popularity, followers per venue seat, tour size, market) and shows a range. Estimated events sort by the midpoint of their range.</p>
+        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Spotify popularity, followers per venue seat, tour size, market) and shows a range. Estimated events sort by the midpoint of their range.</p>
       </section>
       <section>
         <h3 id="calib-title">Estimates are uncalibrated</h3>
@@ -330,6 +330,7 @@ footer p { margin: 4px 0; }
 
   var DATA = JSON.parse(document.getElementById("presale-data").textContent);
   var FEES = DATA.fees;
+  var ASK_DISCOUNT = DATA.ask_discount || 0;
   var DAY = 864e5;
   var SOON_MS = DAY; // "soon" styling when opening within 24h
 
@@ -453,8 +454,9 @@ footer p { margin: 4px 0; }
     var box = document.createDocumentFragment();
     var items = [];
     if (ev.m === "live") {
-      box.appendChild(el("h4", null, "Live: " + pct(ev.p) + " from current resale"));
-      items.push(["Median resale", money(ev.rm) + " (" + ev.rn + " listings)"]);
+      box.appendChild(el("h4", null, "Live: " + pct(ev.p) + " based on asking prices"));
+      items.push(["Median ask", money(ev.rm) + " (" + ev.rn + " listings)"]);
+      items.push(["Sale price used", money(ev.rm * (1 - ASK_DISCOUNT)) + " (ask less " + Math.round(ASK_DISCOUNT * 100) + "%)"]);
       if (ev.rl != null) items.push(["Lowest / avg", money(ev.rl) + " / " + (ev.ra != null ? money(ev.ra) : "—")]);
       items.push(["Face used", money(inp.face) + (ev.fi ? " (fees included)" : "")]);
       items.push(["Resale multiple", mult(ev.ml)]);
@@ -517,7 +519,7 @@ footer p { margin: 4px 0; }
     btn.type = "button";
     btn.setAttribute("aria-label", (ev.m === "live" ? "Live" : "Estimated") + " edge, show inputs");
     btn.appendChild(el("span", "chip " + (ev.m === "live" ? "is-live" : "is-est"), ev.m === "live" ? "Live" : "Estimated"));
-    if (ev.m !== "live") btn.appendChild(el("small", null, ev.cf + " confidence"));
+    btn.appendChild(el("small", null, ev.m === "live" ? "based on asking prices" : ev.cf + " confidence"));
     btn.addEventListener("mouseenter", function () { showTip(btn, ev); });
     btn.addEventListener("mouseleave", hideTip);
     btn.addEventListener("focus", function () { showTip(btn, ev); });
@@ -538,7 +540,7 @@ footer p { margin: 4px 0; }
     if (ev.m === "live") {
       text.appendChild(document.createTextNode(" · Resale "));
       text.appendChild(el("b", null, money(ev.rm)));
-      text.appendChild(document.createTextNode(" median (" + ev.rn.toLocaleString() + " listings)"));
+      text.appendChild(document.createTextNode(" median ask (" + ev.rn.toLocaleString() + " listings)"));
     }
     if (ev.dp) text.appendChild(el("span", "chip flag", "Dynamic pricing"));
     row.appendChild(text);
@@ -849,6 +851,7 @@ footer p { margin: 4px 0; }
   document.getElementById("total-live").textContent = liveCount.toLocaleString();
   document.getElementById("fees").textContent = "Fees: " + Math.round(FEES.seller_fee * 100) + "% seller, " + Math.round(FEES.primary_fee_pct * 100) + "% primary";
   document.getElementById("min-listings").textContent = DATA.min_listings;
+  document.getElementById("ask-discount").textContent = Math.round(ASK_DISCOUNT * 100) + "%";
   if (DATA.calibrated_at) {
     document.getElementById("calib-title").textContent = "Estimates are calibrated monthly";
     document.getElementById("calib").textContent = "Tier weights and ranges were last refit against scored resale outcomes on " +

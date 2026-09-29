@@ -3,7 +3,10 @@
 Each event's last prediction made before its public on-sale is scored against
 the SeatGeek median 7 and 14 days after on-sale:
 
-    actual multiple = median resale at day N / face
+    actual multiple = median resale at day N * (1 - ask_to_sale_discount) / face
+
+SeatGeek medians are asking prices, so they get the same discount edge.py
+applies in Live mode, and predicted multiples are scored on that sale basis.
 
 Metrics (day 7): tier accuracy (do High events resell higher than Med and
 Low?), share of actual multiples inside the predicted range (target >= 70%),
@@ -90,7 +93,7 @@ def score(now: datetime, cfg: dict) -> list[dict]:
             snap = closest_snapshot(snaps[eid], onsale + timedelta(days=day), window)
             if snap:
                 row[f"median_d{day}"] = num(snap["median"])
-                row[f"multiple_d{day}"] = round(num(snap["median"]) / face, 4)
+                row[f"multiple_d{day}"] = round(edge.sale_price(num(snap["median"]), cfg) / face, 4)
                 changed = True
         if changed:
             row["scored_at"] = iso(now)
