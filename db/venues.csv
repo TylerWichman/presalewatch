@@ -36,7 +36,9 @@ KovZ917Acq0,Intuit Dome,Inglewood,CA,,1
 KovZpZAEkn6A,Kia Forum,Inglewood,CA,,1
 KovZ917ACh0,SoFi Stadium,Inglewood,CA,,1
 KovZ917AJue,YouTube Theater,Inglewood,CA,,1
+KovZ917AtFi,The Venue at Thunder Valley Casino Resort,Lincoln,CA,,0.5
 KovZpa6OCe,Echoplex,Los Angeles,CA,,1
+KovZ917A-HU,Pacific Electric,Los Angeles,CA,,1
 KovZpZAEvnFA,Teragram Ballroom,Los Angeles,CA,,1
 KovZpZAJvttA,The Belasco,Los Angeles,CA,,1
 KovZ917AiI3,The Bellwether,Los Angeles,CA,,1
@@ -53,6 +55,7 @@ KovZpZAkEFlA,Toyota Arena,Ontario,CA,,1
 KovZ917AY2i,Palm Springs Cultural Center,Palm Springs,CA,,1
 KovZ917A2Af,The Show at Agua Caliente Casino Rancho Mirage,Rancho Mirage,CA,,1
 KovZpZAEA6lA,Fox Performing Arts Center,Riverside,CA,,1
+KovZpZAJ711A,The Event at Graton Resort & Casino,Rohnert Park,CA,,0.5
 KovZpZAJ6lvA,Ace of Spades,Sacramento,CA,,0.5
 KovZ917AYe5,Channel 24,Sacramento,CA,,0.5
 KovZpZAEF76A,Golden 1 Center,Sacramento,CA,,0.5
@@ -140,6 +143,7 @@ KovZpZAF7IEA,Casey's Center,Des Moines,IA,,0.5
 KovZ917AiJz,Vibrant Music Hall,Waukee,IA,,0.5
 KovZpZAE7IFA,Morrison Center for the Performing Arts,Boise,ID,,0.5
 KovZ917AJuV,Revolution Concert House & Event Center,Garden City,ID,,0.5
+KovZ917A91V,Bloomington Center for the Performing Arts,Bloomington,IL,,0.5
 KovZpZAFdJnA,Aragon Ballroom,Chicago,IL,,1
 KovZ917AY3o,Garcia's Chicago,Chicago,IL,,1
 KovZpZAEAIlA,House of Blues Chicago,Chicago,IL,,1
@@ -175,6 +179,7 @@ KovZpZAEkFAA,Lafayette Cajundome,Lafayette,LA,,0.5
 KovZpZAEeA7A,Civic Theatre,New Orleans,LA,,0.5
 KovZpZAE6vtA,House of Blues New Orleans ,New Orleans,LA,,0.5
 KovZ917AaR7,New Orleans Jazz Market,New Orleans,LA,,0.5
+KovZpZAa11tA,Orpheum Theater,New Orleans,LA,,0.5
 KovZpZAJAJAA,Smoothie King Center,New Orleans,LA,,0.5
 KovZ917ALJx,The Fillmore New Orleans,New Orleans,LA,,0.5
 KovZpa3tGe,The Joy Theater,New Orleans,LA,,0.5
@@ -195,11 +200,14 @@ KovZpZAJe6dA,CFG Bank Arena,Baltimore,MD,,0.5
 KovZ917AVbx,The Paramount Baltimore,Baltimore,MD,,0.5
 KovZpZA1JkvA,Merriweather Post Pavilion,Columbia,MD,,0.5
 KovZpZA6tFlA,The Fillmore Silver Spring,Silver Spring,MD,,0.5
+KovZ917ACz7,Aura,Portland,ME,,0.5
 KovZpa3mee,State Theatre,Portland,ME,,0.5
 KovZpa3swe,Pine Knob Music Theatre,Clarkston,MI,,0.5
+KovZpZAFnlFA,Detroit Opera House,Detroit,MI,,0.5
 KovZpakX1e,Ford Field,Detroit,MI,,0.5
 KovZpZA6kdtA,Fox Theatre Detroit,Detroit,MI,,0.5
 KovZ917A25V,Little Caesars Arena,Detroit,MI,,0.5
+KovZ917A-lO,Russell Industrial Center,Detroit,MI,,0.5
 KovZpZAEAkEA,Saint Andrew's Hall,Detroit,MI,,0.5
 KovZpZAEAktA,The Fillmore Detroit,Detroit,MI,,0.5
 KovZpZA77JtA,The Shelter,Detroit,MI,,0.5
@@ -261,6 +269,7 @@ KovZ917Ah93,Hard Rock Live at Etess Arena,Atlantic City,NJ,,0.5
 KovZpZAJd6IA,Ovation Hall at Ocean Casino Resort ,Atlantic City,NJ,,0.5
 KovZpZAEAIEA,Freedom Mortgage Pavilion,Camden,NJ,,1
 KovZpakS7e,MetLife Stadium,East Rutherford,NJ,82500,1
+KovZpZAEAdJA,Bergen Performing Arts Center,Englewood,NJ,,1
 KovZpZAEAIIA,PNC Bank Arts Center,Holmdel,NJ,17500,1
 KovZpZA6vkJA,White Eagle Hall,Jersey City,NJ,800,1
 KovZpZAJvIeA,The Wellmont Theater,Montclair,NJ,2500,1
@@ -374,6 +383,7 @@ KovZ917AiMF,Xfinity Mobile Arena,Philadelphia,PA,,0.5
 KovZpZAFa6nA,Acrisure Stadium,Pittsburgh,PA,,0.5
 KovZ917AYrv,Citizens Live at The Wylie,Pittsburgh,PA,,0.5
 KovZpZA6taeA,PPG Paints Arena,Pittsburgh,PA,,0.5
+KovZ917A_J7,Spirit Hall,Pittsburgh,PA,,0.5
 KovZpZAJdEvA,The Santander Performing Arts Center ,Reading,PA,,0.5
 KovZpZAFdJAA,Scranton Cultural Center,Scranton,PA,,0.5
 KovZpZAFdJdA,F.M. Kirby Center,Wilkes Barre,PA,,0.5
@@ -408,6 +418,7 @@ KovZpZAE6kIA,Scoot Inn,Austin,TX,,0.5
 KovZpZAJnIIA,Selena Auditorium,Corpus Christi,TX,,0.5
 KovZpZAEAFeA,Dos Equis Pavilion,Dallas,TX,,0.5
 KovZpZAEAF7A,House of Blues Dallas ,Dallas,TX,,0.5
+KovZpabeVe,Margot and Bill Winspear Opera House,Dallas,TX,,0.5
 KovZpZAFFvnA,Music Hall At Fair Park,Dallas,TX,,0.5
 KovZpZAIvlIA,The Cambridge Room at House Of Blues,Dallas,TX,,0.5
 KovZ917AxY0,The Echo Lounge & Music Hall,Dallas,TX,,0.5
