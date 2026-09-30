@@ -47,6 +47,7 @@ def compact(data: dict) -> dict:
             inp = r["inputs"]
             events.append(drop_none({
                 "a": r["artist"],
+                "ai": r.get("artist_id"),  # groups a tour's dates into one card; older data falls back to the name
                 "n": r["event_name"] if r["event_name"].strip().lower() != r["artist"].strip().lower() else None,
                 "u": r["url"],
                 "i": r.get("image"),

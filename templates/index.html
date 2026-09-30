@@ -174,6 +174,20 @@ main { padding: 20px 0 40px; }
 .more { margin-top: 8px; align-self: flex-start; padding: 4px 0; border: 0; background: none; color: var(--accent); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; }
 .more:hover { text-decoration: underline; }
 
+.dates { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 2px; font-size: 13.5px; }
+.date { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 10px; align-items: baseline; padding: 5px 8px; border-radius: 8px; }
+.date.best { background: var(--accent-soft); }
+.date.off, .date.extra { display: none; }
+.card.dates-open .date.extra { display: grid; }
+.card.dates-open .date.off { display: none; }
+.date-day { font-weight: 650; font-variant-numeric: tabular-nums; }
+.date-place { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.date-edge { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.date-link { font-weight: 600; text-decoration: none; white-space: nowrap; }
+.date-link:hover { text-decoration: underline; }
+.ps.off { display: none; }
+.card.expanded .ps.extra.off { display: none; }
+.ps-dates { margin-top: 3px; font-size: 12.5px; color: var(--muted); }
 .foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; }
 .onsale { font-size: 13px; color: var(--muted); }
 .onsale small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 650; }
@@ -350,6 +364,54 @@ footer p { margin: 4px 0; }
   });
   EVENTS.forEach(function (ev) { ev.presales.sort(function (a, b) { return a.start - b.start; }); });
 
+  // ---- Tours: one card per artist per tour --------------------------------
+  // Ticketmaster has no tour ID, so a tour is an artist's dates with no gap longer
+  // than TOUR_GAP_DAYS between consecutive shows. Undated shows join the artist's first tour.
+  var TOUR_GAP_DAYS = 90;
+  function eventDay(ev) {
+    if (!ev.d) return null;
+    var p = ev.d.split("-").map(Number);
+    return Date.UTC(p[0], p[1] - 1, p[2]);
+  }
+  function mostCommon(values) {
+    var counts = {}, best = null;
+    values.forEach(function (v) {
+      if (!v) return;
+      counts[v] = (counts[v] || 0) + 1;
+      if (best === null || counts[v] > counts[best]) best = v;
+    });
+    return best;
+  }
+  var TOURS = (function () {
+    var byArtist = {}, order = [];
+    EVENTS.forEach(function (ev) {
+      var k = ev.ai || "name:" + norm(ev.a);
+      if (!byArtist[k]) { byArtist[k] = []; order.push(k); }
+      byArtist[k].push(ev);
+    });
+    var tours = [];
+    order.forEach(function (k) {
+      var evs = byArtist[k];
+      var dated = evs.filter(function (e) { return e.d; }).sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+      var undated = evs.filter(function (e) { return !e.d; });
+      var groups = [], cur = null, last = null;
+      dated.forEach(function (e) {
+        var day = eventDay(e);
+        if (!cur || day - last > TOUR_GAP_DAYS * DAY) { cur = []; groups.push(cur); }
+        cur.push(e);
+        last = day;
+      });
+      if (undated.length) {
+        if (groups.length) groups[0] = groups[0].concat(undated); else groups.push(undated);
+      }
+      groups.forEach(function (g) {
+        var names = g.map(function (e) { return e.n && norm(e.n) !== norm(e.a) ? e.n : null; });
+        tours.push({ a: g[0].a, name: mostCommon(names), events: g });
+      });
+    });
+    return tours;
+  })();
+
   // ---- Formatting -------------------------------------------------------
   var TZ = "America/New_York";
   var fmtDayTime = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
@@ -358,6 +420,7 @@ footer p { margin: 4px 0; }
   var fmtYear = new Intl.DateTimeFormat("en-US", { timeZone: TZ, year: "numeric" });
   var fmtEventDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric", year: "numeric" });
   var fmtEventTime = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", hour: "numeric", minute: "2-digit" });
+  var fmtShortDate = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric" });
 
   function dayKey(ms) { return fmtDayKey.format(ms); }
   function withYear(ms, s) {
@@ -553,19 +616,54 @@ footer p { margin: 4px 0; }
     return row;
   }
 
-  // ---- Build cards once ----------------------------------------------------
+  // ---- Build cards once (one per tour) ---------------------------------------
   var grid = document.getElementById("grid");
-  var MAX_ROWS = 2; // presale rows shown before "Show all"
+  var MAX_ROWS = 2;  // presale rows shown before "Show more"
+  var MAX_DATES = 3; // tour dates shown before "Show all dates"
 
-  var cards = EVENTS.map(function (ev) {
-    var url = safeUrl(ev.u);
+  function shortDate(ev) {
+    if (!ev.d) return "Date TBA";
+    var p = ev.d.split("-").map(Number);
+    return fmtShortDate.format(Date.UTC(p[0], p[1] - 1, p[2]));
+  }
+  // With the year when it isn't the current one.
+  function shortDateYear(ev) {
+    var s = shortDate(ev);
+    return ev.d && ev.d.slice(0, 4) !== String(new Date().getFullYear()) ? s + ", " + ev.d.slice(0, 4) : s;
+  }
+  function placeText(ev) { return [ev.c, ev.s].filter(Boolean).join(", "); }
+  function edgeText(ev) { return ev.m === "live" ? pct(ev.p) : pct(ev.pl) + " to " + pct(ev.ph); }
+
+  // Presales that are identical across a tour's dates (same name, window, and code) are
+  // shown once, with the dates they cover.
+  function mergePresales(events) {
+    var byKey = {}, list = [];
+    events.forEach(function (ev) {
+      ev.presales.forEach(function (p) {
+        var k = [p.type, p.name, p.start, p.end, p.code, p.url || ""].join("|");
+        if (!byKey[k]) { byKey[k] = { p: p, events: [] }; list.push(byKey[k]); }
+        byKey[k].events.push(ev);
+      });
+    });
+    return list;
+  }
+
+  function coversText(events, total) {
+    var places = events.map(function (e) { return e.c || e.v || shortDate(e); });
+    var shown = places.slice(0, 3).join(", ");
+    var rest = places.length - 3;
+    return "For " + events.length + " of " + total + " dates: " + shown + (rest > 0 ? " +" + rest + " more" : "");
+  }
+
+  var cards = TOURS.map(function (tour) {
+    var multi = tour.events.length > 1;
     var card = el("article", "card");
-
-    var media = url ? link(url, "media") : el("div", "media");
-    media.setAttribute("aria-label", ev.a + " on Ticketmaster");
-    if (safeUrl(ev.i)) {
+    var media = el("a", "media");
+    media.target = "_blank"; media.rel = "noopener noreferrer";
+    var imgEv = tour.events.filter(function (e) { return safeUrl(e.i); })[0];
+    if (imgEv) {
       var img = el("img");
-      img.src = ev.i; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
+      img.src = imgEv.i; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
       img.onerror = function () { img.remove(); };
       media.appendChild(img);
     }
@@ -574,23 +672,44 @@ footer p { margin: 4px 0; }
     card.appendChild(media);
 
     var body = el("div", "body");
-    body.appendChild(el("h2", "artist", ev.a));
-    if (ev.n && norm(ev.n) !== norm(ev.a)) body.appendChild(el("p", "event-name", ev.n));
-    body.appendChild(edgeStrip(ev));
-
+    body.appendChild(el("h2", "artist", tour.a));
+    if (tour.name) body.appendChild(el("p", "event-name", tour.name));
+    var edgeSlot = el("div");
+    body.appendChild(edgeSlot);
     var meta = el("div", "meta");
-    var where = el("div"); where.appendChild(icon("pin"));
-    var whereText = el("span"); whereText.appendChild(el("b", null, ev.v || "Venue TBA"));
-    var place = [ev.c, ev.s].filter(Boolean).join(", ");
-    if (place) whereText.appendChild(document.createTextNode(" · " + place));
-    where.appendChild(whereText); meta.appendChild(where);
-    var when = el("div"); when.appendChild(icon("cal")); when.appendChild(el("span", null, eventDateText(ev)));
-    meta.appendChild(when);
-    meta.appendChild(pricesLine(ev));
     body.appendChild(meta);
 
+    // Tour dates: each with its own edge and ticket link.
+    var dates = null, datesMore = null;
+    if (multi) {
+      dates = el("ul", "dates");
+      tour.events.forEach(function (ev) {
+        var li = el("li", "date");
+        li.appendChild(el("span", "date-day", shortDate(ev)));
+        var placeEl = el("span", "date-place", ev.c || ev.v || "Venue TBA");
+        placeEl.title = [ev.v, placeText(ev)].filter(Boolean).join(" · ");
+        li.appendChild(placeEl);
+        var edge = el("span", "date-edge " + (ev.m === "live" ? sign(ev.p) : sign(ev.es)), edgeText(ev));
+        edge.title = (ev.m === "live" ? "Live Profit %" : "Estimated range") + (ev.v ? " · " + ev.v : "");
+        li.appendChild(edge);
+        var u = safeUrl(ev.u);
+        li.appendChild(u ? link(u, "date-link", "Tickets ↗") : el("span", "date-link"));
+        ev.dateLi = li;
+        dates.appendChild(li);
+      });
+      body.appendChild(dates);
+      datesMore = el("button", "more");
+      datesMore.type = "button";
+      datesMore.addEventListener("click", function () {
+        card.classList.toggle("dates-open");
+        updateMore(c);
+      });
+      body.appendChild(datesMore);
+    }
+
     var list = el("ul", "presales");
-    var rows = ev.presales.map(function (p) {
+    var rows = mergePresales(tour.events).map(function (m) {
+      var p = m.p;
       var li = el("li", "ps");
       var top = el("div", "ps-top");
       var name = el("span", "ps-name");
@@ -601,6 +720,7 @@ footer p { margin: 4px 0; }
       top.appendChild(pill);
       li.appendChild(top);
       li.appendChild(el("div", "ps-when", windowText(p.start, p.end)));
+      if (multi && m.events.length < tour.events.length) li.appendChild(el("div", "ps-dates", coversText(m.events, tour.events.length)));
       li.appendChild(el("div", "ps-code", "Code: " + p.code));
       if (p.desc) li.appendChild(el("div", "ps-desc", p.desc));
       var pu = safeUrl(p.url);
@@ -610,7 +730,7 @@ footer p { margin: 4px 0; }
         li.appendChild(a);
       }
       list.appendChild(li);
-      return { p: p, li: li, pill: pill, lastCls: "" };
+      return { p: p, events: m.events, li: li, pill: pill, lastCls: "" };
     });
     body.appendChild(list);
 
@@ -625,27 +745,72 @@ footer p { margin: 4px 0; }
     var foot = el("div", "foot");
     var onsale = el("div", "onsale");
     onsale.appendChild(el("small", null, "Public on-sale"));
-    onsale.appendChild(el("span", null, ev.o ? etDateTime(Date.parse(ev.o)) + " ET" : "TBA"));
+    var onsaleText = el("span");
+    onsale.appendChild(onsaleText);
     foot.appendChild(onsale);
-    if (url) {
-      var btn = link(url, "btn", "Get Tickets");
-      btn.appendChild(icon("arrow", 15));
-      foot.appendChild(btn);
-    }
+    var btn = el("a", "btn");
+    btn.target = "_blank"; btn.rel = "noopener noreferrer";
+    btn.appendChild(document.createTextNode(multi ? "Best date tickets" : "Get Tickets"));
+    btn.appendChild(icon("arrow", 15));
+    foot.appendChild(btn);
     body.appendChild(foot);
     card.appendChild(body);
 
+    tour.events.forEach(function (ev) {
+      ev.text = norm([ev.a, ev.n, tour.name, ev.v, ev.c, ev.s, STATE_NAMES[ev.s]].join(" "));
+    });
     var c = {
-      ev: ev, el: card, rows: rows, badge: topBadge, more: more, primary: null, extraCount: 0,
-      text: norm([ev.a, ev.n, ev.v, ev.c, ev.s, STATE_NAMES[ev.s]].join(" "))
+      tour: tour, multi: multi, el: card, rows: rows, badge: topBadge, more: more, primary: null, extraCount: 0,
+      dates: dates, datesMore: datesMore, extraDates: 0, shownDates: 0,
+      media: media, edgeSlot: edgeSlot, meta: meta, onsaleText: onsaleText, btn: btn, best: null, drawnBest: null
     };
     return c;
   });
 
+  // The edge, venue, date, and prices at the top of a card describe its best matching date.
+  function drawBest(c, ev, matchCount) {
+    if (c.drawnBest === ev && c.drawnCount === matchCount) return;
+    c.drawnBest = ev; c.drawnCount = matchCount;
+    var url = safeUrl(ev.u);
+    if (url) { c.media.href = url; c.btn.href = url; c.btn.hidden = false; }
+    else { c.media.removeAttribute("href"); c.btn.hidden = true; }
+    c.media.setAttribute("aria-label", c.tour.a + " on Ticketmaster");
+
+    c.edgeSlot.textContent = "";
+    c.edgeSlot.appendChild(edgeStrip(ev));
+
+    c.meta.textContent = "";
+    if (c.multi) {
+      var span = el("div"); span.appendChild(icon("cal"));
+      var first = c.tour.events[0], last = c.tour.events[c.tour.events.length - 1];
+      var spanText = el("span");
+      spanText.appendChild(el("b", null, c.tour.events.length + " dates"));
+      if (first.d && last.d) spanText.appendChild(document.createTextNode(" · " + (first.d.slice(0, 4) === last.d.slice(0, 4) ? shortDate(first) : shortDateYear(first)) + " – " + shortDateYear(last)));
+      if (matchCount < c.tour.events.length) spanText.appendChild(document.createTextNode(" · " + matchCount + (matchCount === 1 ? " matches" : " match") + " your filters"));
+      span.appendChild(spanText);
+      c.meta.appendChild(span);
+    }
+    var where = el("div"); where.appendChild(icon("pin"));
+    var whereText = el("span");
+    if (c.multi) whereText.appendChild(document.createTextNode("Best date: "));
+    whereText.appendChild(el("b", null, ev.v || "Venue TBA"));
+    var place = placeText(ev);
+    if (place) whereText.appendChild(document.createTextNode(" · " + place));
+    where.appendChild(whereText); c.meta.appendChild(where);
+    var when = el("div"); when.appendChild(icon("cal")); when.appendChild(el("span", null, eventDateText(ev)));
+    c.meta.appendChild(when);
+    c.meta.appendChild(pricesLine(ev));
+  }
+
   function updateMore(c) {
     var expanded = c.el.classList.contains("expanded");
     c.more.hidden = c.extraCount === 0;
-    c.more.textContent = expanded ? "Show fewer" : "Show " + c.extraCount + " more presale" + (c.extraCount === 1 ? "" : "s");
+    c.more.textContent = expanded ? "Show fewer presales" : "Show " + c.extraCount + " more presale" + (c.extraCount === 1 ? "" : "s");
+    if (c.datesMore) {
+      var open = c.el.classList.contains("dates-open");
+      c.datesMore.hidden = c.extraDates === 0;
+      c.datesMore.textContent = open ? "Show fewer dates" : "Show all " + (c.shownDates + c.extraDates) + " dates";
+    }
   }
 
   // ---- Filters -------------------------------------------------------------
@@ -681,35 +846,63 @@ footer p { margin: 4px 0; }
     var now = Date.now();
     var terms = norm(state.q).split(" ").filter(Boolean);
     var min = state.min === "" ? null : Number(state.min);
+    function dateMatches(ev) {
+      if (state.st && ev.s !== state.st) return false;
+      if (state.live && ev.m !== "live") return false;
+      if (min != null && ev.es < min) return false;
+      if (state.tier && ev.tr !== state.tier) return false;
+      return terms.every(function (t) { return ev.text.indexOf(t) !== -1; });
+    }
     visible = [];
     cards.forEach(function (c) {
-      var ev = c.ev;
       c.primary = null;
-      if (state.st && ev.s !== state.st) return;
-      if (state.live && ev.m !== "live") return;
-      if (min != null && ev.es < min) return;
-      if (state.tier && ev.tr !== state.tier) return;
-      if (terms.length && !terms.every(function (t) { return c.text.indexOf(t) !== -1; })) return;
-      var best = null, bestKey = null;
+      var matching = c.tour.events.filter(dateMatches);
+      if (!matching.length) return;
+      // A presale counts if it covers a matching date and passes the time and platform filters.
+      var best = null, bestKey = null, active = [];
       c.rows.forEach(function (r) {
-        if (!matchesWhen(r.p, now, state.when)) return;
+        r.on = r.events.some(function (e) { return matching.indexOf(e) !== -1; });
+        if (!r.on || !matchesWhen(r.p, now, state.when)) return;
         if (state.plat && r.p.type !== state.plat) return;
+        r.events.forEach(function (e) { if (matching.indexOf(e) !== -1 && active.indexOf(e) === -1) active.push(e); });
         var k = sortKey(r.p, now);
         if (!best || k[0] < bestKey[0] || (k[0] === bestKey[0] && k[1] < bestKey[1])) { best = r; bestKey = k; }
       });
       if (!best) return;
-      c.primary = best; c.key = bestKey;
+      c.primary = best; c.key = bestKey; c.matching = matching;
+      // Best date: highest edge among dates with a qualifying presale.
+      c.best = active.reduce(function (a, b) { return b.es > a.es ? b : a; });
       visible.push(c);
     });
     visible.sort(function (a, b) {
-      // Edge sort: highest first (estimates by range midpoint); ties go to the sooner presale.
-      if (state.sort === "edge" && a.ev.es !== b.ev.es) return b.ev.es - a.ev.es;
-      return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.ev.a.localeCompare(b.ev.a);
+      // Edge sort: highest best-date edge first (estimates by range midpoint); ties go to the sooner presale.
+      if (state.sort === "edge" && a.best.es !== b.best.es) return b.best.es - a.best.es;
+      return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.tour.a.localeCompare(b.tour.a);
     });
 
     var frag = document.createDocumentFragment();
+    var dateTotal = 0;
     visible.forEach(function (c) {
-      // Primary presale first, then the rest in time order, ended last.
+      dateTotal += c.matching.length;
+      drawBest(c, c.best, c.matching.length);
+
+      // Dates: matching ones in date order, best highlighted; the rest hidden.
+      if (c.dates) {
+        var shownDates = 0, extraDates = 0;
+        c.tour.events.forEach(function (ev) {
+          var on = c.matching.indexOf(ev) !== -1;
+          ev.dateLi.classList.toggle("off", !on);
+          ev.dateLi.classList.toggle("best", ev === c.best);
+          if (!on) return;
+          var isExtra = shownDates >= MAX_DATES && ev !== c.best;
+          ev.dateLi.classList.toggle("extra", isExtra);
+          if (isExtra) extraDates++; else shownDates++;
+        });
+        c.shownDates = shownDates; c.extraDates = extraDates;
+      }
+
+      // Presales: primary first, then the rest in time order, ended last. Presales only for
+      // dates outside the filters are hidden.
       var shown = 0, extra = 0;
       var ordered = c.rows.slice().sort(function (a, b) {
         if (a === c.primary) return -1;
@@ -720,12 +913,17 @@ footer p { margin: 4px 0; }
       var list = c.rows[0].li.parentNode;
       ordered.forEach(function (r) {
         list.appendChild(r.li);
+        r.li.classList.toggle("off", !r.on);
         r.li.classList.toggle("primary", r === c.primary);
+        if (!r.on) return;
         var isExtra = shown >= MAX_ROWS;
         r.li.classList.toggle("extra", isExtra);
         if (isExtra) extra++; else shown++;
       });
       c.extraCount = extra;
+
+      var onsales = c.matching.map(function (e) { return e.o ? Date.parse(e.o) : null; }).filter(Boolean);
+      c.onsaleText.textContent = onsales.length ? etDateTime(Math.min.apply(null, onsales)) + " ET" : "TBA";
       updateMore(c);
       frag.appendChild(c.el);
     });
@@ -733,7 +931,9 @@ footer p { margin: 4px 0; }
     grid.appendChild(frag);
 
     var n = visible.length;
-    countEl.textContent = n === cards.length ? n.toLocaleString() + " events" : "Showing " + n.toLocaleString() + " of " + cards.length.toLocaleString() + " events";
+    var noun = function (k) { return k === 1 ? " tour or show" : " tours and shows"; };
+    countEl.textContent = (n === cards.length ? n.toLocaleString() + noun(n) : "Showing " + n.toLocaleString() + " of " + cards.length.toLocaleString() + noun(cards.length))
+      + " · " + dateTotal.toLocaleString() + " date" + (dateTotal === 1 ? "" : "s");
     emptyEl.classList.toggle("show", n === 0);
     document.getElementById("empty-hint").textContent = state.live && liveCount === 0
       ? "No event has " + DATA.min_listings + "+ resale listings yet, so every edge is still an estimate."
