@@ -28,7 +28,7 @@ class ProfitFormula(unittest.TestCase):
         self.assertAlmostEqual(edge.profit_pct(200, 100, self.cfg, fee_included=True), 0.70)
 
     def test_high_tier_range_matches_spec_example(self):
-        signals = {"popularity": 1.0, "followers_capacity": 1.0, "scarcity": 1.0, "market": 1.0}
+        signals = dict.fromkeys(edge.SIGNALS, 1.0)
         res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
         self.assertEqual((res["mode"], res["tier"], res["confidence"]), ("predicted", "High", "Med"))
         self.assertAlmostEqual(res["profit_low"], 1.8 * 0.85 / 1.25 - 1, places=4)   # about +22%
@@ -66,17 +66,45 @@ class ProfitFormula(unittest.TestCase):
         self.assertEqual(edge.tier_for(0.45, self.cfg)["name"], "Med")
         self.assertEqual(edge.tier_for(0.44, self.cfg)["name"], "Low")
 
-    def test_missing_signals_lower_confidence(self):
+    def test_missing_signals_are_left_out_and_weights_rescaled(self):
+        # No Last.fm data and no capacity: only scarcity (1/4) and market (1.0) count.
         signals = edge.demand_signals(None, None, None, 4, 1.0, self.cfg)
         score, missing = edge.demand_score(signals, self.cfg)
-        self.assertEqual(missing, ["popularity", "followers_capacity"])
-        self.assertAlmostEqual(score, 0.35 * 0.5 + 0.30 * 0.5 + 0.20 * 0.25 + 0.15 * 1.0)
+        self.assertEqual(missing, ["listeners", "engagement", "listeners_capacity"])
+        self.assertAlmostEqual(score, (0.15 * 0.25 + 0.15 * 1.0) / (0.15 + 0.15))
 
-    def test_followers_capacity_log_scale(self):
-        s = edge.demand_signals(80, 1_000_000, 1000, 1, 0.5, self.cfg)
-        self.assertAlmostEqual(s["followers_capacity"], math.log10(1000) / 4)
-        self.assertAlmostEqual(s["popularity"], 0.8)
+    def test_missing_signal_does_not_drag_score_down(self):
+        full = dict.fromkeys(edge.SIGNALS, 0.9)
+        partial = {**full, "listeners_capacity": None}
+        self.assertAlmostEqual(edge.demand_score(full, self.cfg)[0], 0.9)
+        self.assertAlmostEqual(edge.demand_score(partial, self.cfg)[0], 0.9)
+
+    def test_no_lastfm_data_means_low_confidence_and_no_high_tier(self):
+        # A one-night show in a top market scores 1.0 on what's left, but can't be High without Last.fm.
+        signals = edge.demand_signals(None, None, None, 1, 1.0, self.cfg)
+        res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
+        self.assertEqual(res["demand_score"], 1.0)
+        self.assertEqual((res["tier"], res["confidence"]), ("Med", "Low"))
+
+    def test_lastfm_data_means_med_confidence_and_high_is_reachable(self):
+        # A big artist (3M listeners, 40 plays each) on a 20-date tour in a top market, capacity unknown.
+        signals = edge.demand_signals(3_000_000, 120_000_000, None, 20, 1.0, self.cfg)
+        res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
+        self.assertEqual(res["missing_signals"], ["listeners_capacity"])
+        self.assertEqual((res["tier"], res["confidence"]), ("High", "Med"))
+
+    def test_signal_scaling(self):
+        sc = self.cfg["scaling"]
+        s = edge.demand_signals(1_000_000, 30_000_000, 2000, 1, 0.5, self.cfg)
+        lo, hi = sc["listeners_log10"]
+        self.assertAlmostEqual(s["listeners"], (6 - lo) / (hi - lo))
+        lo, hi = sc["plays_per_listener_log10"]
+        self.assertAlmostEqual(s["engagement"], (math.log10(30) - lo) / (hi - lo))
+        lo, hi = sc["listeners_per_seat_log10"]
+        self.assertAlmostEqual(s["listeners_capacity"], (math.log10(500) - lo) / (hi - lo))
         self.assertEqual(s["scarcity"], 1.0)
+        self.assertEqual(edge.demand_signals(50, 100, 1000, None, None, self.cfg)["listeners"], 0.0)
+        self.assertEqual(edge.demand_signals(10**9, None, None, None, None, self.cfg)["listeners"], 1.0)
 
 
 class PresaleTypes(unittest.TestCase):
@@ -118,11 +146,11 @@ class Refit(unittest.TestCase):
         rng = random.Random(1)
         rows = []
         for _ in range(200):
-            pop, fc, sc, mk = rng.random(), rng.random(), rng.random(), rng.choice([0.5, 1.0])
-            mult = math.exp(-0.5 + 1.5 * pop + 0.5 * fc + rng.gauss(0, 0.1))
-            rows.append({"popularity": pop, "followers_capacity": fc, "scarcity": sc, "market": mk, "multiple_d7": mult})
+            lis, eng, lc, sc, mk = rng.random(), rng.random(), rng.random(), rng.random(), rng.choice([0.5, 1.0])
+            mult = math.exp(-0.5 + 1.5 * lis + 0.5 * lc + rng.gauss(0, 0.1))
+            rows.append({"listeners": lis, "engagement": eng, "listeners_capacity": lc, "scarcity": sc, "market": mk, "multiple_d7": mult})
         fit = calibrate.refit(rows, cfg)
-        self.assertGreater(fit["weights"]["popularity"], fit["weights"]["followers_capacity"])
+        self.assertGreater(fit["weights"]["listeners"], fit["weights"]["listeners_capacity"])
         self.assertLess(fit["weights"]["scarcity"], 0.1)
         names = [t["name"] for t in fit["tiers"]]
         self.assertEqual(names, ["High", "Med", "Low"])

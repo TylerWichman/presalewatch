@@ -1,14 +1,14 @@
 """PresaleWatch data pipeline: pull sources, compute edge, write tables and presales.json.
 
 1. Pull upcoming events and presales (Ticketmaster).
-2. Enrich with artist (Spotify, tour size) and venue (capacity, market) data.
+2. Enrich with artist (Last.fm listeners and plays, tour size) and venue (capacity, market) data.
 3. Pull resale snapshots (SeatGeek) where the event exists.
 4. Pick Mode A or B, compute Profit % or range, and assign a confidence label.
 5. Append to predictions; write data/presales.json.
 
 Tables live as CSVs in db/, which the scheduled job keeps on the `data`
 branch rather than main. Venue capacities are entered by hand in
-config/venues.csv. Spotify and SeatGeek are optional: without their
+config/venues.csv. Last.fm and SeatGeek are optional: without their
 keys the pipeline still runs, and every row falls back to a Low-confidence
 predicted range.
 
@@ -27,7 +27,7 @@ import ticketmaster
 from common import (PRESALES_PATH, VENUES_MANUAL_PATH, ApiError, append_table, assert_no_secrets, fmt_cell,
                     hours_since, integer, iso, load_config, num, read_csv, read_table, write_table)
 from seatgeek import SeatGeek
-from spotify import Spotify, artist_stats
+from lastfm import LastFm, artist_stats
 
 EVENT_FIELDS = [
     "event_id", "artist", "name", "artist_id", "venue", "venue_id", "city", "state", "market_ids",
@@ -35,15 +35,15 @@ EVENT_FIELDS = [
     "fee_included", "dynamic_pricing_flag", "url", "seatgeek_id", "seatgeek_checked_at", "updated_at",
 ]
 ARTIST_FIELDS = [
-    "artist_id", "name", "spotify_id", "spotify_popularity", "spotify_followers", "tour_date_count",
-    "spotify_checked_at", "updated_at",
+    "artist_id", "name", "lastfm_lookup", "lastfm_name", "lastfm_listeners", "lastfm_playcount",
+    "tour_date_count", "lastfm_checked_at", "updated_at",
 ]
 VENUE_FIELDS = ["venue_id", "name", "city", "state", "capacity", "market_tier"]
 SNAPSHOT_FIELDS = ["event_id", "seatgeek_id", "captured_at", "listing_count", "low", "median", "avg"]
 PREDICTION_FIELDS = [
     "event_id", "predicted_at", "mode", "demand_score", "tier", "multiple_low", "multiple_high",
     "profit_low", "profit_high", "confidence", "face", "resale_median", "listing_count",
-    "popularity", "followers_capacity", "scarcity", "market",
+    "listeners", "engagement", "listeners_capacity", "scarcity", "market",
 ]
 # Backfill face values for events whose presales ended up to this many days ago.
 BACKFILL_DAYS = 21
@@ -67,36 +67,40 @@ def upsert_artists(parsed: list[dict], now: datetime, cfg: dict) -> dict[str, di
         a = p["artist"]
         row = artists.setdefault(a["artist_id"], {"artist_id": a["artist_id"]})
         row["name"] = a["name"]
-        if a["spotify_id"]:
-            if row.get("spotify_id") and row["spotify_id"] != a["spotify_id"]:
-                row["spotify_checked_at"] = ""  # Ticketmaster now links a different artist
-            row["spotify_id"] = a["spotify_id"]
+        lookup = a["lastfm_lookup"] or a["name"]
+        if row.get("lastfm_lookup") and row["lastfm_lookup"] != lookup:
+            row["lastfm_checked_at"] = ""  # Ticketmaster now links a different Last.fm artist
+        row["lastfm_lookup"] = lookup
         if a["tour_date_count"]:
             row["tour_date_count"] = a["tour_date_count"]
         row["updated_at"] = iso(now)
 
-    sp = Spotify.from_env()
-    if not sp:
-        print("  Spotify: no credentials, skipping popularity and followers")
+    lf = LastFm.from_env()
+    if not lf:
+        print("  Last.fm: no LASTFM_API_KEY, skipping listener counts (estimates stay Low confidence)")
         return artists
     current = {p["artist"]["artist_id"] for p in parsed}
-    ttl, budget = cfg["refresh"]["spotify_ttl_hours"], cfg["refresh"]["spotify_max_calls"]
-    stale = [artists[k] for k in current if hours_since(artists[k].get("spotify_checked_at"), now) >= ttl]
-    stale.sort(key=lambda r: r.get("spotify_checked_at") or "")  # never-checked first
-    done = 0
+    ttl, budget = cfg["refresh"]["lastfm_ttl_hours"], cfg["refresh"]["lastfm_max_calls"]
+    stale = [artists[k] for k in current if hours_since(artists[k].get("lastfm_checked_at"), now) >= ttl]
+    stale.sort(key=lambda r: r.get("lastfm_checked_at") or "")  # never-checked first
+    done = found = 0
     for row in stale:
-        if sp.http.calls >= budget:
+        if lf.http.calls >= budget:
             break
         try:
-            row.update(artist_stats(sp, row["name"], row.get("spotify_id") or None))
+            lookup = row.get("lastfm_lookup") or row["name"]
+            # A lookup name that differs from the Ticketmaster name came from Ticketmaster's Last.fm link.
+            row.update(artist_stats(lf, lookup, trusted=lookup != row["name"]))
         except ApiError as err:
-            warn(f"Spotify lookup failed for {row['name']}: {err}")
+            warn(f"Last.fm lookup failed for {row['name']}: {err}")
             if err.status in (401, 403, 429, 0):
                 break
             continue
-        row["spotify_checked_at"] = iso(now)
+        # Not-found answers are cached too, so unknown artists aren't retried every run.
+        row["lastfm_checked_at"] = iso(now)
         done += 1
-    print(f"  Spotify: refreshed {done}/{len(stale)} stale artists ({sp.http.calls} calls)")
+        found += bool(row.get("lastfm_listeners"))
+    print(f"  Last.fm: refreshed {done}/{len(stale)} stale artists, {found} found ({lf.http.calls} calls)")
     return artists
 
 
@@ -279,8 +283,8 @@ def presale_rows(parsed: list[dict], results: dict[str, dict], artists: dict, ve
                 "resale_captured_at": snap.get("captured_at") if live else None,
                 "inputs": {
                     "face_used": res["face"],
-                    "spotify_popularity": integer(artist.get("spotify_popularity")),
-                    "spotify_followers": integer(artist.get("spotify_followers")),
+                    "lastfm_listeners": integer(artist.get("lastfm_listeners")),
+                    "lastfm_playcount": integer(artist.get("lastfm_playcount")),
                     "venue_capacity": integer(venue.get("capacity")),
                     "tour_date_count": integer(artist.get("tour_date_count")),
                     "market_tier": num(venue.get("market_tier")),
@@ -331,8 +335,8 @@ def main() -> None:
         if market is None:
             market = edge.market_tier(p["venue"]["market_ids"], cfg)
         signals = edge.demand_signals(
-            popularity=num(artist.get("spotify_popularity")),
-            followers=num(artist.get("spotify_followers")),
+            listeners=num(artist.get("lastfm_listeners")),
+            playcount=num(artist.get("lastfm_playcount")),
             capacity=num(venue.get("capacity")),
             tour_dates=num(artist.get("tour_date_count")),
             market=market,

@@ -16,7 +16,7 @@ describe("high profit rule", () => {
     assert.equal(isHighProfit(ev({ profitLow: 0.1, profitHigh: 0.4, tier: "High" }), 30), false);
   });
 
-  it("today's no-Spotify Med tier (-18% to +22%) doesn't reach the 30% default", () => {
+  it("the Med tier's range (-18% to +22%) doesn't reach the 30% default", () => {
     assert.equal(isHighProfit(ev({ profitLow: -0.184, profitHigh: 0.224, tier: "Med" }), 30), false);
     assert.equal(isHighProfit(ev({ profitLow: -0.184, profitHigh: 0.224, tier: "Med" }), 2), true);
   });

@@ -8,13 +8,19 @@
   "face_basis": "mid",
   "live_min_listings": 10,
   "weights": {
-    "popularity": 0.35,
-    "followers_capacity": 0.30,
-    "scarcity": 0.20,
+    "listeners": 0.35,
+    "engagement": 0.15,
+    "listeners_capacity": 0.20,
+    "scarcity": 0.15,
     "market": 0.15
   },
-  "followers_capacity_log10_max": 4.0,
-  "missing_signal_value": 0.5,
+  "scaling": {
+    "_note": "Each signal is log10(value) mapped from [low, high] onto 0-1.",
+    "listeners_log10": [4.0, 6.5],
+    "plays_per_listener_log10": [0.5, 2.0],
+    "listeners_per_seat_log10": [0.0, 4.0]
+  },
+  "refit_missing_value": 0.5,
   "market": {
     "top_market_ids": ["35", "55", "27", "3"],
     "top": 1.0,
@@ -26,8 +32,8 @@
     {"name": "Low", "min_score": 0.0, "multiple_low": 0.7, "multiple_high": 1.2}
   ],
   "refresh": {
-    "spotify_ttl_hours": 72,
-    "spotify_max_calls": 1500,
+    "lastfm_ttl_hours": 168,
+    "lastfm_max_calls": 1500,
     "seatgeek_research_hours": 24,
     "seatgeek_max_searches": 1000,
     "snapshot_max_age_hours": 24,

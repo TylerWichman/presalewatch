@@ -324,7 +324,7 @@ footer p { margin: 4px 0; }
       </section>
       <section>
         <h3>Live vs Estimated</h3>
-        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Spotify popularity, followers per venue seat, tour size, market) and shows a range. Estimated events sort by the midpoint of their range.</p>
+        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. Estimated events sort by the midpoint of their range.</p>
       </section>
       <section>
         <h3 id="calib-title">Estimates are uncalibrated</h3>
@@ -336,8 +336,8 @@ footer p { margin: 4px 0; }
 
 <footer>
   <div class="wrap">
-    <p>Presales and face values from the Ticketmaster Discovery API, live resale from SeatGeek, artist popularity from Spotify. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
-    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Spotify. Nothing here is financial advice. <a href="/privacy">Privacy</a></p>
+    <p>Presales and face values from the Ticketmaster Discovery API, artist listener counts from <a href="https://www.last.fm" rel="noopener noreferrer" target="_blank">Last.fm</a>. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
+    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Last.fm. Nothing here is financial advice. <a href="/privacy">Privacy</a></p>
   </div>
 </footer>
 
@@ -517,7 +517,7 @@ footer p { margin: 4px 0; }
   }
 
   // ---- Inputs tooltip -------------------------------------------------------
-  var SIGNAL_NAMES = { popularity: "Spotify popularity", followers_capacity: "Followers per seat", scarcity: "Tour scarcity", market: "Market" };
+  var SIGNAL_NAMES = { listeners: "Last.fm listeners", engagement: "Plays per listener", listeners_capacity: "Listeners per seat", scarcity: "Tour scarcity", market: "Market" };
   function tipContent(ev) {
     var inp = ev["in"] || {};
     var box = document.createDocumentFragment();
@@ -534,7 +534,7 @@ footer p { margin: 4px 0; }
       box.appendChild(el("h4", null, "Estimated · " + ev.cf + " confidence"));
       items.push(["Demand score", ev.ds.toFixed(2) + " → " + ev.tr + " tier"]);
       items.push(["Resale multiple", mult(ev.ml) + "–" + mult(ev.mh) + " face"]);
-      items.push(["Spotify", inp.pop != null ? "popularity " + inp.pop + (inp.fol != null ? ", " + big(inp.fol) + " followers" : "") : "not available"]);
+      items.push(["Last.fm", inp.lis != null ? big(inp.lis) + " listeners" + (inp.plc != null ? ", " + Math.round(inp.plc / inp.lis) + " plays each" : "") : "artist not found"]);
       items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() : "unknown"]);
       items.push(["Tour dates", inp.tour != null ? String(inp.tour) : "unknown"]);
       items.push(["Market", inp.mkt === 1 ? "NYC / LA / Chicago" : "Other metro"]);
@@ -546,7 +546,8 @@ footer p { margin: 4px 0; }
     items.forEach(function (it) { dl.appendChild(el("dt", null, it[0])); dl.appendChild(el("dd", null, it[1])); });
     box.appendChild(dl);
     if (ev.m !== "live" && inp.miss) {
-      box.appendChild(el("p", null, "Missing: " + inp.miss.map(function (k) { return SIGNAL_NAMES[k] || k; }).join(", ") + ". Filled with a neutral value, so confidence is Low."));
+      box.appendChild(el("p", null, "Not available: " + inp.miss.map(function (k) { return SIGNAL_NAMES[k] || k; }).join(", ") + ". Left out of the score." +
+        (inp.miss.indexOf("listeners") !== -1 ? " Without Last.fm data, confidence is Low and demand can't be rated High." : "")));
     }
     return box;
   }

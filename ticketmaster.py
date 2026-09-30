@@ -22,7 +22,18 @@ MIN_INTERVAL = 0.25      # seconds between requests (limit is 5/sec)
 LOOKBACK_DAYS = 5
 MAX_CURSOR_STEPS = 6     # safety cap on forward paging (~6000 events)
 
-SPOTIFY_ARTIST_RE = re.compile(r"open\.spotify\.com/artist/([A-Za-z0-9]{22})")
+LASTFM_ARTIST_RE = re.compile(r"last\.fm/music/([^/?#]+)")
+
+
+def lastfm_name(attraction: dict) -> str | None:
+    """The artist's Last.fm name from Ticketmaster's external links, when it has one."""
+    for link in (attraction.get("externalLinks") or {}).get("lastfm") or []:
+        m = LASTFM_ARTIST_RE.search(link.get("url") or "")
+        if m:
+            name = urllib.parse.unquote_plus(m.group(1)).strip()
+            if name:
+                return name
+    return None
 
 # (type, pattern on the normalized presale name, where the code comes from).
 # Order matters: the first match wins.
@@ -219,12 +230,6 @@ def parse_event(ev: dict, now: datetime) -> dict | None:
     start = ev.get("dates", {}).get("start", {})
     artist = attraction.get("name") or ev.get("name", "").strip()
 
-    spotify_id = None
-    for link in (attraction.get("externalLinks") or {}).get("spotify") or []:
-        m = SPOTIFY_ARTIST_RE.search(link.get("url") or "")
-        if m:
-            spotify_id = m.group(1)
-            break
     tour_dates = (attraction.get("upcomingEvents") or {}).get("_total")
 
     return {
@@ -250,7 +255,7 @@ def parse_event(ev: dict, now: datetime) -> dict | None:
         "artist": {
             "artist_id": attraction.get("id") or f"name:{norm(artist)}",
             "name": artist,
-            "spotify_id": spotify_id,
+            "lastfm_lookup": lastfm_name(attraction),
             "tour_date_count": tour_dates if isinstance(tour_dates, int) and tour_dates > 0 else None,
         },
         "venue": {

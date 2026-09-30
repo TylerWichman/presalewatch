@@ -16,7 +16,9 @@ from __future__ import annotations
 
 import math
 
-SIGNALS = ("popularity", "followers_capacity", "scarcity", "market")
+SIGNALS = ("listeners", "engagement", "listeners_capacity", "scarcity", "market")
+# Without Last.fm data confidence is Low and the tier is capped at Med, since market
+# and tour size alone can't show that people want the tickets.
 
 
 def all_in_cost(face: float, cfg: dict, fee_included: bool = False) -> float:
@@ -53,15 +55,27 @@ def market_tier(market_ids: list[str], cfg: dict) -> float:
     return cfg["market"]["top"] if top.intersection(market_ids) else cfg["market"]["other"]
 
 
-def demand_signals(popularity: float | None, followers: float | None, capacity: float | None,
+def log_scale(value: float, lo: float, hi: float) -> float:
+    """log10(value) mapped from [lo, hi] onto [0, 1]."""
+    return clip((math.log10(max(value, 1.0)) - lo) / (hi - lo))
+
+
+def demand_signals(listeners: float | None, playcount: float | None, capacity: float | None,
                    tour_dates: float | None, market: float | None, cfg: dict) -> dict:
-    """Scale raw inputs to 0-1 signals. Missing inputs come back as None."""
+    """Scale raw inputs to 0-1 signals. Missing inputs come back as None.
+
+    listeners: Last.fm listeners, log-scaled (reach).
+    engagement: Last.fm plays per listener, log-scaled (how hard fans listen).
+    listeners_capacity: listeners per venue seat, log-scaled (demand vs supply).
+    """
+    s = cfg["scaling"]
     out: dict[str, float | None] = dict.fromkeys(SIGNALS)
-    if popularity is not None:
-        out["popularity"] = clip(popularity / 100)
-    if followers is not None and capacity:
-        ratio = max(followers / capacity, 1.0)
-        out["followers_capacity"] = clip(math.log10(ratio) / cfg["followers_capacity_log10_max"])
+    if listeners:
+        out["listeners"] = log_scale(listeners, *s["listeners_log10"])
+        if playcount:
+            out["engagement"] = log_scale(playcount / listeners, *s["plays_per_listener_log10"])
+        if capacity:
+            out["listeners_capacity"] = log_scale(listeners / capacity, *s["listeners_per_seat_log10"])
     if tour_dates is not None and tour_dates >= 1:
         out["scarcity"] = clip(1 / tour_dates)
     if market is not None:
@@ -70,12 +84,23 @@ def demand_signals(popularity: float | None, followers: float | None, capacity: 
 
 
 def demand_score(signals: dict, cfg: dict) -> tuple[float, list[str]]:
-    """Weighted demand score D. Missing signals are imputed with a neutral value."""
+    """Weighted demand score D over the signals that are available.
+
+    Missing signals are left out and the remaining weights are rescaled to sum to 1,
+    so a missing input neither drags the score down nor gets a made-up value.
+    """
     weights = cfg["weights"]
-    fill = cfg["missing_signal_value"]
     missing = [k for k in SIGNALS if signals.get(k) is None]
-    score = sum(weights[k] * (fill if signals.get(k) is None else signals[k]) for k in SIGNALS)
-    return clip(score), missing
+    present = [k for k in SIGNALS if signals.get(k) is not None and weights.get(k, 0) > 0]
+    total = sum(weights[k] for k in present)
+    if total <= 0:
+        return 0.0, missing
+    return clip(sum(weights[k] * signals[k] for k in present) / total), missing
+
+
+def has_artist_data(missing: list[str]) -> bool:
+    """Last.fm found the artist (listeners known). Plays per listener comes with it."""
+    return "listeners" not in missing
 
 
 def tier_for(score: float, cfg: dict) -> dict:
@@ -91,6 +116,8 @@ def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bo
     """Pick Mode A or B and compute the edge for one event."""
     score, missing = demand_score(signals, cfg)
     tier = tier_for(score, cfg)
+    if not has_artist_data(missing) and tier["name"] == "High":
+        tier = next(t for t in cfg["tiers"] if t["name"] == "Med")
     face = face_price(face_min, face_max, cfg)
     result = {
         "demand_score": round(score, 4),
@@ -124,7 +151,7 @@ def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bo
     hi = profit_pct(base * tier["multiple_high"], base, cfg, fee_included)
     result.update({
         "mode": "predicted",
-        "confidence": "Low" if missing else "Med",
+        "confidence": "Med" if has_artist_data(missing) else "Low",
         "multiple_low": tier["multiple_low"],
         "multiple_high": tier["multiple_high"],
         "profit": None,

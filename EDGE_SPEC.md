@@ -2,6 +2,8 @@
 
 Sep 26, 2026 · @Tyler
 
+> **Update (Sep 30, 2026):** Spotify was replaced by Last.fm listener and play counts, because Spotify stopped giving development apps popularity and follower data in February 2026. SeatGeek's free tier turned out to have no price stats, so Live mode is paused. The README's "How edge works" section has the current signals and weights; this spec is kept as the original design.
+
 ## Overview
 
 Every presale row gets a Profit % (the "edge"): the expected resale return per dollar spent, net of fees on both sides. The model is OddsJam's arbitrage table, where each opportunity leads with its profit % and the table sorts by it.
