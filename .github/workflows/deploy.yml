@@ -18,22 +18,32 @@ concurrency:
 
 env:
   CF_PROJECT: presalewatch
-  WRANGLER_VERSION: "4.140.0"
+  WRANGLER_VERSION: "4.144.0"   # keep in step with package.json
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
 
       - name: Unit tests
         run: python -m unittest
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      # The API (functions/) is deployed with the site, so its tests gate the deploy too.
+      - name: API tests
+        run: |
+          npm ci
+          npm test
 
       # Generated tables and presales.json live on the `data` branch, so the
       # job never commits to main (which is protected).
@@ -105,7 +115,7 @@ jobs:
           esac
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v4
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -114,5 +124,5 @@ jobs:
 
       - name: Show the live URL
         run: |
-          echo "Live site: https://$CF_PROJECT.pages.dev (the hash URL above is a frozen snapshot of this one deploy)" >> "$GITHUB_STEP_SUMMARY"
-          echo "Live site: https://$CF_PROJECT.pages.dev"
+          echo "Live site: https://pouchit.net (the hash URL above is a frozen snapshot of this one deploy)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Live site: https://pouchit.net"

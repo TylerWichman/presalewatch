@@ -1,0 +1,111 @@
+import assert from "node:assert/strict";
+import { afterEach, beforeEach, describe, it } from "node:test";
+import { onRequestPost as unsubscribePage } from "../../functions/api/unsubscribe/index.ts";
+import { onRequestPost as oneClick } from "../../functions/api/unsubscribe/one-click.ts";
+import { escapeHtml, renderDigest, renderSignIn, safeEventUrl } from "../../src/lib/email.ts";
+import { unsubscribeToken } from "../../src/lib/unsubscribe.ts";
+import { call, fakeFetch, makeEnv, signIn } from "./helpers.ts";
+import { ev, user } from "./fixtures.ts";
+
+const CTX = { origin: "https://pouchit.net", from: "PresaleWatch <alerts@pouchit.net>", unsubscribeSecret: "u".repeat(48), postalAddress: "PO Box 1, Town, ST 00000" };
+const XSS = `<script>alert(1)</script><img src=x onerror=alert(2)>"'&`;
+
+describe("email escaping", () => {
+  it("escapes artist, event, and venue names from third-party data", async () => {
+    const msg = await renderDigest({ user: user(), follows: [], profit: [ev({ artist: XSS, name: XSS, venue: XSS, city: XSS })] }, CTX);
+    assert.ok(!msg.html.includes("<script>"));
+    assert.ok(!msg.html.includes("<img src=x"));
+    assert.ok(msg.html.includes(escapeHtml("<script>alert(1)</script>")));
+  });
+
+  it("only links to https Ticketmaster or Live Nation pages", () => {
+    assert.equal(safeEventUrl("https://www.ticketmaster.com/e/1"), "https://www.ticketmaster.com/e/1");
+    assert.equal(safeEventUrl("https://concerts.livenation.com/e/1"), "https://concerts.livenation.com/e/1");
+    for (const bad of ["javascript:alert(1)", "http://www.ticketmaster.com/e", "https://ticketmaster.com.evil.example/", "https://evil.example/?ticketmaster.com", "https://user:pw@www.ticketmaster.com/", "data:text/html,hi", "not a url"]) {
+      assert.equal(safeEventUrl(bad), null, bad);
+    }
+  });
+
+  it("replaces unsafe event links with the site link", async () => {
+    const msg = await renderDigest({ user: user(), follows: [], profit: [ev({ url: "javascript:alert(1)" })] }, CTX);
+    assert.ok(!msg.html.includes("javascript:"));
+    assert.ok(msg.html.includes('href="https://pouchit.net/"'));
+  });
+
+  it("labels estimates as estimates and Live as asking-price based", async () => {
+    const msg = await renderDigest({ user: user(), follows: [], profit: [ev(), ev({ id: "L", mode: "live", profit: 0.42 })] }, CTX);
+    assert.match(msg.text, /Estimate: \+22% to \+104%/);
+    assert.match(msg.text, /\+42% Profit %, based on asking prices/);
+    assert.match(msg.text, /Items marked Estimate are predictions/);
+  });
+
+  it("includes unsubscribe links, one-click headers, and the postal address", async () => {
+    const msg = await renderDigest({ user: user(), follows: [], profit: [ev()] }, CTX);
+    const token = await unsubscribeToken(CTX.unsubscribeSecret, user().id, user().unsub_nonce);
+    assert.equal(msg.headers!["List-Unsubscribe"], `<https://pouchit.net/api/unsubscribe/one-click?u=${user().id}&t=${token}>`);
+    assert.equal(msg.headers!["List-Unsubscribe-Post"], "List-Unsubscribe=One-Click");
+    assert.ok(msg.text.includes(`https://pouchit.net/unsubscribe#u=${user().id}&t=${token}`));
+    assert.ok(msg.html.includes("Unsubscribe"));
+    assert.ok(msg.text.includes(CTX.postalAddress));
+  });
+
+  it("refuses header values with line breaks", async () => {
+    assert.throws(() => renderSignIn("PresaleWatch <alerts@pouchit.net>", "a@example.com\r\nBcc: x@example.com", "https://pouchit.net/x"));
+    await assert.rejects(() => renderDigest({ user: user({ email: "a@example.com\nBcc: x@example.com" }), follows: [], profit: [ev()] }, CTX));
+  });
+});
+
+describe("unsubscribe", () => {
+  let env: ReturnType<typeof makeEnv>;
+  let net: ReturnType<typeof fakeFetch>;
+  beforeEach(() => {
+    env = makeEnv();
+    net = fakeFetch();
+  });
+  afterEach(() => net.restore());
+
+  async function userRow(email: string) {
+    const [u] = env.DB.rows<{ id: string; unsub_nonce: string }>("SELECT id, unsub_nonce FROM users WHERE email = ?", email);
+    return { ...u, token: await unsubscribeToken(env.UNSUBSCRIBE_SECRET, u.id, u.unsub_nonce) };
+  }
+  const prefs = (id: string) => env.DB.rows("SELECT follow_alerts, profit_alerts FROM preferences WHERE user_id = ?", id)[0];
+
+  it("turns off all alerts immediately, without signing in", async () => {
+    await signIn(env, net.mail, "a@example.com");
+    const a = await userRow("a@example.com");
+    const res = await call(unsubscribePage, env, "/api/unsubscribe", { body: { u: a.id, t: a.token } });
+    assert.equal(res.status, 200);
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0, profit_alerts: 0 });
+  });
+
+  it("works as an RFC 8058 one-click POST with no Origin", async () => {
+    await signIn(env, net.mail, "a@example.com");
+    const a = await userRow("a@example.com");
+    const res = await call(oneClick, env, "/api/unsubscribe/one-click", {
+      origin: null, contentType: "application/x-www-form-urlencoded", body: "List-Unsubscribe=One-Click", query: `?u=${a.id}&t=${a.token}`,
+    });
+    assert.equal(res.status, 200);
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0, profit_alerts: 0 });
+  });
+
+  it("can't be forged or used on another user", async () => {
+    await signIn(env, net.mail, "a@example.com");
+    await signIn(env, net.mail, "b@example.com");
+    const a = await userRow("a@example.com");
+    const b = await userRow("b@example.com");
+    for (const [u, t] of [[b.id, a.token], [a.id, b.token], [b.id, "A".repeat(43)], [b.id, a.token.slice(0, -1) + (a.token.endsWith("A") ? "B" : "A")]]) {
+      const res = await call(unsubscribePage, env, "/api/unsubscribe", { body: { u, t } });
+      assert.equal(res.status, 400);
+    }
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 1, profit_alerts: 1 });
+    assert.deepEqual({ ...prefs(b.id) }, { follow_alerts: 1, profit_alerts: 1 });
+  });
+
+  it("a token from a different secret doesn't work", async () => {
+    await signIn(env, net.mail, "a@example.com");
+    const a = await userRow("a@example.com");
+    const forged = await unsubscribeToken("attacker-guess-".repeat(4), a.id, a.unsub_nonce);
+    const res = await call(unsubscribePage, env, "/api/unsubscribe", { body: { u: a.id, t: forged } });
+    assert.equal(res.status, 400);
+  });
+});

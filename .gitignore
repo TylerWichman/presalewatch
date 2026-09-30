@@ -9,3 +9,8 @@ db/
 data/
 _data/
 site/
+
+# Node and Wrangler: dependencies, local secrets for `wrangler pages dev`, local D1 state.
+node_modules/
+.dev.vars
+.wrangler/

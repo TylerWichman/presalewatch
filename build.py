@@ -1,6 +1,11 @@
-"""Render site/index.html from data/presales.json.
+"""Render site/ from data/presales.json.
 
-The output is a single self-contained HTML file with the data inlined.
+- site/index.html: the presale page, one self-contained file with the data inlined.
+- site/alerts.json: one row per event, read by the alert Worker and by the My alerts page
+  for artist suggestions. Public data only.
+- The account pages from templates/static/ (sign in, My alerts, unsubscribe, privacy).
+- site/_headers: security headers for every static file, with a strict Content-Security-Policy
+  that allows the page's inline script and style by hash.
 
 Usage:
     python build.py
@@ -8,13 +13,22 @@ Usage:
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
+import re
+import shutil
 import sys
 
 from common import PRESALES_PATH, ROOT, assert_no_secrets
 
 TEMPLATE_PATH = ROOT / "templates" / "index.html"
-OUT_PATH = ROOT / "site" / "index.html"
+STATIC_DIR = ROOT / "templates" / "static"
+SITE_DIR = ROOT / "site"
+OUT_PATH = SITE_DIR / "index.html"
+ALERTS_PATH = SITE_DIR / "alerts.json"
+HEADERS_PATH = SITE_DIR / "_headers"
+SECURITY_HEADERS_PATH = ROOT / "config" / "security_headers.json"
 PLACEHOLDER = "__PRESALE_DATA__"
 
 
@@ -98,6 +112,66 @@ def compact(data: dict) -> dict:
     }
 
 
+def alerts_feed(data: dict) -> dict:
+    """One row per event for the alert Worker. presale_end is the latest close across its presales."""
+    events: dict[str, dict] = {}
+    for r in data["presales"]:
+        ev = events.get(r["event_id"])
+        if ev is None:
+            events[r["event_id"]] = ev = drop_none({
+                "id": r["event_id"],
+                "artist": r["artist"],
+                "name": r["event_name"] if r["event_name"].strip().lower() != r["artist"].strip().lower() else None,
+                "url": r["url"],
+                "venue": r["venue"],
+                "city": r["city"],
+                "state": r["state"],
+                "date": r["event_date"],
+                "mode": r["mode"],
+                "profit": r["profit"],
+                "profit_low": r["profit_low"],
+                "profit_high": r["profit_high"],
+                "edge": r["edge_sort"],
+                "tier": r["tier"],
+                "confidence": r["confidence"],
+            })
+        end = r.get("presale_end")
+        if end and end > ev.get("presale_end", ""):
+            ev["presale_end"] = end
+    return {"v": 1, "generated_at": data["generated_at"], "events": list(events.values())}
+
+
+def csp_hash(text: str) -> str:
+    return "'sha256-" + base64.b64encode(hashlib.sha256(text.encode("utf-8")).digest()).decode() + "'"
+
+
+INLINE_SCRIPT = re.compile(r"<script(\s[^>]*)?>(.*?)</script>", re.S)
+INLINE_STYLE = re.compile(r"<style>(.*?)</style>", re.S)
+
+
+def inline_hashes(html: str) -> tuple[list[str], list[str]]:
+    """CSP hashes of the executable inline <script> blocks and the <style> blocks."""
+    scripts = [csp_hash(m.group(2)) for m in INLINE_SCRIPT.finditer(html)
+               if m.group(2).strip() and "application/json" not in (m.group(1) or "")]
+    styles = [csp_hash(m.group(1)) for m in INLINE_STYLE.finditer(html)]
+    return scripts, styles
+
+
+def headers_file(html: str) -> str:
+    cfg = json.loads(SECURITY_HEADERS_PATH.read_text(encoding="utf-8"))
+    scripts, styles = inline_hashes(html)
+    csp = {k: list(v) for k, v in cfg["page_csp"].items()}
+    csp["script-src"] += scripts
+    csp["style-src"] += styles
+    policy = "; ".join(" ".join([k, *v]) for k, v in csp.items())
+    lines = ["/*", f"  Content-Security-Policy: {policy}"]
+    lines += [f"  {name}: {value}" for name, value in cfg["common"].items()]
+    lines += ["", "/alerts.json", "  Cache-Control: no-cache",
+              "", "/auth/*", "  Cache-Control: no-store",
+              "", "/unsubscribe", "  Cache-Control: no-store"]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     if not PRESALES_PATH.exists():
         sys.exit(f"{PRESALES_PATH.relative_to(ROOT)} not found. Run: python pipeline.py")
@@ -113,7 +187,14 @@ def main() -> None:
     assert_no_secrets(html, "page")
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(STATIC_DIR, SITE_DIR, dirs_exist_ok=True)
     OUT_PATH.write_text(html, encoding="utf-8", newline="\n")
+
+    feed = json.dumps(alerts_feed(json.loads(PRESALES_PATH.read_text(encoding="utf-8"))),
+                      ensure_ascii=False, separators=(",", ":"))
+    assert_no_secrets(feed, "alerts.json")
+    ALERTS_PATH.write_text(feed, encoding="utf-8", newline="\n")
+    HEADERS_PATH.write_text(headers_file(html), encoding="utf-8", newline="\n")
     size_kb = OUT_PATH.stat().st_size / 1024
     print(f"{len(payload['rows'])} presales, {len(payload['events'])} events -> "
           f"{OUT_PATH.relative_to(ROOT)} ({size_kb:.0f} KB)")

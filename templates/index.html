@@ -85,6 +85,9 @@ a { color: var(--accent); }
 .hero { background: var(--hero); color: #fff; padding: 28px 0 22px; }
 .brand { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
 .brand svg { flex: none; }
+.hero-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.account-link { color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 7px 14px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; white-space: nowrap; }
+.account-link:hover { background: rgba(255,255,255,.12); }
 .brand span { background: linear-gradient(90deg, #fff, #f5c2e7); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .tagline { margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: 15px; }
 .stats { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; font-size: 13px; color: rgba(255,255,255,.72); }
@@ -236,10 +239,13 @@ footer p { margin: 4px 0; }
 <body>
 <header class="hero">
   <div class="wrap">
-    <h1 class="brand">
-      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#7c3aed"/><path d="M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z" fill="#fff"/></svg>
-      <span>PresaleWatch</span>
-    </h1>
+    <div class="hero-top">
+      <h1 class="brand">
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#7c3aed"/><path d="M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z" fill="#fff"/></svg>
+        <span>PresaleWatch</span>
+      </h1>
+      <a class="account-link" href="/alerts">Sign in · My alerts</a>
+    </div>
     <p class="tagline">Upcoming US concert presales, ranked by edge: the expected resale profit after fees.</p>
     <div class="stats">
       <div id="updated-wrap"><span class="dot"></span>Last updated <b id="updated"></b></div>
@@ -317,7 +323,7 @@ footer p { margin: 4px 0; }
 <footer>
   <div class="wrap">
     <p>Presales and face values from the Ticketmaster Discovery API, live resale from SeatGeek, artist popularity from Spotify. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
-    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Spotify. Nothing here is financial advice.</p>
+    <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Spotify. Nothing here is financial advice. <a href="/privacy">Privacy</a></p>
   </div>
 </footer>
 

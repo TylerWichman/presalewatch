@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My alerts · PresaleWatch</title>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/assets/account.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="/assets/alerts.js" defer></script>
+</head>
+<body>
+<header class="hero"><div class="wrap"><a class="brand" href="/">PresaleWatch</a></div></header>
+<main class="wrap">
+  <p id="loading" class="muted">Loading…</p>
+
+  <section id="signin" hidden>
+    <h1>Sign in</h1>
+    <p class="muted">Get email alerts for artists you follow and for high-profit presales. We'll email you a sign-in link. No password needed.</p>
+    <form id="signin-form" class="card" novalidate>
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+      <div class="turnstile cf-turnstile" data-sitekey="0x4AAAAAAFJpsdv0jmtHdce7" data-action="signin"></div>
+      <button type="submit" id="signin-btn">Email me a sign-in link</button>
+      <p id="signin-msg" class="msg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="small muted">We only store your email address and alert settings. <a href="/privacy">Privacy</a></p>
+  </section>
+
+  <section id="settings" hidden>
+    <h1>My alerts</h1>
+    <p class="muted">Signed in as <b id="me-email"></b> · <a href="/">Back to presales</a></p>
+
+    <form id="prefs-form" class="card" novalidate>
+      <h2>Email alerts</h2>
+      <label class="check"><input type="checkbox" id="follow-alerts"> <span><b>Artists I follow</b><br><span class="muted small">A new presale for an artist on your list.</span></span></label>
+      <label class="check"><input type="checkbox" id="profit-alerts"> <span><b>High profit</b><br><span class="muted small">Any presale at or above your Profit % threshold. Until live resale data is available, this uses estimates with Med or High demand, labeled as estimates.</span></span></label>
+      <label for="threshold">Profit % threshold</label>
+      <div class="row"><input id="threshold" type="number" min="0" max="500" step="1" inputmode="numeric" required> <span class="muted">%</span></div>
+      <p class="small muted">You get at most one digest after each data refresh, and never the same event twice.</p>
+      <button type="submit">Save settings</button>
+      <p id="prefs-msg" class="msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="card">
+      <h2>Artists I follow</h2>
+      <form id="follow-form" class="row" novalidate>
+        <input id="artist" type="text" list="artist-list" maxlength="100" autocomplete="off" placeholder="Search artists or type any name" aria-label="Artist name">
+        <datalist id="artist-list"></datalist>
+        <button type="submit" class="secondary">Follow</button>
+      </form>
+      <p id="follow-msg" class="msg" role="status" aria-live="polite"></p>
+      <ul id="follows" class="follows"></ul>
+      <p id="no-follows" class="muted small" hidden>You're not following anyone yet.</p>
+    </div>
+
+    <div class="card">
+      <h2>Account</h2>
+      <div class="row">
+        <button type="button" id="signout" class="secondary">Sign out</button>
+        <button type="button" id="delete" class="danger">Delete my account</button>
+      </div>
+      <p class="small muted">Deleting removes your email address, settings, follows, and alert history right away.</p>
+      <p id="account-msg" class="msg" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+<footer class="wrap"><a href="/privacy">Privacy</a> · Not financial advice.</footer>
+</body>
+</html>
