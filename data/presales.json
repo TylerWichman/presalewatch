@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-30T05:32:38Z",
+ "generated_at": "2026-09-30T12:34:27Z",
  "fees": {
   "seller_fee": 0.15,
   "primary_fee_pct": 0.25
@@ -8,7 +8,7 @@
  "ask_to_sale_discount": 0.15,
  "calibrated_at": null,
  "event_count": 842,
- "presale_count": 2761,
+ "presale_count": 2759,
  "presales": [
   {
    "id": "G5viZ_FUqianP-0",
@@ -2138,7 +2138,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4833,
+   "demand_score": 0.4824,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -2155,12 +2155,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": 1025,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 1.0
     },
     "missing_signals": [
@@ -2498,7 +2498,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -2515,12 +2515,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": 2700,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -2558,7 +2558,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -2575,12 +2575,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": 2700,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -3458,7 +3458,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4833,
+   "demand_score": 0.4824,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -3475,12 +3475,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 1.0
     },
     "missing_signals": [
@@ -3518,7 +3518,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -3535,12 +3535,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -3578,7 +3578,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -3595,12 +3595,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -4778,7 +4778,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -4795,12 +4795,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -4838,7 +4838,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -4855,12 +4855,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -4898,7 +4898,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4824,
+   "demand_score": 0.4819,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -4915,12 +4915,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 1.0
     },
     "missing_signals": [
@@ -6965,66 +6965,6 @@
      "followers_capacity": null,
      "scarcity": 1.0,
      "market": 0.5
-    },
-    "missing_signals": [
-     "popularity",
-     "followers_capacity"
-    ],
-    "seatgeek_listings": null
-   }
-  },
-  {
-   "id": "17GZv0G65tTxsBE-0",
-   "event_id": "17GZv0G65tTxsBE",
-   "artist": "John Summit",
-   "event_name": "JOHN SUMMIT - CTRL ESCAPE ARENA TOUR",
-   "url": "https://www.ticketmaster.com/john-summit-ctrl-escape-arena-tour-brooklyn-new-york-11-29-2026/event/300064BA7F8B1EA7",
-   "image": "https://s1.ticketm.net/dam/a/b99/44736a1a-46cb-41c3-8c65-d735b5a45b99_RETINA_PORTRAIT_16_9.jpg",
-   "venue": "Barclays Center",
-   "city": "Brooklyn",
-   "state": "NY",
-   "event_date": "2026-11-29",
-   "event_time": "19:00:00",
-   "presale_name": "Artist Presale",
-   "presale_type": "Artist",
-   "code_source": "Artist newsletter or fan club sign-up",
-   "presale_description": "Available for All Fans - Sign Up in Advance",
-   "presale_url": "https://signup.livenation.com/johnsummit?ac_link=NTM_JohnSummit-1_edposinfo",
-   "presale_link_text": "Sign Up for the Artist Presale",
-   "presale_start": "2026-09-29T14:00:00Z",
-   "presale_end": "2026-09-30T12:00:00Z",
-   "onsale": "2026-09-30T14:00:00Z",
-   "face_min": null,
-   "face_max": null,
-   "fee_included": false,
-   "dynamic_pricing": false,
-   "mode": "predicted",
-   "confidence": "Low",
-   "tier": "Med",
-   "demand_score": 0.4819,
-   "profit": null,
-   "profit_low": -0.184,
-   "profit_high": 0.224,
-   "edge_sort": 0.02,
-   "multiple_low": 1.2,
-   "multiple_high": 1.8,
-   "resale_median": null,
-   "resale_low": null,
-   "resale_avg": null,
-   "resale_listings": null,
-   "resale_captured_at": null,
-   "inputs": {
-    "face_used": null,
-    "spotify_popularity": null,
-    "spotify_followers": null,
-    "venue_capacity": 19000,
-    "tour_date_count": 29,
-    "market_tier": 1.0,
-    "signals": {
-     "popularity": null,
-     "followers_capacity": null,
-     "scarcity": 0.0345,
-     "market": 1.0
     },
     "missing_signals": [
      "popularity",
@@ -9403,7 +9343,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -9420,12 +9360,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -9463,7 +9403,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -9480,132 +9420,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
-     "market": 1.0
-    },
-    "missing_signals": [
-     "popularity",
-     "followers_capacity"
-    ],
-    "seatgeek_listings": null
-   }
-  },
-  {
-   "id": "17GZv0G65tTxsBE-1",
-   "event_id": "17GZv0G65tTxsBE",
-   "artist": "John Summit",
-   "event_name": "JOHN SUMMIT - CTRL ESCAPE ARENA TOUR",
-   "url": "https://www.ticketmaster.com/john-summit-ctrl-escape-arena-tour-brooklyn-new-york-11-29-2026/event/300064BA7F8B1EA7",
-   "image": "https://s1.ticketm.net/dam/a/b99/44736a1a-46cb-41c3-8c65-d735b5a45b99_RETINA_PORTRAIT_16_9.jpg",
-   "venue": "Barclays Center",
-   "city": "Brooklyn",
-   "state": "NY",
-   "event_date": "2026-11-29",
-   "event_time": "19:00:00",
-   "presale_name": "LIVE NATION PRESALE",
-   "presale_type": "Live Nation",
-   "code_source": "Live Nation code (app or email)",
-   "presale_description": "Available exclusively to Live Nation All Access members",
-   "presale_url": "https://www.livenation.com/allaccess",
-   "presale_link_text": "Join for Free to Unlock Presale",
-   "presale_start": "2026-09-29T16:00:00Z",
-   "presale_end": "2026-09-30T12:00:00Z",
-   "onsale": "2026-09-30T14:00:00Z",
-   "face_min": null,
-   "face_max": null,
-   "fee_included": false,
-   "dynamic_pricing": false,
-   "mode": "predicted",
-   "confidence": "Low",
-   "tier": "Med",
-   "demand_score": 0.4819,
-   "profit": null,
-   "profit_low": -0.184,
-   "profit_high": 0.224,
-   "edge_sort": 0.02,
-   "multiple_low": 1.2,
-   "multiple_high": 1.8,
-   "resale_median": null,
-   "resale_low": null,
-   "resale_avg": null,
-   "resale_listings": null,
-   "resale_captured_at": null,
-   "inputs": {
-    "face_used": null,
-    "spotify_popularity": null,
-    "spotify_followers": null,
-    "venue_capacity": 19000,
-    "tour_date_count": 29,
-    "market_tier": 1.0,
-    "signals": {
-     "popularity": null,
-     "followers_capacity": null,
-     "scarcity": 0.0345,
-     "market": 1.0
-    },
-    "missing_signals": [
-     "popularity",
-     "followers_capacity"
-    ],
-    "seatgeek_listings": null
-   }
-  },
-  {
-   "id": "17GZv0G65tTxsBE-2",
-   "event_id": "17GZv0G65tTxsBE",
-   "artist": "John Summit",
-   "event_name": "JOHN SUMMIT - CTRL ESCAPE ARENA TOUR",
-   "url": "https://www.ticketmaster.com/john-summit-ctrl-escape-arena-tour-brooklyn-new-york-11-29-2026/event/300064BA7F8B1EA7",
-   "image": "https://s1.ticketm.net/dam/a/b99/44736a1a-46cb-41c3-8c65-d735b5a45b99_RETINA_PORTRAIT_16_9.jpg",
-   "venue": "Barclays Center",
-   "city": "Brooklyn",
-   "state": "NY",
-   "event_date": "2026-11-29",
-   "event_time": "19:00:00",
-   "presale_name": "Venue Presale",
-   "presale_type": "Venue",
-   "code_source": "Venue newsletter or email list",
-   "presale_description": null,
-   "presale_url": null,
-   "presale_link_text": null,
-   "presale_start": "2026-09-29T16:00:00Z",
-   "presale_end": "2026-09-30T12:00:00Z",
-   "onsale": "2026-09-30T14:00:00Z",
-   "face_min": null,
-   "face_max": null,
-   "fee_included": false,
-   "dynamic_pricing": false,
-   "mode": "predicted",
-   "confidence": "Low",
-   "tier": "Med",
-   "demand_score": 0.4819,
-   "profit": null,
-   "profit_low": -0.184,
-   "profit_high": 0.224,
-   "edge_sort": 0.02,
-   "multiple_low": 1.2,
-   "multiple_high": 1.8,
-   "resale_median": null,
-   "resale_low": null,
-   "resale_avg": null,
-   "resale_listings": null,
-   "resale_captured_at": null,
-   "inputs": {
-    "face_used": null,
-    "spotify_popularity": null,
-    "spotify_followers": null,
-    "venue_capacity": 19000,
-    "tour_date_count": 29,
-    "market_tier": 1.0,
-    "signals": {
-     "popularity": null,
-     "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -11323,7 +11143,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -11340,12 +11160,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -11383,7 +11203,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -11400,12 +11220,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -14444,7 +14264,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4819,
+   "demand_score": 0.4815,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -14461,12 +14281,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": 1025,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 1.0
     },
     "missing_signals": [
@@ -21225,7 +21045,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -21242,12 +21062,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -21285,7 +21105,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -21302,12 +21122,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -21345,7 +21165,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4819,
+   "demand_score": 0.4815,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -21362,12 +21182,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 1.0
     },
     "missing_signals": [
@@ -25425,7 +25245,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -25442,12 +25262,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -25485,7 +25305,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -25502,12 +25322,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -25545,7 +25365,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -25562,12 +25382,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -25605,7 +25425,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -25622,12 +25442,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -25665,7 +25485,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4819,
+   "demand_score": 0.4815,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -25682,12 +25502,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": 1025,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 1.0
     },
     "missing_signals": [
@@ -29962,6 +29782,66 @@
    }
   },
   {
+   "id": "vv170Z_KGkYg1uF7-0",
+   "event_id": "vv170Z_KGkYg1uF7",
+   "artist": "Davion Farris",
+   "event_name": "Davion Farris",
+   "url": "https://www.ticketmaster.com/davion-farris-los-angeles-california-11-24-2026/event/0900653C3528D204",
+   "image": "https://s1.ticketm.net/dam/a/037/975e061a-7ff5-46fe-bb2d-231146aae037_RETINA_PORTRAIT_16_9.jpg",
+   "venue": "The Peppermint Club",
+   "city": "Los Angeles",
+   "state": "CA",
+   "event_date": "2026-11-24",
+   "event_time": "19:00:00",
+   "presale_name": "LIVE NATION PRESALE",
+   "presale_type": "Live Nation",
+   "code_source": "Live Nation code (app or email)",
+   "presale_description": "Available exclusively to Live Nation All Access members",
+   "presale_url": "https://www.livenation.com/allaccess",
+   "presale_link_text": "Join for Free to Unlock Presale",
+   "presale_start": "2026-10-01T17:00:00Z",
+   "presale_end": "2026-10-02T05:00:00Z",
+   "onsale": "2026-10-02T17:00:00Z",
+   "face_min": null,
+   "face_max": null,
+   "fee_included": false,
+   "dynamic_pricing": false,
+   "mode": "predicted",
+   "confidence": "Low",
+   "tier": "Med",
+   "demand_score": 0.675,
+   "profit": null,
+   "profit_low": -0.184,
+   "profit_high": 0.224,
+   "edge_sort": 0.02,
+   "multiple_low": 1.2,
+   "multiple_high": 1.8,
+   "resale_median": null,
+   "resale_low": null,
+   "resale_avg": null,
+   "resale_listings": null,
+   "resale_captured_at": null,
+   "inputs": {
+    "face_used": null,
+    "spotify_popularity": null,
+    "spotify_followers": null,
+    "venue_capacity": null,
+    "tour_date_count": 1,
+    "market_tier": 1.0,
+    "signals": {
+     "popularity": null,
+     "followers_capacity": null,
+     "scarcity": 1.0,
+     "market": 1.0
+    },
+    "missing_signals": [
+     "popularity",
+     "followers_capacity"
+    ],
+    "seatgeek_listings": null
+   }
+  },
+  {
    "id": "vv1AaZkfUGkdYm2Qo-2",
    "event_id": "vv1AaZkfUGkdYm2Qo",
    "artist": "Dropkick Murphys",
@@ -30169,7 +30049,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30186,12 +30066,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30229,7 +30109,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30246,12 +30126,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30289,7 +30169,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30306,12 +30186,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30349,7 +30229,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30366,12 +30246,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30409,7 +30289,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30426,12 +30306,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30469,7 +30349,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30486,12 +30366,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30529,7 +30409,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30546,12 +30426,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -30589,7 +30469,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4819,
+   "demand_score": 0.4815,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30606,12 +30486,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 1.0
     },
     "missing_signals": [
@@ -30649,7 +30529,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4819,
+   "demand_score": 0.4815,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -30666,12 +30546,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 1.0
     },
     "missing_signals": [
@@ -31009,7 +30889,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4932,
+   "demand_score": 0.4917,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -31026,12 +30906,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 11,
+    "tour_date_count": 12,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0909,
+     "scarcity": 0.0833,
      "market": 1.0
     },
     "missing_signals": [
@@ -31069,7 +30949,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4932,
+   "demand_score": 0.4917,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -31086,12 +30966,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 11,
+    "tour_date_count": 12,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0909,
+     "scarcity": 0.0833,
      "market": 1.0
     },
     "missing_signals": [
@@ -33709,7 +33589,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -33726,12 +33606,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -36829,7 +36709,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -36846,12 +36726,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -36889,7 +36769,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -36906,12 +36786,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -36949,7 +36829,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -36966,12 +36846,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -37009,7 +36889,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -37026,12 +36906,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -37069,7 +36949,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -37086,12 +36966,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -37129,7 +37009,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.479,
+   "demand_score": 0.4789,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -37146,12 +37026,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 1.0
     },
     "missing_signals": [
@@ -37369,7 +37249,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Med",
-   "demand_score": 0.4932,
+   "demand_score": 0.4917,
    "profit": null,
    "profit_low": -0.184,
    "profit_high": 0.224,
@@ -37386,12 +37266,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 11,
+    "tour_date_count": 12,
     "market_tier": 1.0,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0909,
+     "scarcity": 0.0833,
      "market": 1.0
     },
     "missing_signals": [
@@ -42410,7 +42290,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -42427,12 +42307,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -42470,7 +42350,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -42487,12 +42367,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -42530,7 +42410,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -42547,12 +42427,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -42590,7 +42470,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -42607,12 +42487,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -42650,7 +42530,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -42667,12 +42547,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -43730,7 +43610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -43747,12 +43627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -43790,7 +43670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -43807,12 +43687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -43850,7 +43730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -43867,12 +43747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -43910,7 +43790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -43927,12 +43807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -43970,7 +43850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -43987,12 +43867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44030,7 +43910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44047,12 +43927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44090,7 +43970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44107,12 +43987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44150,7 +44030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44167,12 +44047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44210,7 +44090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44227,12 +44107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44270,7 +44150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44287,12 +44167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44330,7 +44210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44347,12 +44227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -44390,7 +44270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -44407,12 +44287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -47390,7 +47270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -47407,12 +47287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -47450,7 +47330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4083,
+   "demand_score": 0.4074,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -47467,12 +47347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 24,
+    "tour_date_count": 27,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0417,
+     "scarcity": 0.037,
      "market": 0.5
     },
     "missing_signals": [
@@ -48410,7 +48290,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48427,12 +48307,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48470,7 +48350,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48487,12 +48367,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48530,7 +48410,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48547,12 +48427,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48590,7 +48470,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48607,12 +48487,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48650,7 +48530,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48667,12 +48547,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48710,7 +48590,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48727,12 +48607,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -48770,7 +48650,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -48787,12 +48667,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -50630,7 +50510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -50647,12 +50527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -51470,7 +51350,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4333,
+   "demand_score": 0.45,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -51487,12 +51367,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 6,
+    "tour_date_count": 4,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.1667,
+     "scarcity": 0.25,
      "market": 0.5
     },
     "missing_signals": [
@@ -51590,7 +51470,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4154,
+   "demand_score": 0.4143,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -51607,12 +51487,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 13,
+    "tour_date_count": 14,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0769,
+     "scarcity": 0.0714,
      "market": 0.5
     },
     "missing_signals": [
@@ -54170,7 +54050,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4074,
+   "demand_score": 0.4069,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -54187,12 +54067,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 27,
+    "tour_date_count": 29,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.037,
+     "scarcity": 0.0345,
      "market": 0.5
     },
     "missing_signals": [
@@ -67730,7 +67610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -67747,12 +67627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -67790,7 +67670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -67807,12 +67687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -67850,7 +67730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -67867,12 +67747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -67910,7 +67790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -67927,12 +67807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -67970,7 +67850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -67987,12 +67867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68030,7 +67910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68047,12 +67927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68090,7 +67970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68107,12 +67987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68150,7 +68030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68167,12 +68047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68210,7 +68090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68227,12 +68107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68270,7 +68150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68287,12 +68167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68330,7 +68210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68347,12 +68227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68390,7 +68270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68407,12 +68287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68450,7 +68330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68467,12 +68347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68510,7 +68390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68527,12 +68407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68570,7 +68450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68587,12 +68467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -68630,7 +68510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -68647,12 +68527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71150,7 +71030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71167,12 +71047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71210,7 +71090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71227,12 +71107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71270,7 +71150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71287,12 +71167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71330,7 +71210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71347,12 +71227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71390,7 +71270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71407,12 +71287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71450,7 +71330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71467,12 +71347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71510,7 +71390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71527,12 +71407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71570,7 +71450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71587,12 +71467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71630,7 +71510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71647,12 +71527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71690,7 +71570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71707,12 +71587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71750,7 +71630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71767,12 +71647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71810,7 +71690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71827,12 +71707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -71870,7 +71750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -71887,12 +71767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -74630,7 +74510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -74647,12 +74527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -74690,7 +74570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -74707,12 +74587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -83330,7 +83210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83347,12 +83227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -83390,7 +83270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83407,12 +83287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -83450,7 +83330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83467,12 +83347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -83510,7 +83390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83527,12 +83407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -83570,7 +83450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83587,12 +83467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -83630,7 +83510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -83647,12 +83527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -85670,7 +85550,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85687,12 +85567,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -85730,7 +85610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85747,12 +85627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -85790,7 +85670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85807,12 +85687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -85850,7 +85730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85867,12 +85747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -85910,7 +85790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85927,12 +85807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -85970,7 +85850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -85987,12 +85867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86030,7 +85910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86047,12 +85927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86090,7 +85970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86107,12 +85987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86150,7 +86030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86167,12 +86047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86210,7 +86090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86227,12 +86107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86270,7 +86150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86287,12 +86167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86330,7 +86210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86347,12 +86227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86390,7 +86270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86407,12 +86287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86450,7 +86330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86467,12 +86347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86510,7 +86390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86527,12 +86407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86570,7 +86450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86587,12 +86467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86630,7 +86510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86647,12 +86527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86690,7 +86570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86707,12 +86587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86750,7 +86630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86767,12 +86647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86810,7 +86690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86827,12 +86707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86870,7 +86750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86887,12 +86767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86930,7 +86810,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -86947,12 +86827,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -86990,7 +86870,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4071,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -87007,12 +86887,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 28,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0357,
      "market": 0.5
     },
     "missing_signals": [
@@ -96230,7 +96110,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -96247,12 +96127,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -101030,7 +100910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -101047,12 +100927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -121490,7 +121370,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121507,12 +121387,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121550,7 +121430,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121567,12 +121447,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121610,7 +121490,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121627,12 +121507,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121670,7 +121550,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121687,12 +121567,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121730,7 +121610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121747,12 +121627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121790,7 +121670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121807,12 +121687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121850,7 +121730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121867,12 +121747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121910,7 +121790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121927,12 +121807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -121970,7 +121850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -121987,12 +121867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122030,7 +121910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122047,12 +121927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122090,7 +121970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122107,12 +121987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122150,7 +122030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122167,12 +122047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122210,7 +122090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122227,12 +122107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122270,7 +122150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122287,12 +122167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122330,7 +122210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122347,12 +122227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122390,7 +122270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122407,12 +122287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122450,7 +122330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122467,12 +122347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122510,7 +122390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122527,12 +122407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122570,7 +122450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122587,12 +122467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122630,7 +122510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122647,12 +122527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122690,7 +122570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122707,12 +122587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122750,7 +122630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122767,12 +122647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122810,7 +122690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122827,12 +122707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122870,7 +122750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122887,12 +122767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122930,7 +122810,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -122947,12 +122827,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -122990,7 +122870,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123007,12 +122887,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -123050,7 +122930,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123067,12 +122947,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -123110,7 +122990,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123127,12 +123007,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -123170,7 +123050,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123187,12 +123067,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -123230,7 +123110,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123247,12 +123127,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -123290,7 +123170,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123307,12 +123187,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -123350,7 +123230,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123367,12 +123247,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -123410,7 +123290,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123427,12 +123307,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -123470,7 +123350,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123487,12 +123367,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -123530,7 +123410,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123547,12 +123427,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -123590,7 +123470,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -123607,12 +123487,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -130670,7 +130550,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130687,12 +130567,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -130730,7 +130610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130747,12 +130627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -130790,7 +130670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130807,12 +130687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -130850,7 +130730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130867,12 +130747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -130910,7 +130790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130927,12 +130807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -130970,7 +130850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -130987,12 +130867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131030,7 +130910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131047,12 +130927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131090,7 +130970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131107,12 +130987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131150,7 +131030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131167,12 +131047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131210,7 +131090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131227,12 +131107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131270,7 +131150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131287,12 +131167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131330,7 +131210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131347,12 +131227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131390,7 +131270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131407,12 +131287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131450,7 +131330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131467,12 +131347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131510,7 +131390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131527,12 +131407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131570,7 +131450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131587,12 +131467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131630,7 +131510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131647,12 +131527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131690,7 +131570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131707,12 +131587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131750,7 +131630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131767,12 +131647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131810,7 +131690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131827,12 +131707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131870,7 +131750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131887,12 +131767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131930,7 +131810,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -131947,12 +131827,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -131990,7 +131870,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -132007,12 +131887,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -132050,7 +131930,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -132067,12 +131947,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -132290,7 +132170,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -132307,12 +132187,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -135890,7 +135770,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -135907,12 +135787,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -135950,7 +135830,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -135967,12 +135847,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -136010,7 +135890,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -136027,12 +135907,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -136070,7 +135950,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -136087,12 +135967,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -136130,7 +136010,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -136147,12 +136027,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -145970,7 +145850,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -145987,12 +145867,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146030,7 +145910,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146047,12 +145927,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146090,7 +145970,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146107,12 +145987,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146150,7 +146030,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146167,12 +146047,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146210,7 +146090,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146227,12 +146107,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146270,7 +146150,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146287,12 +146167,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146330,7 +146210,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146347,12 +146227,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146390,7 +146270,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146407,12 +146287,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146450,7 +146330,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146467,12 +146347,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146510,7 +146390,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146527,12 +146407,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146570,7 +146450,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146587,12 +146467,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146630,7 +146510,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146647,12 +146527,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146690,7 +146570,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146707,12 +146587,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146750,7 +146630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146767,12 +146647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146810,7 +146690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146827,12 +146707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146870,7 +146750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146887,12 +146767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146930,7 +146810,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -146947,12 +146827,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -146990,7 +146870,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -147007,12 +146887,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -147050,7 +146930,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -147067,12 +146947,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -147110,7 +146990,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -147127,12 +147007,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -147170,7 +147050,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -147187,12 +147067,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -147230,7 +147110,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.4069,
+   "demand_score": 0.4065,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -147247,12 +147127,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 29,
+    "tour_date_count": 31,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.0345,
+     "scarcity": 0.0323,
      "market": 0.5
     },
     "missing_signals": [
@@ -153890,7 +153770,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -153907,12 +153787,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -153950,7 +153830,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -153967,12 +153847,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154010,7 +153890,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154027,12 +153907,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154070,7 +153950,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154087,12 +153967,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154130,7 +154010,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154147,12 +154027,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154190,7 +154070,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154207,12 +154087,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154250,7 +154130,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154267,12 +154147,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154310,7 +154190,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154327,12 +154207,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154370,7 +154250,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154387,12 +154267,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154430,7 +154310,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154447,12 +154327,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154490,7 +154370,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154507,12 +154387,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154550,7 +154430,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154567,12 +154447,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154610,7 +154490,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154627,12 +154507,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154670,7 +154550,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154687,12 +154567,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154730,7 +154610,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154747,12 +154627,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154790,7 +154670,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154807,12 +154687,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154850,7 +154730,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154867,12 +154747,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -154910,7 +154790,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -154927,12 +154807,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -158750,7 +158630,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -158767,12 +158647,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -158810,7 +158690,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -158827,12 +158707,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
@@ -158870,7 +158750,7 @@
    "mode": "predicted",
    "confidence": "Low",
    "tier": "Low",
-   "demand_score": 0.404,
+   "demand_score": 0.4039,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -158887,12 +158767,12 @@
     "spotify_popularity": null,
     "spotify_followers": null,
     "venue_capacity": null,
-    "tour_date_count": 50,
+    "tour_date_count": 51,
     "market_tier": 0.5,
     "signals": {
      "popularity": null,
      "followers_capacity": null,
-     "scarcity": 0.02,
+     "scarcity": 0.0196,
      "market": 0.5
     },
     "missing_signals": [
