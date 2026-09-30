@@ -150,6 +150,11 @@ def backfill_prices(events: dict[str, dict], raw: dict[str, dict], current: set[
 # ---- Step 3: resale snapshots -----------------------------------------------------
 
 def pull_resale(events: dict[str, dict], parsed: list[dict], now: datetime, cfg: dict) -> None:
+    if not cfg["refresh"].get("seatgeek_enabled", True):
+        # SeatGeek's free tier returns events without price stats, so matching only burned
+        # ~10 minutes of rate-limited searches per run. Re-enable if partner access is granted.
+        print("  SeatGeek: paused in config/model.json (free tier has no price stats)")
+        return
     sg = SeatGeek.from_env()
     if not sg:
         print("  SeatGeek: no client ID, skipping live resale (every row stays predicted)")

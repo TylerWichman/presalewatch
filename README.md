@@ -33,6 +33,10 @@ Fees default to 15% seller and 25% of face for primary (`config/model.json`).
   giving an exact Profit %. Listings are asking prices and tickets usually sell
   below the ask, so the page labels Live edges "based on asking prices".
   Calibration applies the same discount to the SeatGeek medians it scores against.
+  **Paused:** SeatGeek's free tier returns events with an empty `stats` object (no
+  listing count or prices), so `refresh.seatgeek_enabled` is `false` in
+  `config/model.json` and scheduled runs skip SeatGeek. Every row is an estimate
+  until a resale source with prices is available.
 - **Estimated (Mode B):** otherwise a demand score (Spotify popularity, followers per
   venue seat, 1 ÷ tour dates, NYC/LA/Chicago market) picks a High/Med/Low tier and a
   resale multiple range, shown as a margin range such as "+22% to +104%". Confidence is
