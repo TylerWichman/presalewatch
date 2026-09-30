@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { onRequestPost as unsubscribePage } from "../../functions/api/unsubscribe/index.ts";
 import { onRequestPost as oneClick } from "../../functions/api/unsubscribe/one-click.ts";
@@ -9,6 +10,37 @@ import { ev, user } from "./fixtures.ts";
 
 const CTX = { origin: "https://pouchit.net", from: "PresaleWatch <alerts@pouchit.net>", unsubscribeSecret: "u".repeat(48), postalAddress: "PO Box 1, Town, ST 00000" };
 const XSS = `<script>alert(1)</script><img src=x onerror=alert(2)>"'&`;
+
+describe("deliverability", () => {
+  const FROM = "PresaleWatch <alerts@pouchit.net>";
+
+  it("both Cloudflare configs send from PresaleWatch <alerts@pouchit.net>", () => {
+    for (const f of ["wrangler.toml", "worker/wrangler.toml"]) {
+      const toml = readFileSync(new URL(`../../${f}`, import.meta.url), "utf8");
+      assert.match(toml, /^EMAIL_FROM = "PresaleWatch <alerts@pouchit\.net>"$/m, f);
+    }
+  });
+
+  it("every email has a plain-text part alongside the HTML", async () => {
+    const digest = await renderDigest({ user: user(), follows: [ev({ id: "F" })], profit: [ev()] }, { ...CTX, from: FROM });
+    const signin = renderSignIn(FROM, "a@example.com", "https://pouchit.net/auth/confirm#token=" + "A".repeat(43));
+    for (const m of [digest, signin]) {
+      assert.equal(m.from, FROM);
+      assert.ok(m.text.trim().length > 0);
+      assert.ok(m.html.trim().length > 0);
+      assert.doesNotMatch(m.text, /<[a-z]/i, "text part has no HTML");
+    }
+  });
+
+  it("the sign-in email is short and plain", () => {
+    const link = "https://pouchit.net/auth/confirm#token=" + "A".repeat(43) + "&next=%2Falerts";
+    const m = renderSignIn(FROM, "a@example.com", link);
+    assert.ok(m.text.includes(link));
+    assert.ok(m.text.length < 300, `text is ${m.text.length} characters`);
+    assert.doesNotMatch(m.html, /<img|<style|style=|<table/i);
+    assert.equal((m.html.match(/<a /g) ?? []).length, 1);
+  });
+});
 
 describe("email escaping", () => {
   it("escapes artist, event, and venue names from third-party data", async () => {
