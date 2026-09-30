@@ -235,6 +235,7 @@ def presale_rows(parsed: list[dict], results: dict[str, dict], artists: dict, ve
                 "id": f"{e['event_id']}-{i}",
                 "event_id": e["event_id"],
                 "artist": e["artist"],
+                "artist_id": e["artist_id"],
                 "event_name": e["name"],
                 "url": e["url"],
                 "image": e["image"],
