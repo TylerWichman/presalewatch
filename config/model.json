@@ -30,7 +30,8 @@
     "spotify_max_calls": 1500,
     "seatgeek_research_hours": 24,
     "seatgeek_max_searches": 1000,
-    "snapshot_max_age_hours": 24
+    "snapshot_max_age_hours": 24,
+    "seatgeek_enabled": false
   },
   "calibration": {
     "min_scored_for_refit": 50,
