@@ -77,8 +77,8 @@ def compact(data: dict) -> dict:
                 "rc": r["resale_captured_at"],
                 "in": drop_none({
                     "face": inp["face_used"],
-                    "pop": inp["spotify_popularity"],
-                    "fol": inp["spotify_followers"],
+                    "lis": inp.get("lastfm_listeners"),
+                    "plc": inp.get("lastfm_playcount"),
                     "cap": inp["venue_capacity"],
                     "tour": inp["tour_date_count"],
                     "mkt": inp["market_tier"],

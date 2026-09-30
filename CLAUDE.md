@@ -46,7 +46,7 @@ sessions, user data, or email must keep the protections listed in the README
 
 | Path | What it does |
 | --- | --- |
-| `pipeline.py` | Pulls presales (Ticketmaster), resale (SeatGeek), and artist data (Spotify), computes edge, and saves `data/presales.json` |
+| `pipeline.py` | Pulls presales (Ticketmaster), resale (SeatGeek, paused), and artist data (Last.fm), computes edge, and saves `data/presales.json` |
 | `edge.py`, `calibrate.py` | The Profit % model, and scoring it against real resale prices |
 | `build.py` | Builds `site/`: the main page with data built in, `alerts.json`, the account pages, and security headers |
 | `templates/index.html` | The main page design. Edit this file to change the page |
@@ -66,7 +66,8 @@ sessions, user data, or email must keep the protections listed in the README
 in the repo. Don't edit `site/index.html` by hand; the next build overwrites it.
 
 **Where the data comes from:** the Ticketmaster Discovery API (`TM_API_KEY`),
-plus optional SeatGeek and Spotify keys. User accounts live in Cloudflare D1.
+plus optional Last.fm (`LASTFM_API_KEY`) and SeatGeek keys. Spotify is not used:
+since February 2026 it no longer gives development apps popularity or follower data. User accounts live in Cloudflare D1.
 
 ## 5. How to run
 

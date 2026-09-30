@@ -35,7 +35,7 @@ from common import CONFIG_PATH, DB_DIR, iso, load_config, num, parse_utc, read_t
 
 SCORE_FIELDS = [
     "event_id", "artist", "onsale_date", "predicted_at", "tier", "demand_score", "multiple_low",
-    "multiple_high", "popularity", "followers_capacity", "scarcity", "market", "face",
+    "multiple_high", "listeners", "engagement", "listeners_capacity", "scarcity", "market", "face",
     "median_d7", "multiple_d7", "median_d14", "multiple_d14", "scored_at",
 ]
 REPORT_PATH = DB_DIR / "calibration.json"
@@ -83,7 +83,7 @@ def score(now: datetime, cfg: dict) -> list[dict]:
         row = scores.get(eid) or {
             "event_id": eid, "artist": ev.get("artist"), "onsale_date": ev.get("onsale_date"),
             **{k: pred.get(k) for k in ("predicted_at", "tier", "demand_score", "multiple_low", "multiple_high",
-                                        "popularity", "followers_capacity", "scarcity", "market")},
+                                        *edge.SIGNALS)},
             "face": face,
         }
         changed = False
@@ -140,7 +140,7 @@ def review_due(n: int, now: datetime, cfg: dict) -> bool:
 # ---- Refit ----------------------------------------------------------------------
 
 def signal_matrix(rows: list[dict], cfg: dict) -> list[list[float]]:
-    fill = cfg["missing_signal_value"]
+    fill = cfg["refit_missing_value"]  # least squares needs a value for every signal
     return [[1.0] + [num(r.get(k)) if num(r.get(k)) is not None else fill for k in edge.SIGNALS] for r in rows]
 
 

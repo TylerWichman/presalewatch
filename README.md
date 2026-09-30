@@ -8,11 +8,11 @@ See [EDGE_SPEC.md](EDGE_SPEC.md) for the edge model and [SPEC.md](SPEC.md) for t
 
 | File | What it does |
 | --- | --- |
-| `pipeline.py` | Pulls Ticketmaster, Spotify, and SeatGeek; computes edge; updates `db/*.csv`; writes `data/presales.json` |
+| `pipeline.py` | Pulls Ticketmaster, Last.fm, and SeatGeek; computes edge; updates `db/*.csv`; writes `data/presales.json` |
 | `calibrate.py` | Scores past predictions against real resale; `--refit` retunes the model |
 | `build.py` | Renders `site/`: the main page (data inlined), `alerts.json`, account pages, and `_headers` |
 | `edge.py` | The Profit % formula, demand score, and tiers (pure functions) |
-| `ticketmaster.py`, `spotify.py`, `seatgeek.py` | One module per data source |
+| `ticketmaster.py`, `lastfm.py`, `seatgeek.py` | One module per data source |
 | `config/model.json` | Fees, weights, tier cutoffs, and multiple ranges |
 | `config/venues.csv` | Venue capacities, entered by hand. Seeded for NYC |
 | `db/`, `data/` | Generated tables and `presales.json`. Kept on the `data` branch, not `main` |
@@ -37,11 +37,23 @@ Fees default to 15% seller and 25% of face for primary (`config/model.json`).
   listing count or prices), so `refresh.seatgeek_enabled` is `false` in
   `config/model.json` and scheduled runs skip SeatGeek. Every row is an estimate
   until a resale source with prices is available.
-- **Estimated (Mode B):** otherwise a demand score (Spotify popularity, followers per
-  venue seat, 1 ÷ tour dates, NYC/LA/Chicago market) picks a High/Med/Low tier and a
-  resale multiple range, shown as a margin range such as "+22% to +104%". Confidence is
-  Med when all four signals are known and Low when any is missing. Missing signals are
-  filled with a neutral 0.5.
+- **Estimated (Mode B):** otherwise a demand score picks a High/Med/Low tier and a
+  resale multiple range, shown as a margin range such as "+22% to +104%". The score
+  is a weighted average of these signals, each scaled 0 to 1 (`config/model.json`):
+
+  | Signal | Source | Weight |
+  | --- | --- | --- |
+  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.35 |
+  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.15 |
+  | Listeners per venue seat (log scale) | Last.fm + `config/venues.csv` | 0.20 |
+  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.15 |
+  | Market, 1 for NYC/LA/Chicago, 0.5 otherwise | Ticketmaster | 0.15 |
+
+  A missing signal is left out and the other weights are rescaled to add up to 1, so
+  a gap doesn't pull the score toward a made-up middle value. Confidence is Med when
+  Last.fm knows the artist and Low when it doesn't. Without Last.fm data an event is
+  capped at Med demand, because market and tour size alone can't show that people
+  want the tickets.
 
 Edge doesn't adjust for the odds of actually getting tickets. Ticketmaster rarely
 publishes price ranges before on-sale, so most rows start as estimates. The pipeline
@@ -60,19 +72,17 @@ calibration both need.
 2. Get a free API key at [developer.ticketmaster.com](https://developer.ticketmaster.com/)
    (My Apps → your app → **Consumer Key**).
 
-3. Optional, for live resale and demand signals:
-   - SeatGeek client ID from [seatgeek.com/account/develop](https://seatgeek.com/account/develop)
-   - Spotify client ID and secret from [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
-
-   Without these, the pipeline still runs, but every row is a Low-confidence estimate.
+3. Optional, for demand signals: a Last.fm API key from
+   [last.fm/api/account/create](https://www.last.fm/api/account/create). Without it the
+   pipeline still runs, but every row is a Low-confidence estimate. (SeatGeek is paused;
+   see Live mode above.)
 
 4. In the project folder, create a file named `.env` containing:
 
    ```
    TM_API_KEY=your_consumer_key_here
+   LASTFM_API_KEY=
    SEATGEEK_CLIENT_ID=
-   SPOTIFY_CLIENT_ID=
-   SPOTIFY_CLIENT_SECRET=
    ```
 
    `.env` is in `.gitignore`, so it never gets committed. Environment variables
@@ -89,7 +99,8 @@ python -m unittest
 ```
 
 A Ticketmaster fetch uses about a dozen API calls (the free tier allows ~5,000/day).
-Spotify lookups are cached for 3 days per artist and SeatGeek matches for 24 hours.
+Last.fm lookups are cached for 7 days per artist, including artists Last.fm doesn't know,
+and take about a quarter second each (Last.fm asks for at most ~5 requests a second).
 `fixtures/sample_events.json` is a saved raw API response for reference.
 
 A local run starts from empty tables. To start from the live data instead, copy
@@ -139,13 +150,13 @@ One-time setup:
    permission **Account → Cloudflare Pages → Edit**. Copy the token.
 2. **Find your account ID.** It's under **Workers & Pages** in the dashboard
    (right-hand sidebar, "Account ID").
-3. **Add three repo secrets** under **Settings → Secrets and variables → Actions**:
+3. **Add the repo secrets** under **Settings → Secrets and variables → Actions**:
 
    | Name | Value |
    | --- | --- |
    | `TM_API_KEY` | your Ticketmaster key |
-   | `SEATGEEK_CLIENT_ID` | optional, enables live resale |
-   | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | optional, enables popularity and followers |
+   | `LASTFM_API_KEY` | optional, enables listener counts (the demand signal) |
+   | `SEATGEEK_CLIENT_ID` | optional; SeatGeek is paused (no prices on the free tier) |
    | `CLOUDFLARE_API_TOKEN` | the token from step 1 |
    | `CLOUDFLARE_ACCOUNT_ID` | the ID from step 2 |
 
@@ -153,9 +164,8 @@ One-time setup:
 
    ```powershell
    gh secret set TM_API_KEY
+   gh secret set LASTFM_API_KEY
    gh secret set SEATGEEK_CLIENT_ID
-   gh secret set SPOTIFY_CLIENT_ID
-   gh secret set SPOTIFY_CLIENT_SECRET
    gh secret set CLOUDFLARE_API_TOKEN
    gh secret set CLOUDFLARE_ACCOUNT_ID
    ```
@@ -234,9 +244,9 @@ event twice.
   sends at most `MAX_EMAILS_PER_RUN` (80) per run to stay under Resend's free
   100/day; anyone past the cap gets their digest the next hour.
 
-Right now, without Spotify or Live resale data, no event qualifies as high profit
-at the 30% default (the Med-demand estimate midpoint is about +2%). Follow alerts
-work regardless.
+Without Live resale data, an estimated event qualifies as high profit at the 30%
+default only when it's rated High demand (range midpoint about +63%); the Med-demand
+midpoint is about +2%. High demand needs Last.fm data. Follow alerts work regardless.
 
 ### One-time setup
 

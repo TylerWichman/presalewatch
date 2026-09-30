@@ -24,8 +24,7 @@ SECRET_NAMES = (
     "TM_API_KEY",
     "SEATGEEK_CLIENT_ID",
     "SEATGEEK_CLIENT_SECRET",
-    "SPOTIFY_CLIENT_ID",
-    "SPOTIFY_CLIENT_SECRET",
+    "LASTFM_API_KEY",
 )
 
 _dotenv: dict[str, str] | None = None
@@ -131,9 +130,19 @@ def write_table(name: str, rows: list[dict], fields: list[str]) -> None:
 
 
 def append_table(name: str, rows: list[dict], fields: list[str]) -> None:
-    """Append rows, writing the header if the file is new."""
+    """Append rows, writing the header if the file is new.
+
+    If the saved file has different columns (a field was renamed), it's rewritten with
+    the new header first, so old rows keep their shared columns instead of misaligning.
+    """
     DB_DIR.mkdir(parents=True, exist_ok=True)
     path = DB_DIR / f"{name}.csv"
+    if path.exists():
+        with path.open(encoding="utf-8", newline="") as fh:
+            header = next(csv.reader(fh), [])
+        if header and header != fields:
+            write_table(name, read_table(name) + rows, fields)
+            return
     new = not path.exists()
     with path.open("a", encoding="utf-8", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore", lineterminator="\n")
