@@ -144,14 +144,17 @@ Not financial advice. Always confirm prices on the ticketing site.
   };
 }
 
+/** Short and plain on purpose: no images, buttons, or styling, which reads as a personal
+ * transactional message to spam filters. The HTML part is the text with the link clickable. */
 export function renderSignIn(from: string, to: string, link: string): Message {
   const subject = "Your PresaleWatch sign-in link";
   assertHeaderSafe(from, to, subject);
-  const text = `Use this link to sign in to PresaleWatch:\n\n${link}\n\nIt works once and expires in 15 minutes. If you didn't ask to sign in, you can ignore this email.\n`;
-  const html = `<!doctype html><html><body style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#111">
-<p>Use this button to sign in to PresaleWatch:</p>
-<p><a href="${escapeHtml(link)}" style="display:inline-block;background:#6d28d9;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:600">Sign in</a></p>
-<p style="color:#555">It works once and expires in 15 minutes. If you didn't ask to sign in, you can ignore this email.</p>
+  const lines = ["Sign in to PresaleWatch:", link, "This link works once and expires in 15 minutes. If you didn't ask for it, ignore this email."];
+  const text = `${lines[0]}\n\n${lines[1]}\n\n${lines[2]}\n`;
+  const html = `<!doctype html><html><body>
+<p>${escapeHtml(lines[0])}</p>
+<p><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p>
+<p>${escapeHtml(lines[2])}</p>
 </body></html>`;
   return { from, to: [to], subject, html, text };
 }
