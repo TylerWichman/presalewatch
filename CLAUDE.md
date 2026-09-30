@@ -7,8 +7,8 @@ Read this before starting any work in this repo.
 PresaleWatch alerts people to exclusive ticket drops and presales that are
 often resold for a profit.
 
-The current stage is an MVP: a single shareable web page that lists upcoming
-US concert presales.
+The current stage is an MVP: a shareable web page that lists upcoming US
+concert presales ranked by edge, plus free accounts with email alerts.
 
 ## 2. MVP scope
 
@@ -16,13 +16,22 @@ In scope:
 
 - The presale listing page
 - The core data behind it (which presales exist, when they open, and how to get access)
+- The edge (Profit %) model and its calibration
+- Accounts and email alerts: magic-link sign-in (no passwords), following
+  artists, a Profit % threshold for "high profit" alerts, per-type on/off,
+  account deletion, and one digest email per data refresh
 
 Out of scope for now:
 
-- Sales, payments, signups, accounts, and emails
-- Anything beyond the core page
+- Sales, payments, and paid plans
+- Marketing emails, and any email other than sign-in links and the alerts a user turned on
+- Anything beyond the page and alerts
 
 If a request goes outside this scope, say so and check before building it.
+
+Security is not optional for accounts and alerts. Anything touching sign-in,
+sessions, user data, or email must keep the protections listed in the README
+("Accounts and alerts > Security") and their tests passing.
 
 ## 3. Product rules
 
@@ -37,9 +46,16 @@ If a request goes outside this scope, say so and check before building it.
 
 | Path | What it does |
 | --- | --- |
-| `fetch_presales.py` | Pulls upcoming US concert presales from the Ticketmaster Discovery API and saves them to `data/presales.json` |
-| `build.py` | Turns `data/presales.json` into the finished page, `site/index.html`, with the data built into the page |
-| `templates/index.html` | The page design: layout, styles, search, filters, and countdowns. Edit this file to change the page |
+| `pipeline.py` | Pulls presales (Ticketmaster), resale (SeatGeek), and artist data (Spotify), computes edge, and saves `data/presales.json` |
+| `edge.py`, `calibrate.py` | The Profit % model, and scoring it against real resale prices |
+| `build.py` | Builds `site/`: the main page with data built in, `alerts.json`, the account pages, and security headers |
+| `templates/index.html` | The main page design. Edit this file to change the page |
+| `templates/static/` | Account pages: sign in / My alerts, sign-in confirm, unsubscribe, privacy |
+| `functions/api/` | The accounts API (Cloudflare Pages Functions) |
+| `worker/` | The hourly job that emails alert digests (Cloudflare Worker) |
+| `src/lib/` | Code shared by the API and the Worker: auth, sessions, matching, email |
+| `migrations/` | Database tables (Cloudflare D1) |
+| `tests/` | Python tests (`tests/*.py`) and API/alert tests (`tests/js/`) |
 | `fixtures/sample_events.json` | A saved example of what the Ticketmaster API sends back, for reference |
 | `.github/workflows/deploy.yml` | The automatic job that refreshes the data and publishes the site |
 | `SPEC.md` | The original MVP product spec |
@@ -49,12 +65,13 @@ If a request goes outside this scope, say so and check before building it.
 `data/` and `site/` are created when you run the scripts. They aren't stored
 in the repo. Don't edit `site/index.html` by hand; the next build overwrites it.
 
-**Where the data comes from:** only the Ticketmaster Discovery API. It needs a
-free API key, stored as `TM_API_KEY`.
+**Where the data comes from:** the Ticketmaster Discovery API (`TM_API_KEY`),
+plus optional SeatGeek and Spotify keys. User accounts live in Cloudflare D1.
 
 ## 5. How to run
 
-You need Python 3.11 or newer. There's nothing to install beyond that.
+You need Python 3.11 or newer for the page. The accounts API and alerts also
+need Node.js 24 (`npm ci`, then `npm test`). See the README for details.
 
 1. Create a file named `.env` in the project folder containing:
 
@@ -68,7 +85,7 @@ You need Python 3.11 or newer. There's nothing to install beyond that.
 2. In a terminal in the project folder, run:
 
    ```powershell
-   python fetch_presales.py
+   python pipeline.py
    python build.py
    start site\index.html
    ```
@@ -84,7 +101,10 @@ To see a design change without new data, edit `templates/index.html` and run
 - The GitHub repo is public, so anyone can read the code. Never commit API
   keys or passwords. Keys go in `.env` (which Git ignores) locally, and in
   GitHub repo secrets for the automatic job.
-- The site is hosted on Cloudflare Pages at https://presalewatch.pages.dev.
+- The site is hosted on Cloudflare Pages at https://pouchit.net. Alert emails
+  come from alerts@pouchit.net through Resend.
+- Account and email secrets live only in Cloudflare (`wrangler secret`) and
+  GitHub secrets, never in the repo, page code, or logs.
 - Every merge to `main` goes live automatically. The same job also refreshes
   the data every 6 hours.
 

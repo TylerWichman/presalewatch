@@ -1,0 +1,16 @@
+# Cloudflare Pages project: the static site in site/ plus the API in functions/.
+# Secrets (RESEND_API_KEY, TURNSTILE_SECRET, UNSUBSCRIBE_SECRET, IP_HASH_SECRET) are set with
+# `npx wrangler pages secret put`, never here. See README > Accounts and alerts.
+name = "presalewatch"
+pages_build_output_dir = "site"
+compatibility_date = "2026-09-26"
+
+[vars]
+APP_ORIGIN = "https://pouchit.net"
+EMAIL_FROM = "PresaleWatch <alerts@pouchit.net>"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "presalewatch"
+database_id = "b3dc330c-e82f-48b6-a117-b0d6400d1b73"
+migrations_dir = "migrations"

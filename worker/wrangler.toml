@@ -1,0 +1,31 @@
+# Alert sender. Cron only: no workers.dev URL, no preview URLs, no routes, so it can't be called
+# over HTTP. Secrets (RESEND_API_KEY, UNSUBSCRIBE_SECRET) are set with `npx wrangler secret put`.
+name = "presalewatch-alerts"
+main = "src/index.ts"
+compatibility_date = "2026-09-26"
+workers_dev = false
+preview_urls = false
+
+[triggers]
+crons = ["20 * * * *"]
+
+[vars]
+APP_ORIGIN = "https://pouchit.net"
+EMAIL_FROM = "PresaleWatch <alerts@pouchit.net>"
+# "false" sends real email. Anything else only logs what would be sent (user IDs, no addresses).
+DRY_RUN = "true"
+# Stays under Resend's free tier of 100 emails/day. Users past the cap get their digest next hour.
+MAX_EMAILS_PER_RUN = "80"
+# CAN-SPAM: a valid postal address (a P.O. box works) must appear in every alert email.
+# The Worker refuses to send real email while this is empty.
+# TODO: fill in before setting DRY_RUN = "false".
+POSTAL_ADDRESS = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "presalewatch"
+database_id = "b3dc330c-e82f-48b6-a117-b0d6400d1b73"
+migrations_dir = "../migrations"
+
+[observability]
+enabled = true

@@ -1,0 +1,67 @@
+:root {
+  --bg: #f5f5fa;
+  --surface: #ffffff;
+  --text: #17142a;
+  --muted: #5f5b76;
+  --border: #e6e4f0;
+  --accent: #6d28d9;
+  --accent-2: #db2777;
+  --accent-soft: #efe9fd;
+  --ok: #15803d;
+  --neg: #b91c1c;
+  --hero: linear-gradient(135deg, #16122b 0%, #2a1657 55%, #4a1a5c 100%);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0d1a;
+    --surface: #1a1729;
+    --text: #f1effa;
+    --muted: #aaa5c4;
+    --border: #2e2a45;
+    --accent: #a78bfa;
+    --accent-2: #f472b6;
+    --accent-soft: #2c2350;
+    --ok: #4ade80;
+    --neg: #f87171;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+.hero { background: var(--hero); color: #fff; padding: 22px 0; }
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+main { padding: 24px 0 48px; }
+h1 { font-size: 24px; margin: 0 0 6px; }
+h2 { font-size: 17px; margin: 0 0 10px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin: 0 0 16px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+label { display: block; font-weight: 600; margin: 0 0 6px; }
+input[type=email], input[type=text], input[type=number] {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--bg); color: var(--text); font: inherit;
+}
+input[type=number] { width: 110px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row input[type=text] { flex: 1 1 220px; width: auto; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; margin: 0 0 12px; }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent); }
+button, .button {
+  display: inline-block; border: 0; border-radius: 10px; padding: 10px 18px; font: inherit; font-weight: 700; cursor: pointer;
+  color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); text-decoration: none;
+}
+button.secondary { background: var(--accent-soft); color: var(--accent); }
+button.danger { background: transparent; color: var(--neg); border: 1px solid var(--neg); }
+button:disabled { opacity: .6; cursor: default; }
+.msg { min-height: 1.5em; margin: 10px 0 0; font-size: 14px; }
+.msg.ok { color: var(--ok); }
+.msg.err { color: var(--neg); }
+.follows { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.follows li { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-soft); color: var(--text); border-radius: 999px; padding: 4px 6px 4px 12px; }
+.follows button { background: transparent; color: var(--muted); padding: 2px 8px; font-size: 16px; line-height: 1; }
+.turnstile { margin: 12px 0; min-height: 65px; }
+[hidden] { display: none !important; }
+footer { color: var(--muted); font-size: 13px; padding: 0 0 32px; }

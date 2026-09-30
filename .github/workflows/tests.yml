@@ -1,7 +1,8 @@
 name: Tests
 
-# Runs the unit tests on pull requests to main. No secrets, no data branch
-# access, no deploy: the tests need no API keys.
+# Runs on pull requests to main: Python and JS unit tests, a TypeScript check, a dependency
+# audit, and a secret scan. No secrets, no data branch access, no deploy.
+# Third-party actions are pinned to exact commits.
 on:
   pull_request:
     branches: [main]
@@ -13,11 +14,39 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
 
-      - name: Unit tests
+      - name: Python unit tests
         run: python -m unittest -v
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      - name: Install pinned dependencies
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --audit-level=low
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: JS unit tests (API, auth, alerts)
+        run: npm test
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
