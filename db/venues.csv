@@ -25,6 +25,7 @@ KovZpZAdlFaA,Rialto Theatre-Tucson,Tucson,AZ,,0.5
 KovZpakTme,Honda Center,Anaheim,CA,,1
 KovZpZAEA67A,House of Blues Anaheim,Anaheim,CA,,1
 KovZ917AGEf,The Parish at House of Blues Anaheim,Anaheim,CA,,1
+KovZpZAFadlA,Greek Theatre-U.C. Berkeley,Berkeley,CA,,0.5
 KovZpa2WZe,North Island Credit Union Amphitheatre,Chula Vista,CA,,0.5
 KovZpZAFktvA,Cow Palace,Daly City,CA,,0.5
 KovZ917Atrk,The Sound,Del Mar,CA,,0.5
@@ -62,6 +63,7 @@ KovZpZAEF76A,Golden 1 Center,Sacramento,CA,,0.5
 KovZpZAEAlIA,Balboa Theatre,San Diego,CA,,0.5
 KovZpZAEAltA,House of Blues San Diego,San Diego,CA,,0.5
 KovZpZAJ6d1A,Jacobs Music Center,San Diego,CA,,0.5
+KovZpa4cFe,Petco Park,San Diego,CA,,0.5
 KovZpZA1teEA,SOMA,San Diego,CA,,0.5
 KovZ917AIoi,Snapdragon Stadium,San Diego,CA,,0.5
 KovZ917AxAB,The Observatory North Park,San Diego,CA,,0.5
@@ -87,6 +89,7 @@ KovZpaprpe,Oriental Theater,Denver,CO,,0.5
 KovZpZAFa1nA,Paramount Theatre,Denver,CO,,0.5
 KovZpZAFFt1A,Summit Music Hall,Denver,CO,,0.5
 KovZpapEke,The Buell Theatre,Denver,CO,,0.5
+KovZpZAaeIvA,Red Rocks Amphitheatre,Morrison,CO,,0.5
 KovZpZAE6e6A,Premier Theater at Foxwoods Resort Casino,Mashantucket,CT,,1
 KovZ917AIW3,Rainmaker Expo Center,Mashantucket,CT,,0.5
 KovZpZA6taIA,Mohegan Sun Arena,Uncasville,CT,,1
@@ -99,6 +102,7 @@ KovZpZA1J67A,Nationals Park,Washington,DC,,0.5
 KovZ917A3Y7,The Anthem,Washington,DC,,0.5
 KovZ917AinI,The Atlantis,Washington,DC,,0.5
 KovZ917A2T0,The Queen,Wilmington,DE,,0.5
+KovZpZAEkAeA,Hertz Arena,Estero,FL,,0.5
 KovZpZAEvnlA,Au-Rene Theater at the Broward Center,Ft Lauderdale,FL,,0.5
 KovZpZAEkvlA,Revolution Live,Ft Lauderdale,FL,,0.5
 KovZpZAEeFtA,Wells Hall at The Parker,Ft Lauderdale,FL,,0.5
@@ -141,6 +145,8 @@ KovZpa3h3e,Macon City Auditorium,Macon,GA,,0.5
 KovZpZAF6aEA,ISU Cyclones - MidAmerican Energy Field at Jack Trice Stadium,Ames,IA,,0.5
 KovZpZAF7IEA,Casey's Center,Des Moines,IA,,0.5
 KovZ917AiJz,Vibrant Music Hall,Waukee,IA,,0.5
+KovZpZAEetIA,ExtraMile Arena,Boise,ID,,0.5
+KovZ917AJZU,Knitting Factory - Boise,Boise,ID,,0.5
 KovZpZAE7IFA,Morrison Center for the Performing Arts,Boise,ID,,0.5
 KovZ917AJuV,Revolution Concert House & Event Center,Garden City,ID,,0.5
 KovZ917A91V,Bloomington Center for the Performing Arts,Bloomington,IL,,0.5
@@ -165,6 +171,7 @@ KovZpZAEAAlA,Ford Center,Evansville,IN,,0.5
 KovZ917AJlp,Hard Rock Live Northern Indiana,Gary,IN,,1
 KovZpZAEAlvA,The Venue at Horseshoe Casino,Hammond,IN,,1
 KovZpZAJdEkA,Clowes Memorial Hall,Indianapolis,IN,,0.5
+KovZpZA6keIA,Gainbridge Fieldhouse,Indianapolis,IN,,0.5
 KovZpZAdEJEA,Lucas Oil Stadium,Indianapolis,IN,,0.5
 KovZpZAEAkvA,Old National Centre,Indianapolis,IN,,0.5
 KovZ917AOr1,Brown County Music Center,Nashville,IN,,0.5
@@ -197,9 +204,11 @@ KovZpZA77lkA,Blue Ocean Music Hall,Salisbury,MA,,0.5
 KovZ917AJnQ,Crystal Ballroom at Somerville Theatre,Somerville,MA,,0.5
 KovZpa4fJe,Baltimore Soundstage,Baltimore,MD,,0.5
 KovZpZAJe6dA,CFG Bank Arena,Baltimore,MD,,0.5
+KovZ917AYnv,Nevermore Hall,Baltimore,MD,,0.5
 KovZ917AVbx,The Paramount Baltimore,Baltimore,MD,,0.5
 KovZpZA1JkvA,Merriweather Post Pavilion,Columbia,MD,,0.5
 KovZpZA6tFlA,The Fillmore Silver Spring,Silver Spring,MD,,0.5
+KovZpZAEAdlA,Maine Savings Amphitheater,Bangor,ME,,0.5
 KovZ917ACz7,Aura,Portland,ME,,0.5
 KovZpa3mee,State Theatre,Portland,ME,,0.5
 KovZpa3swe,Pine Knob Music Theatre,Clarkston,MI,,0.5
@@ -249,6 +258,7 @@ KovZpa3hYe,The Orange Peel,Asheville,NC,,0.5
 KovZpa3hje,Bank of America Stadium,Charlotte,NC,,0.5
 KovZ917ASM4,Neighborhood Theatre Tap Room,Charlotte,NC,,0.5
 KovZpZAEkA6A,Ovens Auditorium,Charlotte,NC,,0.5
+KovZpZA7kdJA,Skyla Credit Union Amphitheatre,Charlotte,NC,,0.5
 KovZpZA6AEIA,Spectrum Center,Charlotte,NC,,0.5
 KovZpaFEre,The Fillmore Charlotte,Charlotte,NC,,0.5
 KovZpZAIIvEA,The Underground,Charlotte,NC,,0.5
@@ -281,10 +291,12 @@ KovZ917A8C7,Hackensack Meridian Health Theatre at the Count Basie Center ,Red Ba
 KovZ917AxIJ,The Vogel at Count Basie Center for the Arts,Red Bank,NJ,,1
 KovZpaFbwe,Starland Ballroom,Sayreville,NJ,2000,1
 KovZpZAanJtA,Kiva Auditorium at the Albuquerque Convention Center,Albuquerque,NM,,0.5
+KovZpZAIEdFA,Route 66 Casino,Albuquerque,NM,,0.5
 KovZpZAIeldA,Brooklyn Bowl Las Vegas,Las Vegas,NV,,0.5
 KovZ917AcIV,Fontainebleau Las Vegas,Las Vegas,NV,,0.5
 KovZpZA7klAA,House of Blues Las Vegas ,Las Vegas,NV,,0.5
 KovZ917Atbr,Sphere,Las Vegas,NV,,0.5
+KovZpZAJAJeA,The Cosmopolitan of Las Vegas,Las Vegas,NV,,0.5
 KovZpZAF6vnA,The Venetian Theatre at The Venetian Resort,Las Vegas,NV,,0.5
 KovZ917AOoO,Westgate Las Vegas International Theater,Las Vegas ,NV,,0.5
 KovZpZAa1dtA,Access at Aliante Casino & Hotel,North Las Vegas,NV,,0.5
@@ -305,6 +317,7 @@ KovZpZA77eIA,Music Hall of Williamsburg,Brooklyn,NY,650,1
 KovZpZAdJtAA,Warsaw,Brooklyn,NY,1000,1
 KovZpZAaFEaA,KeyBank Center,Buffalo,NY,,0.5
 KovZ917AJge,UB Center for the Arts - Mainstage Theatre,Buffalo,NY,,0.5
+KovZpZAdEJAA,Constellation Brands-Marvin Sands Performing Arts Center: CMAC,Canandaigua,NY,,0.5
 KovZpZA777nA,Forest Hills Stadium,Forest Hills,NY,13000,1
 KovZpZAEAEtA,The Paramount,Huntington,NY,1555,1
 KovZpZAFIv7A,Arlene's Grocery,New York,NY,150,1
@@ -362,7 +375,9 @@ KovZpZA17JvA,Centennial Terrace,Sylvania,OH,,0.5
 KovZ917AmEr,Lori's Roadhouse,West Chester,OH,,0.5
 KovZpZAEvntA,Choctaw Grand Theater,Durant,OK,,0.5
 KovZpZAJIndA,BOK Center,Tulsa,OK,,0.5
+KovZpZA1vlIA,Hayden Homes Amphitheater,Bend,OR,,0.5
 KovZpZAEe1eA,Matthew Knight Arena,Eugene,OR,,0.5
+KovZpZAEkkJA,Arlene Schnitzer Concert Hall,Portland,OR,,0.5
 KovZpa6MXe,Moda Center,Portland,OR,,0.5
 KovZpZAJ67kA,Veterans Memorial Coliseum,Portland,OR,,0.5
 KovZ917AYdd,Arrow,Allentown,PA,,0.5
@@ -378,6 +393,7 @@ KovZpa2yme,Lincoln Financial Field,Philadelphia,PA,,0.5
 KovZpZAEkteA,The Fillmore Philadelphia,Philadelphia,PA,,0.5
 KovZpZAEktdA,The Foundry,Philadelphia,PA,,0.5
 KovZpZAatnaA,The Liacouras Center,Philadelphia,PA,,0.5
+KovZ917Ahxb,The Met Presented by Highmark,Philadelphia,PA,,0.5
 KovZpZAEAIaA,Theatre of Living Arts,Philadelphia,PA,,0.5
 KovZ917AiMF,Xfinity Mobile Arena,Philadelphia,PA,,0.5
 KovZpZAFa6nA,Acrisure Stadium,Pittsburgh,PA,,0.5
@@ -389,6 +405,7 @@ KovZpZAFdJAA,Scranton Cultural Center,Scranton,PA,,0.5
 KovZpZAFdJdA,F.M. Kirby Center,Wilkes Barre,PA,,0.5
 KovZpa2gGe,Amica Mutual Pavilion,Providence,RI,,0.5
 KovZpZA1vt6A,The Charleston Music Hall,Charleston,SC,,0.5
+KovZpZAE7dtA,Colonial Life Arena,Columbia,SC,,0.5
 KovZ917AxrJ,The Senate,Columbia,SC,,0.5
 KovZpZAEkkeA,Township Auditorium,Columbia,SC,,0.5
 KovZpZAJEInA,Bon Secours Wellness Arena ,Greenville,SC,,0.5
@@ -413,13 +430,16 @@ KovZpa61Ge,Ryman Auditorium,Nashville,TN,,0.5
 KovZpZAEvF7A,Schermerhorn Symphony Center,Nashville,TN,,0.5
 KovZ917ASBh,The Truth,Nashville,TN,,0.5
 KovZpZAtv1nA,Antone's Nightclub,Austin,TX,,0.5
+KovZ917AJ_x,Moody Amphitheater,Austin,TX,,0.5
 KovZ917ANwG,Moody Center ATX,Austin,TX,,0.5
 KovZpZAE6kIA,Scoot Inn,Austin,TX,,0.5
+KovZpZA771IA,Hilliard Center Arena,Corpus Christi,TX,,0.5
 KovZpZAJnIIA,Selena Auditorium,Corpus Christi,TX,,0.5
 KovZpZAEAFeA,Dos Equis Pavilion,Dallas,TX,,0.5
 KovZpZAEAF7A,House of Blues Dallas ,Dallas,TX,,0.5
 KovZpabeVe,Margot and Bill Winspear Opera House,Dallas,TX,,0.5
 KovZpZAFFvnA,Music Hall At Fair Park,Dallas,TX,,0.5
+KovZpZAEAFdA,South Side Ballroom,Dallas,TX,,0.5
 KovZpZAIvlIA,The Cambridge Room at House Of Blues,Dallas,TX,,0.5
 KovZ917AxY0,The Echo Lounge & Music Hall,Dallas,TX,,0.5
 KovZpa3VBe,Abraham Chavez Theatre,El Paso,TX,,0.5
@@ -443,6 +463,7 @@ KovZpZAJEavA,Aztec Theatre,San Antonio,TX,,0.5
 KovZpZAJJEdA,Frost Bank Center,San Antonio,TX,,0.5
 KovZpZAE6k6A,The Cynthia Woods Mitchell Pavilion sponsored by Huntsman,The Woodlands,TX,,0.5
 KovZpZAdEt6A,Rice-Eccles Stadium,Salt Lake City,UT,,0.5
+KovZpZAJFA7A,The Complex,Salt Lake City,UT,,0.5
 KovZpZAJk7IA,The Depot,Salt Lake City,UT,,0.5
 KovZ917A-HC,The Union,Salt Lake City,UT,,0.5
 KovZ917AVFB,Canyon View Credit Union Stage at Maverik Center,West Valley City,UT,,0.5
@@ -456,6 +477,7 @@ KovZpa34pe,Toyota Center Kennewick,Kennewick,WA,,0.5
 KovZ917Ahkk,Climate Pledge Arena,Seattle,WA,,0.5
 KovZpZAFnltA,Neptune Theatre,Seattle,WA,,0.5
 KovZpZAFkvEA,Paramount Theatre,Seattle,WA,,0.5
+KovZpZAFFE7A,WAMU Theater,Seattle,WA,,0.5
 KovZ917AxcJ,First Interstate Center for the Arts,Spokane,WA,,0.5
 KovZpZA1eklA,Numerica Veterans Arena,Spokane,WA,,0.5
 KovZpZAaltvA,Majestic Theatre,Madison,WI,,0.5
@@ -463,4 +485,5 @@ KovZ917AQBC,The Sylvee,Madison,WI,,0.5
 KovZpZA1FlkA,American Family Field ,Milwaukee,WI,,0.5
 KovZpZAJeenA,American Family Insurance Amphitheater - Summerfest Grounds,Milwaukee,WI,,0.5
 KovZ917A_fV,Fiserv Forum,Milwaukee,WI,,0.5
+KovZpZA6tavA,Charleston Coliseum,Charleston,WV,,0.5
 KovZpZA7v7tA,Metropolitan Theatre,Morgantown,WV,,0.5
