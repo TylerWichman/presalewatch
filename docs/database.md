@@ -308,6 +308,36 @@ python -m ingest.venue_handfill import venues_to_fill.csv --db d1
 
 Imported values are marked verified and are never overwritten.
 
+**Renamed stadiums and arenas.** Naming rights change often, and Wikidata can lag behind (Daikin Park
+used to be Minute Maid Park). A Wikidata entry typed as a stadium or arena within 300 m is a confident
+match without a name match, since two stadiums are never that close. It applies only when
+Ticketmaster's own venue name also sounds large (stadium, arena, field, park, center, ...), so a room
+inside an arena, like The Theater at MSG, can't take the arena's capacity.
+
+### Estimated capacity (migration 0005)
+
+For small venues no source covers, `ingest/venue_estimates.py` (daily, after enrichment) can store an
+**estimate** in `venues.capacity_estimate`. It never goes in `venues.capacity`, which only holds
+measured values.
+
+| Field | Meaning |
+| --- | --- |
+| `capacity_estimate` | The estimated capacity |
+| `capacity_estimate_basis` | How it was made, e.g. "25th percentile of 97 measured venues <= 3,000" |
+| `capacity_estimate_at` | When it was set |
+
+- **The value** is the **25th percentile** of measured venues of 3,000 seats or fewer. The 25th
+  rather than the median, because measured small venues skew large: a club with a Wikipedia page is
+  usually a notable, bigger one.
+- **Who gets one:** only venues that every source has tried, with nothing open in `match_review`, and
+  with no large-venue name or type (stadium, arena, field, park, amphitheater, center, casino, ...).
+  Without that filter, unprocessed or renamed stadiums would get a small-room estimate and look like
+  sellouts.
+- **In scoring,** an estimate counts for less: it can make an event High only if the event would still
+  be High at 3,000 seats. The page labels that rating "High demand · est."
+- **Switch:** `capacity_estimate.enabled` in `config/model.json`. Turning it off clears every estimate
+  on the next run.
+
 **`event_status_history`**: one row each time Ticketmaster's status for an event changes
 (`onsale`, `offsale`, `cancelled`, `postponed`, `rescheduled`). The change happened between
 `previous_seen_at` and `seen_at`. Ingestion re-checks events for 30 days after on-sale, since

@@ -44,17 +44,29 @@ Fees default to 15% seller and 25% of face for primary (`config/model.json`).
 
   | Signal | Source | Weight |
   | --- | --- | --- |
-  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.35 |
-  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.15 |
-  | Listeners per venue seat (log scale) | Last.fm + `config/venues.csv` | 0.20 |
-  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.15 |
+  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.15 |
+  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.10 |
+  | **Listeners per venue seat** (log scale) | Last.fm + venue capacity | **0.50** |
+  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.10 |
   | Market, 1 for NYC/LA/Chicago, 0.5 otherwise | Ticketmaster | 0.15 |
 
-  A missing signal is left out and the other weights are rescaled to add up to 1, so
-  a gap doesn't pull the score toward a made-up middle value. Confidence is Med when
-  Last.fm knows the artist and Low when it doesn't. Without Last.fm data an event is
-  capped at Med demand, because market and tour size alone can't show that people
-  want the tickets.
+  Listeners per seat dominates: a big audience for a small room is what drives resale
+  prices, so raw popularity counts for less. A missing signal is left out and the
+  other weights are rescaled to add up to 1, so a gap doesn't pull the score toward
+  a made-up middle value. Confidence is Med when Last.fm knows the artist and Low
+  when it doesn't.
+
+  **High demand needs both Last.fm data and a venue capacity.** Without them the
+  rescaled weights fall on market and raw popularity, which overrate big-market shows
+  and big artists in big rooms, so such events are capped at Med.
+
+  **Where the capacity comes from**, in order: the hand-entered value in
+  `config/venues.csv`; a measured capacity from the intelligence database (Wikidata,
+  Wikipedia, or OpenStreetMap; see [docs/database.md](docs/database.md)); then, when
+  `capacity_estimate.enabled` is on, an **estimated** capacity for small venues no source
+  covers. An estimate counts for less: it can make an event High only if the show would
+  still rate High in a 3,000-seat room, and the page labels that rating **High demand ·
+  est.** Estimates are off until the first full enrichment pass has been reviewed.
 
 Edge doesn't adjust for the odds of actually getting tickets. Ticketmaster rarely
 publishes price ranges before on-sale, so most rows start as estimates. The pipeline
