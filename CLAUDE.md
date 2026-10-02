@@ -54,7 +54,9 @@ sessions, user data, or email must keep the protections listed in the README
 | `functions/api/` | The accounts API (Cloudflare Pages Functions) |
 | `worker/` | The hourly job that emails alert digests (Cloudflare Worker) |
 | `src/lib/` | Code shared by the API and the Worker: auth, sessions, matching, email |
-| `migrations/` | Database tables (Cloudflare D1) |
+| `migrations/` | Database tables (Cloudflare D1): accounts, plus the artist/venue intelligence database |
+| `ingest/` | Daily jobs that fill the intelligence database from Ticketmaster, Last.fm, MusicBrainz, Wikidata, Wikipedia pageviews, ListenBrainz, and YouTube |
+| `docs/database.md` | Every table, field, and view in the intelligence database, and each source's terms |
 | `tests/` | Python tests (`tests/*.py`) and API/alert tests (`tests/js/`) |
 | `fixtures/sample_events.json` | A saved example of what the Ticketmaster API sends back, for reference |
 | `.github/workflows/deploy.yml` | The automatic job that refreshes the data and publishes the site |

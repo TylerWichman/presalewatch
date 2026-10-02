@@ -16,6 +16,7 @@ See [EDGE_SPEC.md](EDGE_SPEC.md) for the edge model and [SPEC.md](SPEC.md) for t
 | `config/model.json` | Fees, weights, tier cutoffs, and multiple ranges |
 | `config/venues.csv` | Venue capacities, entered by hand. Seeded for NYC |
 | `db/`, `data/` | Generated tables and `presales.json`. Kept on the `data` branch, not `main` |
+| `ingest/` | Daily jobs filling the D1 intelligence database (see [docs/database.md](docs/database.md)). They don't affect the live page yet |
 
 The data pipeline uses only the Python standard library, so there is nothing to `pip install`.
 The accounts API and alerts are TypeScript on Cloudflare; see [Accounts and alerts](#accounts-and-alerts).
@@ -43,17 +44,43 @@ Fees default to 15% seller and 25% of face for primary (`config/model.json`).
 
   | Signal | Source | Weight |
   | --- | --- | --- |
-  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.35 |
-  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.15 |
-  | Listeners per venue seat (log scale) | Last.fm + `config/venues.csv` | 0.20 |
-  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.15 |
-  | Market, 1 for NYC/LA/Chicago, 0.5 otherwise | Ticketmaster | 0.15 |
+  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.15 |
+  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.10 |
+  | **Listeners per venue seat** (log scale) | Last.fm + venue capacity | **0.50** |
+  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.10 |
+  | Market: people within 80 km of the venue (log scale, 250K to 20M) | 2020 Census | 0.075 |
 
-  A missing signal is left out and the other weights are rescaled to add up to 1, so
-  a gap doesn't pull the score toward a made-up middle value. Confidence is Med when
-  Last.fm knows the artist and Low when it doesn't. Without Last.fm data an event is
-  capped at Med demand, because market and tour size alone can't show that people
-  want the tickets.
+  Listeners per seat dominates: a big audience for a small room is what drives resale
+  prices, so raw popularity counts for less. A missing signal is left out and the
+  other weights are rescaled to add up to 1, so a gap doesn't pull the score toward
+  a made-up middle value. Confidence is Med. (Weights are relative: the five add up to
+  0.925, and the score divides by the total.)
+
+  **Tiers are percentiles.** Each run ranks the rated events that have a venue capacity
+  by score: the **top 10% are High, the next 40% Med**, the rest Low. A venue with an
+  estimated capacity is ranked as if it had 3,000 seats. With fewer than 50 such events
+  the fixed cutoffs in `config/model.json` apply instead (High 0.70, Med 0.45). Settings
+  are in `tiering`.
+
+  **No Last.fm data means Unrated.** Without listener data the score would rest on
+  market and tour size alone, which can't show that people want the tickets, so the
+  event gets no tier and no estimated range. The page shows it as "Unrated" and sorts
+  it below rated events.
+
+  **High demand needs a venue capacity too.** Without it the rescaled weights fall on
+  market and raw popularity, which overrate big-market shows and big artists in big
+  rooms, so such events are capped at Med.
+
+  **Where the capacity comes from**, in order: the hand-entered value in
+  `config/venues.csv`; a measured capacity from the intelligence database (Wikidata,
+  Wikipedia, or OpenStreetMap; see [docs/database.md](docs/database.md)); then, when
+  `capacity_estimate.enabled` is on, an **estimated** capacity for small venues no source
+  covers. An estimate counts for less: it can make an event High only if the show would
+  still rate High in a 3,000-seat room, and the page labels that rating **High demand ·
+  est.** Rooms inside resorts and casinos never get an estimate: hotel, resort, and casino
+  names are filtered out, and rooms whose names don't say so (The Cosmopolitan, Fontainebleau)
+  are listed in `capacity_estimate.hand_fill_venues`, which also puts them at the top of the
+  hand-fill list.
 
 Edge doesn't adjust for the odds of actually getting tickets. Ticketmaster rarely
 publishes price ranges before on-sale, so most rows start as estimates. The pipeline
@@ -116,8 +143,9 @@ git archive origin/data | tar -x -f -
 ### Adding venue capacities
 
 Every venue seen is listed in `db/venues.csv`; ones without a capacity have a blank
-there. To add one, copy its row into `config/venues.csv`, fill in `capacity`
-(and `market_tier`: `1` for NYC, LA, or Chicago, `0.5` otherwise), and open a pull request.
+there. To add one, copy its row into `config/venues.csv`, fill in `capacity`, and open a
+pull request. Market size isn't entered by hand: it's the population within 80 km of the
+venue, from the 2020 Census.
 
 ## Calibration
 
@@ -129,7 +157,8 @@ range (target 70%), and mean absolute error.
 Once 50+ events are scored, the report flags a review monthly or every 25 new
 scores. Then run `python calibrate.py --refit`: it fits a log-linear regression of
 the actual multiple on the demand signals and rewrites the weights, tier cutoffs,
-and ranges in `config/model.json`. Copy the data down first (see above), check
+and ranges in `config/model.json`. (With percentile tiers on, the fitted cutoffs are
+only the fallback for small runs.) Copy the data down first (see above), check
 the printed tiers, then open a pull request with the new `config/model.json`.
 
 To edit the page, change `templates/index.html` and rerun `python build.py`.

@@ -25,6 +25,7 @@ SECRET_NAMES = (
     "SEATGEEK_CLIENT_ID",
     "SEATGEEK_CLIENT_SECRET",
     "LASTFM_API_KEY",
+    "CLOUDFLARE_D1_TOKEN",
 )
 
 _dotenv: dict[str, str] | None = None
@@ -91,7 +92,13 @@ class Http:
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as err:
                 if err.code == 429 or err.code >= 500:
-                    delay = min(float(err.headers.get("Retry-After") or 2 ** (attempt + 1)), 60)
+                    # Never retry faster than exponential backoff, even if Retry-After says 0
+                    # (MusicBrainz sends that while it's rate limiting us).
+                    try:
+                        after = float(err.headers.get("Retry-After") or 0)
+                    except ValueError:
+                        after = 0.0
+                    delay = min(max(after, 2 ** (attempt + 1)), 60)
                     print(f"  {self.source}: HTTP {err.code}, retrying in {delay:.0f}s", file=sys.stderr)
                     time.sleep(delay)
                     continue

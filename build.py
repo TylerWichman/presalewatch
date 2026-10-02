@@ -64,6 +64,7 @@ def compact(data: dict) -> dict:
                 "m": r["mode"],
                 "cf": r["confidence"],
                 "tr": r["tier"],
+                "he": r.get("high_estimated") or None,  # High that relies on an estimated venue capacity
                 "ds": r["demand_score"],
                 "p": r["profit"],
                 "pl": r["profit_low"],
@@ -81,8 +82,9 @@ def compact(data: dict) -> dict:
                     "lis": inp.get("lastfm_listeners"),
                     "plc": inp.get("lastfm_playcount"),
                     "cap": inp["venue_capacity"],
+                    "cest": inp.get("capacity_estimated") or None,
                     "tour": inp["tour_date_count"],
-                    "mkt": inp["market_tier"],
+                    "pop": inp.get("catchment_population"),
                     "sig": inp["signals"],
                     "miss": inp["missing_signals"] or None,
                     "sgn": inp["seatgeek_listings"],

@@ -220,6 +220,9 @@ footer p { margin: 4px 0; }
 .tier-High { background: var(--live-soft); color: var(--live); }
 .tier-Med { background: var(--soon-soft); color: var(--soon); }
 .tier-Low { background: var(--later-soft); color: var(--later); }
+.tier-Unrated { background: transparent; color: var(--muted); border: 1px dashed var(--border); }
+.edge.unrated { font-size: 14px; font-weight: 550; letter-spacing: 0; white-space: normal; color: var(--muted); }
+.date-edge.unrated { color: var(--muted); }
 .conf { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: help; text-align: right; }
 .conf:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 999px; }
 .chip.is-live { background: var(--live-soft); color: var(--live); }
@@ -300,6 +303,7 @@ footer p { margin: 4px 0; }
         <option value="High">High demand</option>
         <option value="Med">Med demand</option>
         <option value="Low">Low demand</option>
+        <option value="Unrated">Unrated</option>
       </select></div>
       <div class="select"><select id="state" aria-label="State"><option value="">All states</option></select></div>
       <div class="select"><select id="platform" aria-label="Presale platform"><option value="">All platforms</option></select></div>
@@ -324,7 +328,7 @@ footer p { margin: 4px 0; }
       </section>
       <section>
         <h3>Live vs Estimated</h3>
-        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. Estimated events sort by the midpoint of their range.</p>
+        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. A <b>High demand · est.</b> label means the rating relies on an estimated venue capacity, used only when the show would still rate High in a 3,000-seat room. Estimated events sort by the midpoint of their range.</p>
       </section>
       <section>
         <h3 id="calib-title">Estimates are uncalibrated</h3>
@@ -336,7 +340,7 @@ footer p { margin: 4px 0; }
 
 <footer>
   <div class="wrap">
-    <p>Presales and face values from the Ticketmaster Discovery API, artist listener counts from <a href="https://www.last.fm" rel="noopener noreferrer" target="_blank">Last.fm</a>. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
+    <p>Presales and face values from the Ticketmaster Discovery API, artist listener counts from <a href="https://www.last.fm" rel="noopener noreferrer" target="_blank">Last.fm</a>. Venue capacities from Wikidata, Wikipedia, and <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">© OpenStreetMap contributors</a>; market size from the US Census. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
     <p>PresaleWatch is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Last.fm. Nothing here is financial advice. <a href="/privacy">Privacy</a></p>
   </div>
 </footer>
@@ -530,14 +534,21 @@ footer p { margin: 4px 0; }
       items.push(["Face used", money(inp.face) + (ev.fi ? " (fees included)" : "")]);
       items.push(["Resale multiple", mult(ev.ml)]);
       if (ev.rc) items.push(["Captured", relAgo(Date.parse(ev.rc)) + " · SeatGeek"]);
+    } else if (ev.tr === "Unrated") {
+      box.appendChild(el("h4", null, "Not rated"));
+      box.appendChild(el("p", null, "Last.fm has no listening data for this artist, so there's no demand score or estimated range. Market and tour size alone can't show that people want the tickets."));
+      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() + (inp.cest ? " (estimated)" : "") : "unknown"]);
+      items.push(["Market", inp.pop != null ? popText(inp.pop) : "unknown"]);
+      items.push(["Face used", inp.face != null ? money(inp.face) : "not listed"]);
+      items.push(["SeatGeek", inp.sgn != null ? inp.sgn + " listings (need " + DATA.min_listings + ")" : "no listings found"]);
     } else {
       box.appendChild(el("h4", null, "Estimated · " + ev.cf + " confidence"));
       items.push(["Demand score", ev.ds.toFixed(2) + " → " + ev.tr + " tier"]);
       items.push(["Resale multiple", mult(ev.ml) + "–" + mult(ev.mh) + " face"]);
       items.push(["Last.fm", inp.lis != null ? big(inp.lis) + " listeners" + (inp.plc != null ? ", " + Math.round(inp.plc / inp.lis) + " plays each" : "") : "artist not found"]);
-      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() : "unknown"]);
+      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() + (inp.cest ? " (estimated)" : "") : "unknown"]);
       items.push(["Tour dates", inp.tour != null ? String(inp.tour) : "unknown"]);
-      items.push(["Market", inp.mkt === 1 ? "NYC / LA / Chicago" : "Other metro"]);
+      items.push(["Market", inp.pop != null ? popText(inp.pop) : "unknown"]);
       items.push(["Face used", inp.face != null ? money(inp.face) : "not listed (range is face-independent)"]);
       items.push(["SeatGeek", inp.sgn != null ? inp.sgn + " listings (need " + DATA.min_listings + ")" : "no listings found"]);
     }
@@ -545,7 +556,7 @@ footer p { margin: 4px 0; }
     var dl = el("dl");
     items.forEach(function (it) { dl.appendChild(el("dt", null, it[0])); dl.appendChild(el("dd", null, it[1])); });
     box.appendChild(dl);
-    if (ev.m !== "live" && inp.miss) {
+    if (ev.m !== "live" && ev.tr !== "Unrated" && inp.miss) {
       box.appendChild(el("p", null, "Not available: " + inp.miss.map(function (k) { return SIGNAL_NAMES[k] || k; }).join(", ") + ". Left out of the score." +
         (inp.miss.indexOf("listeners") !== -1 ? " Without Last.fm data, confidence is Low and demand can't be rated High." : "")));
     }
@@ -572,9 +583,12 @@ footer p { margin: 4px 0; }
   function edgeStrip(ev) {
     var strip = el("div", "edge-strip");
     var left = el("div");
-    left.appendChild(el("span", "edge-label", ev.m === "live" ? "Edge" : "Estimated edge"));
+    var unrated = ev.m !== "live" && ev.tr === "Unrated";
+    left.appendChild(el("span", "edge-label", ev.m === "live" || unrated ? "Edge" : "Estimated edge"));
     if (ev.m === "live") {
       left.appendChild(el("span", "edge " + sign(ev.p), pct(ev.p)));
+    } else if (ev.tr === "Unrated") {
+      left.appendChild(el("span", "edge unrated", "Not rated: no artist listening data"));
     } else {
       var rng = el("span", "edge range");
       rng.appendChild(el("span", sign(ev.pl), pct(ev.pl)));
@@ -587,16 +601,20 @@ footer p { margin: 4px 0; }
     var side = el("div", "edge-side");
     var btn = el("button", "conf");
     btn.type = "button";
-    btn.setAttribute("aria-label", (ev.m === "live" ? "Live" : "Estimated") + " edge, show inputs");
-    btn.appendChild(el("span", "chip " + (ev.m === "live" ? "is-live" : "is-est"), ev.m === "live" ? "Live" : "Estimated"));
-    btn.appendChild(el("small", null, ev.m === "live" ? "based on asking prices" : ev.cf + " confidence"));
+    btn.setAttribute("aria-label", ev.m === "live" ? "Live edge, show inputs" : unrated ? "Not rated, show inputs" : "Estimated edge, show inputs");
+    btn.appendChild(el("span", "chip " + (ev.m === "live" ? "is-live" : "is-est"), ev.m === "live" ? "Live" : unrated ? "Inputs" : "Estimated"));
+    btn.appendChild(el("small", null, ev.m === "live" ? "based on asking prices" : ev.tr === "Unrated" ? "show inputs" : ev.cf + " confidence"));
     btn.addEventListener("mouseenter", function () { showTip(btn, ev); });
     btn.addEventListener("mouseleave", hideTip);
     btn.addEventListener("focus", function () { showTip(btn, ev); });
     btn.addEventListener("blur", hideTip);
     btn.addEventListener("click", function () { if (tipOwner === btn) hideTip(); else showTip(btn, ev); });
     side.appendChild(btn);
-    if (ev.m !== "live") side.appendChild(el("span", "chip tier-" + ev.tr, ev.tr + " demand"));
+    if (ev.m !== "live") {
+      var tierChip = el("span", "chip tier-" + ev.tr, ev.tr === "Unrated" ? "Unrated" : ev.tr + " demand" + (ev.he ? " · est." : ""));
+      if (ev.he) tierChip.title = "Estimated: this High rating relies on an estimated venue capacity (no source lists this venue's size)";
+      side.appendChild(tierChip);
+    }
     strip.appendChild(side);
     return strip;
   }
@@ -633,7 +651,15 @@ footer p { margin: 4px 0; }
     return ev.d && ev.d.slice(0, 4) !== String(new Date().getFullYear()) ? s + ", " + ev.d.slice(0, 4) : s;
   }
   function placeText(ev) { return [ev.c, ev.s].filter(Boolean).join(", "); }
-  function edgeText(ev) { return ev.m === "live" ? pct(ev.p) : pct(ev.pl) + " to " + pct(ev.ph); }
+  function edgeText(ev) {
+    if (ev.m === "live") return pct(ev.p);
+    return ev.tr === "Unrated" ? "Unrated" : pct(ev.pl) + " to " + pct(ev.ph);
+  }
+  // Unrated events have no edge; they sort below every rated one.
+  function edgeKey(ev) { return ev.es == null ? -Infinity : ev.es; }
+  function popText(n) {
+    return (n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : Math.round(n / 1e3) + "K") + " people within 80 km";
+  }
 
   // Presales that are identical across a tour's dates (same name, window, and code) are
   // shown once, with the dates they cover.
@@ -690,8 +716,8 @@ footer p { margin: 4px 0; }
         var placeEl = el("span", "date-place", ev.c || ev.v || "Venue TBA");
         placeEl.title = [ev.v, placeText(ev)].filter(Boolean).join(" · ");
         li.appendChild(placeEl);
-        var edge = el("span", "date-edge " + (ev.m === "live" ? sign(ev.p) : sign(ev.es)), edgeText(ev));
-        edge.title = (ev.m === "live" ? "Live Profit %" : "Estimated range") + (ev.v ? " · " + ev.v : "");
+        var edge = el("span", "date-edge " + (ev.m === "live" ? sign(ev.p) : ev.es == null ? "unrated" : sign(ev.es)), edgeText(ev));
+        edge.title = (ev.m === "live" ? "Live Profit %" : ev.es == null ? "Not rated: no artist listening data" : "Estimated range") + (ev.v ? " · " + ev.v : "");
         li.appendChild(edge);
         var u = safeUrl(ev.u);
         li.appendChild(u ? link(u, "date-link", "Tickets ↗") : el("span", "date-link"));
@@ -850,7 +876,7 @@ footer p { margin: 4px 0; }
     function dateMatches(ev) {
       if (state.st && ev.s !== state.st) return false;
       if (state.live && ev.m !== "live") return false;
-      if (min != null && ev.es < min) return false;
+      if (min != null && (ev.es == null || ev.es < min)) return false;
       if (state.tier && ev.tr !== state.tier) return false;
       return terms.every(function (t) { return ev.text.indexOf(t) !== -1; });
     }
@@ -872,12 +898,12 @@ footer p { margin: 4px 0; }
       if (!best) return;
       c.primary = best; c.key = bestKey; c.matching = matching;
       // Best date: highest edge among dates with a qualifying presale.
-      c.best = active.reduce(function (a, b) { return b.es > a.es ? b : a; });
+      c.best = active.reduce(function (a, b) { return edgeKey(b) > edgeKey(a) ? b : a; });
       visible.push(c);
     });
     visible.sort(function (a, b) {
       // Edge sort: highest best-date edge first (estimates by range midpoint); ties go to the sooner presale.
-      if (state.sort === "edge" && a.best.es !== b.best.es) return b.best.es - a.best.es;
+      if (state.sort === "edge" && edgeKey(a.best) !== edgeKey(b.best)) return edgeKey(a.best) < edgeKey(b.best) ? 1 : -1;
       return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.tour.a.localeCompare(b.tour.a);
     });
 

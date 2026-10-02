@@ -67,11 +67,42 @@ class ProfitFormula(unittest.TestCase):
         self.assertEqual(edge.tier_for(0.44, self.cfg)["name"], "Low")
 
     def test_missing_signals_are_left_out_and_weights_rescaled(self):
-        # No Last.fm data and no capacity: only scarcity (1/4) and market (1.0) count.
-        signals = edge.demand_signals(None, None, None, 4, 1.0, self.cfg)
+        # No capacity: listeners, engagement, scarcity (1/4) and market (1.0) count.
+        signals = edge.demand_signals(10**9, 10**11, None, 4, 20_000_000, self.cfg)
         score, missing = edge.demand_score(signals, self.cfg)
-        self.assertEqual(missing, ["listeners", "engagement", "listeners_capacity"])
-        self.assertAlmostEqual(score, (0.15 * 0.25 + 0.15 * 1.0) / (0.15 + 0.15))
+        self.assertEqual(missing, ["listeners_capacity"])
+        w = self.cfg["weights"]
+        kept = w["listeners"] + w["engagement"] + w["scarcity"] + w["market"]
+        self.assertAlmostEqual(score, (w["listeners"] + w["engagement"] + w["scarcity"] * 0.25 + w["market"]) / kept)
+
+    def test_percentile_cutoffs(self):
+        scores = [i / 100 for i in range(100)]          # 0.00 .. 0.99
+        cut = edge.percentile_cutoffs(scores, self.cfg)
+        self.assertEqual(cut, {"High": 0.90, "Med": 0.50})  # top 10 High, next 40 Med
+        self.assertEqual(sum(edge.tier_for(s, self.cfg, cut)["name"] == "High" for s in scores), 10)
+        self.assertEqual(sum(edge.tier_for(s, self.cfg, cut)["name"] == "Med" for s in scores), 40)
+        self.assertIsNone(edge.percentile_cutoffs(scores[:49], self.cfg))  # too few: fixed cutoffs
+        fixed = {**self.cfg, "tiering": {"method": "fixed"}}
+        self.assertIsNone(edge.percentile_cutoffs(scores, fixed))
+        self.assertEqual(edge.tier_for(0.71, self.cfg)["name"], "High")    # no cutoffs: config min_score
+
+    def test_pool_needs_lastfm_and_capacity_and_ranks_estimates_at_3000(self):
+        with_cap = edge.demand_signals(1_000_000, 30_000_000, 835, 10, 5_000_000, self.cfg)
+        no_cap = edge.demand_signals(1_000_000, 30_000_000, None, 10, 5_000_000, self.cfg)
+        at_3000 = edge.demand_signals(1_000_000, 30_000_000, 3000, 10, 5_000_000, self.cfg)
+        self.assertIsNone(edge.pool_score(no_cap, None, False, self.cfg))
+        self.assertIsNone(edge.pool_score(edge.demand_signals(None, None, 835, 10, 5_000_000, self.cfg), None, False, self.cfg))
+        self.assertAlmostEqual(edge.pool_score(with_cap, None, False, self.cfg), edge.demand_score(with_cap, self.cfg)[0])
+        self.assertAlmostEqual(edge.pool_score(with_cap, at_3000, True, self.cfg), edge.demand_score(at_3000, self.cfg)[0])
+
+    def test_evaluate_uses_the_run_cutoffs(self):
+        sig = edge.demand_signals(1_000_000, 30_000_000, 2000, 10, 5_000_000, self.cfg)
+        score = edge.demand_score(sig, self.cfg)[0]
+        ev = lambda cut: edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=sig,  # noqa: E731
+                                       snapshot=None, cfg=self.cfg, cutoffs=cut)["tier"]
+        self.assertEqual(ev({"High": score, "Med": 0.1}), "High")
+        self.assertEqual(ev({"High": score + 0.01, "Med": score}), "Med")
+        self.assertEqual(ev({"High": 0.99, "Med": score + 0.01}), "Low")
 
     def test_missing_signal_does_not_drag_score_down(self):
         full = dict.fromkeys(edge.SIGNALS, 0.9)
@@ -79,23 +110,55 @@ class ProfitFormula(unittest.TestCase):
         self.assertAlmostEqual(edge.demand_score(full, self.cfg)[0], 0.9)
         self.assertAlmostEqual(edge.demand_score(partial, self.cfg)[0], 0.9)
 
-    def test_no_lastfm_data_means_low_confidence_and_no_high_tier(self):
-        # A one-night show in a top market scores 1.0 on what's left, but can't be High without Last.fm.
-        signals = edge.demand_signals(None, None, None, 1, 1.0, self.cfg)
-        res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
-        self.assertEqual(res["demand_score"], 1.0)
-        self.assertEqual((res["tier"], res["confidence"]), ("Med", "Low"))
+    def test_no_lastfm_data_means_unrated(self):
+        # A one-night show in the biggest market would score 1.0 on what's left; it isn't rated at all.
+        signals = edge.demand_signals(None, None, 2000, 1, 20_000_000, self.cfg)
+        res = edge.evaluate(face_min=50, face_max=50, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
+        self.assertEqual((res["tier"], res["mode"], res["confidence"]), (edge.UNRATED, "predicted", "Low"))
+        for k in ("demand_score", "profit_low", "profit_high", "edge_sort", "multiple_low"):
+            self.assertIsNone(res[k], k)
 
-    def test_lastfm_data_means_med_confidence_and_high_is_reachable(self):
-        # A big artist (3M listeners, 40 plays each) on a 20-date tour in a top market, capacity unknown.
-        signals = edge.demand_signals(3_000_000, 120_000_000, None, 20, 1.0, self.cfg)
+    def test_unrated_still_goes_live_with_enough_listings(self):
+        signals = edge.demand_signals(None, None, None, 1, 20_000_000, self.cfg)
+        snap = {"listing_count": 40, "median": 200}
+        res = edge.evaluate(face_min=100, face_max=100, fee_included=False, signals=signals, snapshot=snap, cfg=self.cfg)
+        self.assertEqual(res["mode"], "live")
+        self.assertIsNotNone(res["edge_sort"])
+
+    def test_market_from_catchment_population(self):
+        self.assertEqual(edge.market_value(20_000_000, self.cfg), 1.0)
+        self.assertEqual(edge.market_value(250_000, self.cfg), 0.0)
+        self.assertEqual(edge.market_value(50_000, self.cfg), 0.0)
+        self.assertAlmostEqual(edge.market_value(math.sqrt(250_000 * 20_000_000), self.cfg), 0.5)
+        self.assertIsNone(edge.market_value(None, self.cfg))
+        self.assertIsNone(edge.demand_signals(10**6, None, None, None, None, self.cfg)["market"])
+        # Bigger catchments score higher, never past 1.
+        self.assertLess(edge.market_value(5_000_000, self.cfg), edge.market_value(10_000_000, self.cfg))
+        self.assertEqual(edge.market_value(40_000_000, self.cfg), 1.0)
+
+    def test_high_is_reachable_when_demand_outruns_seats(self):
+        # 3M listeners (40 plays each) for a 2,000-seat room on a 20-date tour in a top market.
+        signals = edge.demand_signals(3_000_000, 120_000_000, 2000, 20, 20_000_000, self.cfg)
         res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
-        self.assertEqual(res["missing_signals"], ["listeners_capacity"])
+        self.assertEqual(res["missing_signals"], [])
         self.assertEqual((res["tier"], res["confidence"]), ("High", "Med"))
+
+    def test_high_needs_listeners_per_seat(self):
+        # Same act, venue capacity unknown: Last.fm data gives Med confidence, but the tier stops at Med.
+        signals = edge.demand_signals(3_000_000, 120_000_000, None, 20, 20_000_000, self.cfg)
+        res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
+        self.assertGreaterEqual(res["demand_score"], 0.70)
+        self.assertEqual((res["tier"], res["confidence"]), ("Med", "Med"))
+
+    def test_listeners_per_seat_dominates(self):
+        # Mid-size artist in a small room beats a bigger artist in an arena.
+        small_room = edge.demand_score(edge.demand_signals(1_000_000, 30_000_000, 600, 10, 20_000_000, self.cfg), self.cfg)[0]
+        arena = edge.demand_score(edge.demand_signals(4_000_000, 120_000_000, 40_000, 10, 20_000_000, self.cfg), self.cfg)[0]
+        self.assertGreater(small_room, arena)
 
     def test_signal_scaling(self):
         sc = self.cfg["scaling"]
-        s = edge.demand_signals(1_000_000, 30_000_000, 2000, 1, 0.5, self.cfg)
+        s = edge.demand_signals(1_000_000, 30_000_000, 2000, 1, 2_000_000, self.cfg)
         lo, hi = sc["listeners_log10"]
         self.assertAlmostEqual(s["listeners"], (6 - lo) / (hi - lo))
         lo, hi = sc["plays_per_listener_log10"]
