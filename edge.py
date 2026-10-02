@@ -110,22 +110,50 @@ def has_artist_data(missing: list[str]) -> bool:
     return "listeners" not in missing
 
 
-def tier_for(score: float, cfg: dict) -> dict:
+def tier_for(score: float, cfg: dict, cutoffs: dict | None = None) -> dict:
+    """The tier for a demand score. cutoffs ({"High": x, "Med": y}, from percentile_cutoffs)
+    replace the fixed min_score values in config when given."""
     tiers = sorted(cfg["tiers"], key=lambda t: t["min_score"], reverse=True)
     for tier in tiers:
-        if score >= tier["min_score"]:
+        if score >= (cutoffs or {}).get(tier["name"], tier["min_score"]):
             return tier
     return tiers[-1]
 
 
+def pool_score(signals: dict, check_signals: dict | None, capacity_estimated: bool, cfg: dict) -> float | None:
+    """An event's score for percentile ranking, or None when it isn't ranked.
+
+    Ranked: events with Last.fm data and a venue capacity (the signals High requires). An
+    estimated capacity ranks at the 3,000-seat check, so a guessed small room can't push it up.
+    """
+    sig = check_signals if capacity_estimated else signals
+    if sig is None or any(sig.get(k) is None for k in cfg.get("high_requires", ["listeners"])):
+        return None
+    return demand_score(sig, cfg)[0]
+
+
+def percentile_cutoffs(scores: list[float], cfg: dict) -> dict | None:
+    """Score cutoffs that put the top high_share of ranked events in High and the next med_share
+    in Med (config tiering). None means use the fixed cutoffs: method isn't percentile, or too few
+    events to rank."""
+    t = cfg.get("tiering") or {}
+    if t.get("method") != "percentile" or len(scores) < t.get("min_pool", 50):
+        return None
+    ranked = sorted(scores, reverse=True)
+    at = lambda share: ranked[max(math.ceil(len(ranked) * share), 1) - 1]  # noqa: E731
+    return {"High": at(t["high_share"]), "Med": at(t["high_share"] + t["med_share"])}
+
+
 def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bool,
              signals: dict, snapshot: dict | None, cfg: dict,
-             capacity_estimated: bool = False, check_signals: dict | None = None) -> dict:
+             capacity_estimated: bool = False, check_signals: dict | None = None,
+             cutoffs: dict | None = None) -> dict:
     """Pick Mode A or B and compute the edge for one event.
 
     capacity_estimated: the venue capacity behind `signals` is an estimate, not a measurement.
     check_signals: the same signals recomputed at the top of the small-venue range (3,000
     seats). An estimate can only make an event High if it's still High at that capacity.
+    cutoffs: percentile tier cutoffs for this run (percentile_cutoffs); None uses the fixed ones.
     """
     listings = (snapshot or {}).get("listing_count")
     median = (snapshot or {}).get("median")
@@ -140,7 +168,7 @@ def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bo
                 "multiple_low": None, "multiple_high": None, "profit": None, "profit_low": None,
                 "profit_high": None, "edge_sort": None}
     score, missing = demand_score(signals, cfg)
-    tier = tier_for(score, cfg)
+    tier = tier_for(score, cfg, cutoffs)
     med = next(t for t in cfg["tiers"] if t["name"] == "Med")
     # High needs the signals that show demand outrunning supply (config: high_requires).
     # Without them the rescaled weights fall on market and raw popularity, which overrate
@@ -149,7 +177,7 @@ def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bo
         tier = med
     if tier["name"] == "High" and capacity_estimated:
         check_score, _ = demand_score(check_signals or {}, cfg)
-        if check_signals is None or tier_for(check_score, cfg)["name"] != "High":
+        if check_signals is None or tier_for(check_score, cfg, cutoffs)["name"] != "High":
             tier = med
     result = {
         "demand_score": round(score, 4),

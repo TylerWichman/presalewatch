@@ -33,8 +33,8 @@ class EstimatedHigh(unittest.TestCase):
     def test_estimate_unlocks_high_only_if_high_at_3000(self):
         big = self.score(3_000_000, 835, estimated=True)      # still High at 3,000 seats
         self.assertEqual((big["tier"], big["high_estimated"]), ("High", True))
-        mid = self.score(700_000, 835, estimated=True)        # High only because the room is assumed tiny
-        self.assertEqual(self.score(700_000, 835, estimated=False)["tier"], "High")
+        mid = self.score(1_000_000, 835, estimated=True)      # High only because the room is assumed tiny
+        self.assertEqual(self.score(1_000_000, 835, estimated=False)["tier"], "High")
         self.assertEqual((mid["tier"], mid["high_estimated"]), ("Med", False))
 
     def test_estimate_without_a_check_never_unlocks_high(self):
@@ -43,8 +43,14 @@ class EstimatedHigh(unittest.TestCase):
                           capacity_estimated=True, check_signals=None)
         self.assertEqual(r["tier"], "Med")
 
-    def test_estimates_are_off_by_default(self):
-        self.assertFalse(load_config()["capacity_estimate"]["enabled"])
+    def test_estimates_are_on_and_resort_rooms_wait_for_hand_fill(self):
+        est = load_config()["capacity_estimate"]
+        self.assertTrue(est["enabled"])
+        large = re.compile(est["large_name_pattern"], re.I)
+        for name in ("Showboat Hotel & Resort", "Route 66 Casino", "Ameristar Casino and Hotel"):
+            self.assertTrue(large.search(name), name)
+        self.assertIn("KovZpZAJAJeA", est["hand_fill_venues"])   # The Cosmopolitan of Las Vegas
+        self.assertIn("KovZ917AcIV", est["hand_fill_venues"])    # Fontainebleau Las Vegas
 
 
 class CapacityPrecedence(unittest.TestCase):
@@ -89,9 +95,10 @@ class EstimatesJob(unittest.TestCase):
         self.db.run("INSERT INTO match_review (kind, source, external_id, external_name, status, created_at, last_updated)"
                     " VALUES ('venue_match', 'enrichment', ?, 'Reviewed Club', 'open', ?, ?)", (str(vid), NOW, NOW))
 
-    def run_job(self, enabled):
+    def run_job(self, enabled, hand_fill=()):
         cfg = load_config()
         cfg["capacity_estimate"]["enabled"] = enabled
+        cfg["capacity_estimate"]["hand_fill_venues"] = list(hand_fill)
         with mock.patch.object(venue_estimates, "load_config", return_value=cfg):
             venue_estimates.run(self.db, {"api_calls": 0, "rows_written": 0})
 
@@ -106,6 +113,12 @@ class EstimatesJob(unittest.TestCase):
         for tm in ("U2", "U3", "U4", "U5", "M1", "M5"):   # large name, not tried, under review, OSM pending, measured
             self.assertIsNone(est[tm], tm)
         self.assertIn("25th percentile of 4 measured venues", self.db.scalar("SELECT capacity_estimate_basis FROM venues WHERE ticketmaster_id = 'U1'"))
+
+    def test_hand_fill_venues_are_never_estimated(self):
+        self.run_job(True)
+        self.assertIsNotNone(self.estimates()["U1"])
+        self.run_job(True, hand_fill=["U1"])
+        self.assertIsNone(self.estimates()["U1"])
 
     def test_turning_estimates_off_clears_them(self):
         self.run_job(True)

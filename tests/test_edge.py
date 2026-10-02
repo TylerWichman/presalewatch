@@ -75,6 +75,35 @@ class ProfitFormula(unittest.TestCase):
         kept = w["listeners"] + w["engagement"] + w["scarcity"] + w["market"]
         self.assertAlmostEqual(score, (w["listeners"] + w["engagement"] + w["scarcity"] * 0.25 + w["market"]) / kept)
 
+    def test_percentile_cutoffs(self):
+        scores = [i / 100 for i in range(100)]          # 0.00 .. 0.99
+        cut = edge.percentile_cutoffs(scores, self.cfg)
+        self.assertEqual(cut, {"High": 0.90, "Med": 0.50})  # top 10 High, next 40 Med
+        self.assertEqual(sum(edge.tier_for(s, self.cfg, cut)["name"] == "High" for s in scores), 10)
+        self.assertEqual(sum(edge.tier_for(s, self.cfg, cut)["name"] == "Med" for s in scores), 40)
+        self.assertIsNone(edge.percentile_cutoffs(scores[:49], self.cfg))  # too few: fixed cutoffs
+        fixed = {**self.cfg, "tiering": {"method": "fixed"}}
+        self.assertIsNone(edge.percentile_cutoffs(scores, fixed))
+        self.assertEqual(edge.tier_for(0.71, self.cfg)["name"], "High")    # no cutoffs: config min_score
+
+    def test_pool_needs_lastfm_and_capacity_and_ranks_estimates_at_3000(self):
+        with_cap = edge.demand_signals(1_000_000, 30_000_000, 835, 10, 5_000_000, self.cfg)
+        no_cap = edge.demand_signals(1_000_000, 30_000_000, None, 10, 5_000_000, self.cfg)
+        at_3000 = edge.demand_signals(1_000_000, 30_000_000, 3000, 10, 5_000_000, self.cfg)
+        self.assertIsNone(edge.pool_score(no_cap, None, False, self.cfg))
+        self.assertIsNone(edge.pool_score(edge.demand_signals(None, None, 835, 10, 5_000_000, self.cfg), None, False, self.cfg))
+        self.assertAlmostEqual(edge.pool_score(with_cap, None, False, self.cfg), edge.demand_score(with_cap, self.cfg)[0])
+        self.assertAlmostEqual(edge.pool_score(with_cap, at_3000, True, self.cfg), edge.demand_score(at_3000, self.cfg)[0])
+
+    def test_evaluate_uses_the_run_cutoffs(self):
+        sig = edge.demand_signals(1_000_000, 30_000_000, 2000, 10, 5_000_000, self.cfg)
+        score = edge.demand_score(sig, self.cfg)[0]
+        ev = lambda cut: edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=sig,  # noqa: E731
+                                       snapshot=None, cfg=self.cfg, cutoffs=cut)["tier"]
+        self.assertEqual(ev({"High": score, "Med": 0.1}), "High")
+        self.assertEqual(ev({"High": score + 0.01, "Med": score}), "Med")
+        self.assertEqual(ev({"High": 0.99, "Med": score + 0.01}), "Low")
+
     def test_missing_signal_does_not_drag_score_down(self):
         full = dict.fromkeys(edge.SIGNALS, 0.9)
         partial = {**full, "listeners_capacity": None}

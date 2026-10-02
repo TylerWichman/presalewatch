@@ -301,7 +301,7 @@ When two entries describe the same building, the tie-breakers are, in order: the
 
 **`venue_capacity_observations`**: every capacity any source reported for a venue, with the source, its link, the raw text, the parsed number, the configuration label, the confidence, and the distance between the two sets of coordinates. `venues.capacity` holds the one in use; this table shows where it came from and any disagreement.
 
-**Hand-fill fallback.** Venues nothing resolves keep `capacity` NULL. Each workflow run attaches `venues_to_fill.csv`, sorted by upcoming events, with a map link, a Wikipedia search link, and any review note. Fill in `capacity` (and ideally `source_url`), then:
+**Hand-fill fallback.** Venues nothing resolves keep `capacity` NULL. Each workflow run attaches `venues_to_fill.csv`: venues pinned in `capacity_estimate.hand_fill_venues` first, then the rest sorted by the biggest Last.fm audience among their upcoming artists, with a map link, a Wikipedia search link, and any review note. Fill in `capacity` (and ideally `source_url`), then:
 
 ```powershell
 python -m ingest.venue_handfill import venues_to_fill.csv --db d1
@@ -331,13 +331,14 @@ measured values.
   rather than the median, because measured small venues skew large: a club with a Wikipedia page is
   usually a notable, bigger one.
 - **Who gets one:** only venues that every source has tried, with nothing open in `match_review`, and
-  with no large-venue name or type (stadium, arena, field, park, amphitheater, center, casino, ...).
-  Without that filter, unprocessed or renamed stadiums would get a small-room estimate and look like
-  sellouts.
+  with no large-venue name or type (stadium, arena, field, park, amphitheater, center, casino, resort,
+  hotel, ...). Without that filter, unprocessed or renamed stadiums would get a small-room estimate and
+  look like sellouts. Venues listed in `capacity_estimate.hand_fill_venues` (resort rooms whose names
+  don't say so, such as The Cosmopolitan of Las Vegas) never get one and head the hand-fill list.
 - **In scoring,** an estimate counts for less: it can make an event High only if the event would still
   be High at 3,000 seats. The page labels that rating "High demand · est."
-- **Switch:** `capacity_estimate.enabled` in `config/model.json`. Turning it off clears every estimate
-  on the next run.
+- **Switch:** `capacity_estimate.enabled` in `config/model.json` (on). Turning it off clears every
+  estimate on the next run.
 
 ### Catchment population (migration 0005)
 

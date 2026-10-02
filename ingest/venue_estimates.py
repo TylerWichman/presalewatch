@@ -37,9 +37,9 @@ def p25(values: list[int]) -> int | None:
     return round(statistics.quantiles(sorted(values), n=4, method="inclusive")[0])
 
 
-def eligible(venue: dict, large_name: re.Pattern) -> bool:
-    """Pure: may this venue get an estimate?"""
-    return (venue["capacity"] is None and venue["capacity_checked_at"] is not None and venue["osm_checked_at"] is not None
+def eligible(venue: dict, large_name: re.Pattern, hand_fill: frozenset = frozenset()) -> bool:
+    """Pure: may this venue get an estimate? Not if it's waiting on a hand-entered capacity."""
+    return (venue["capacity"] is None and venue.get("ticketmaster_id") not in hand_fill and venue["capacity_checked_at"] is not None and venue["osm_checked_at"] is not None
             and not venue["open_review"]
             and not large_name.search(venue["name"] or "") and (venue["venue_type"] or "") not in LARGE_TYPES)
 
@@ -61,12 +61,13 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     basis = f"25th percentile of {len(measured)} measured venues <= {small_max:,}"
     large_name = re.compile(cfg.get("large_name_pattern", "stadium|arena"), re.I)
     venues = db.query(
-        "SELECT v.id, v.name, v.capacity, v.capacity_checked_at, v.osm_checked_at, v.venue_type, v.capacity_estimate,"
+        "SELECT v.id, v.ticketmaster_id, v.name, v.capacity, v.capacity_checked_at, v.osm_checked_at, v.venue_type, v.capacity_estimate,"
         " EXISTS (SELECT 1 FROM match_review r WHERE r.external_id = CAST(v.id AS TEXT) AND r.status = 'open'"
         "   AND r.kind IN ('venue_match', 'venue_capacity')) AS open_review FROM venues v")
+    hand_fill = frozenset(cfg.get("hand_fill_venues") or ())
     stmts, given, cleared = [], 0, 0
     for v in venues:
-        if eligible(v, large_name):
+        if eligible(v, large_name, hand_fill):
             given += 1
             if v["capacity_estimate"] != value:
                 stmts.append(("UPDATE venues SET capacity_estimate = ?, capacity_estimate_basis = ?, capacity_estimate_at = ? WHERE id = ?",

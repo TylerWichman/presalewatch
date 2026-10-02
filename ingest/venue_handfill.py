@@ -2,7 +2,9 @@
 
 Export: the 50 venues without a capacity whose upcoming artists draw the biggest audiences
 (highest Last.fm listener count among each venue's upcoming billed artists), with links to check
-and any open review item. Those are the venues where a capacity changes scores the most. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
+and any open review item. Those are the venues where a capacity changes scores the most. Venues
+listed in config capacity_estimate.hand_fill_venues (rooms inside resorts that no source or estimate
+handles well) always come first. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
 capacities are marked verified and are never overwritten by an automated source.
 
 Usage:
@@ -20,6 +22,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
+from common import load_config
 from ingest.db import Database, id_map, now_iso, open_db
 from ingest.venue_enrichment import write_manual
 
@@ -28,10 +31,13 @@ COLUMNS = ["ticketmaster_id", "name", "city", "state", "top_artist", "top_artist
 TOP_N = 50
 
 
-def unresolved(db: Database, limit: int | None = TOP_N) -> list[dict]:
-    """Venues without a capacity, biggest upcoming audience first (venues with no Last.fm data
-    for any upcoming artist come last, then by event count)."""
+def unresolved(db: Database, limit: int | None = TOP_N, pinned: list[str] | None = None) -> list[dict]:
+    """Venues without a capacity: pinned ones (config hand_fill_venues) first, then biggest upcoming
+    audience first (venues with no Last.fm data for any upcoming artist come last, then by event count)."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if pinned is None:
+        pinned = (load_config().get("capacity_estimate") or {}).get("hand_fill_venues") or []
+    pins = ",".join("?" * len(pinned)) or "NULL"
     rows = db.query(
         "WITH up AS (SELECT e.id, e.venue_id FROM events e WHERE e.event_date >= ?),"
         " reach AS (SELECT up.venue_id, a.name, a.lastfm_listeners,"
@@ -44,9 +50,10 @@ def unresolved(db: Database, limit: int | None = TOP_N) -> list[dict]:
         " (SELECT details FROM match_review mr WHERE mr.external_id = CAST(v.id AS TEXT) AND mr.status = 'open'"
         "   AND mr.kind IN ('venue_match', 'venue_capacity') ORDER BY mr.last_updated DESC LIMIT 1) AS review"
         " FROM venues v LEFT JOIN reach r ON r.venue_id = v.id AND r.rn = 1"
-        " WHERE v.capacity IS NULL AND EXISTS (SELECT 1 FROM up WHERE up.venue_id = v.id)"
-        " ORDER BY r.lastfm_listeners IS NULL, r.lastfm_listeners DESC, upcoming DESC, v.name" + (" LIMIT ?" if limit else ""),
-        (today, limit) if limit else (today,))
+        f" WHERE v.capacity IS NULL AND (EXISTS (SELECT 1 FROM up WHERE up.venue_id = v.id) OR v.ticketmaster_id IN ({pins}))"
+        f" ORDER BY v.ticketmaster_id IN ({pins}) DESC, r.lastfm_listeners IS NULL, r.lastfm_listeners DESC, upcoming DESC, v.name"
+        + (" LIMIT ?" if limit else ""),
+        (today, *pinned, *pinned, limit) if limit else (today, *pinned, *pinned))
     for r in rows:
         r["review_note"] = json.loads(r["review"]).get("reason", "") if r["review"] else ""
     return rows

@@ -370,6 +370,11 @@ class Database(unittest.TestCase):
         rows = venue_handfill.unresolved(self.db)
         self.assertEqual([(r["ticketmaster_id"], r["top_artist"]) for r in rows[:2]], [("KV_BIG", "Huge Act"), ("KV_X", "Local Band")])
         self.assertEqual(rows[0]["upcoming"], 1)  # fewer events, but the biggest audience
+        # A pinned venue (config hand_fill_venues) comes first, even with no upcoming events.
+        self.db.run("INSERT INTO venues (ticketmaster_id, name, name_key, source, last_updated) VALUES ('KV_PIN', 'Resort Room', 'resort room', 't', ?)", (NOW,))
+        pinned = venue_handfill.unresolved(self.db, pinned=["KV_PIN"])
+        self.assertEqual([r["ticketmaster_id"] for r in pinned[:2]], ["KV_PIN", "KV_BIG"])
+        self.assertNotIn("KV_PIN", [r["ticketmaster_id"] for r in venue_handfill.unresolved(self.db, pinned=[])])
 
     def test_handfill_export_and_import(self):
         self.run_job()

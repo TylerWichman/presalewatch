@@ -359,7 +359,7 @@ def main() -> None:
     print("4/5 Computing edge")
     intel = intel_capacities([p["event"]["venue_id"] for p in parsed if p["event"]["venue_id"]])
     check_capacity = (cfg.get("capacity_estimate") or {}).get("high_check_capacity", 3000)
-    results: dict[str, dict] = {}
+    prepared = []
     for p in parsed:
         e = p["event"]
         artist = artists.get(e["artist_id"], {})
@@ -377,10 +377,17 @@ def main() -> None:
                 cfg=cfg,
             )
         signals = signals_at(capacity)
+        check = signals_at(check_capacity) if estimated else None
+        prepared.append((e, signals, check, estimated, capacity, capacity_source, catchment))
+    # Percentile tiers: rank this run's rated events that have a capacity (config tiering).
+    cutoffs = edge.percentile_cutoffs(
+        [s for s in (edge.pool_score(sig, chk, est, cfg) for _, sig, chk, est, *_ in prepared) if s is not None], cfg)
+    results: dict[str, dict] = {}
+    for e, signals, check, estimated, capacity, capacity_source, catchment in prepared:
         snap = snapshots.get(e["event_id"])
         res = edge.evaluate(face_min=e["face_min"], face_max=e["face_max"], fee_included=e["fee_included"],
                             signals=signals, snapshot=snap, cfg=cfg, capacity_estimated=estimated,
-                            check_signals=signals_at(check_capacity) if estimated else None)
+                            check_signals=check, cutoffs=cutoffs)
         res["signals"] = {k: (None if v is None else round(v, 4)) for k, v in signals.items()}
         res["snapshot"] = snap
         res["capacity"], res["capacity_source"] = capacity, capacity_source
@@ -391,6 +398,8 @@ def main() -> None:
              for name in [*(t["name"] for t in cfg["tiers"]), edge.UNRATED]}
     with_cap = sum(1 for r in results.values() if r["capacity"] and not r["capacity_estimated"])
     est = sum(1 for r in results.values() if r["capacity_estimated"])
+    print("  tier cutoffs: " + (f"percentile, High >= {cutoffs['High']:.3f}, Med >= {cutoffs['Med']:.3f}" if cutoffs
+                                   else "fixed (config tiers)"))
     print(f"  {live} live, {len(results) - live} predicted; tiers {tiers}; capacity measured for {with_cap},"
           f" estimated for {est}, High on an estimate {sum(1 for r in results.values() if r['high_estimated'])}")
 
