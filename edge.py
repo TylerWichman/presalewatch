@@ -17,8 +17,8 @@ from __future__ import annotations
 import math
 
 SIGNALS = ("listeners", "engagement", "listeners_capacity", "scarcity", "market")
-# Without Last.fm data confidence is Low and the tier is capped at Med, since market
-# and tour size alone can't show that people want the tickets.
+# Without Last.fm data confidence is Low. An event is capped at Med unless every signal
+# in config high_requires is known (Last.fm listeners and listeners per venue seat).
 
 
 def all_in_cost(face: float, cfg: dict, fee_included: bool = False) -> float:
@@ -112,18 +112,35 @@ def tier_for(score: float, cfg: dict) -> dict:
 
 
 def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bool,
-             signals: dict, snapshot: dict | None, cfg: dict) -> dict:
-    """Pick Mode A or B and compute the edge for one event."""
+             signals: dict, snapshot: dict | None, cfg: dict,
+             capacity_estimated: bool = False, check_signals: dict | None = None) -> dict:
+    """Pick Mode A or B and compute the edge for one event.
+
+    capacity_estimated: the venue capacity behind `signals` is an estimate, not a measurement.
+    check_signals: the same signals recomputed at the top of the small-venue range (3,000
+    seats). An estimate can only make an event High if it's still High at that capacity.
+    """
     score, missing = demand_score(signals, cfg)
     tier = tier_for(score, cfg)
-    if not has_artist_data(missing) and tier["name"] == "High":
-        tier = next(t for t in cfg["tiers"] if t["name"] == "Med")
+    med = next(t for t in cfg["tiers"] if t["name"] == "Med")
+    # High needs the signals that show demand outrunning supply (config: high_requires).
+    # Without them the rescaled weights fall on market and raw popularity, which overrate
+    # big-market shows and big artists in big rooms.
+    if tier["name"] == "High" and any(k in missing for k in cfg.get("high_requires", ["listeners"])):
+        tier = med
+    if tier["name"] == "High" and capacity_estimated:
+        check_score, _ = demand_score(check_signals or {}, cfg)
+        if check_signals is None or tier_for(check_score, cfg)["name"] != "High":
+            tier = med
     face = face_price(face_min, face_max, cfg)
     result = {
         "demand_score": round(score, 4),
         "tier": tier["name"],
         "missing_signals": missing,
         "face": face,
+        "capacity_estimated": capacity_estimated,
+        # Shown on the page as "estimated": this High depends on an estimated venue capacity.
+        "high_estimated": tier["name"] == "High" and capacity_estimated,
     }
 
     listings = (snapshot or {}).get("listing_count")

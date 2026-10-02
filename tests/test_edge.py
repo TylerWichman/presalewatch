@@ -71,7 +71,8 @@ class ProfitFormula(unittest.TestCase):
         signals = edge.demand_signals(None, None, None, 4, 1.0, self.cfg)
         score, missing = edge.demand_score(signals, self.cfg)
         self.assertEqual(missing, ["listeners", "engagement", "listeners_capacity"])
-        self.assertAlmostEqual(score, (0.15 * 0.25 + 0.15 * 1.0) / (0.15 + 0.15))
+        w = self.cfg["weights"]
+        self.assertAlmostEqual(score, (w["scarcity"] * 0.25 + w["market"] * 1.0) / (w["scarcity"] + w["market"]))
 
     def test_missing_signal_does_not_drag_score_down(self):
         full = dict.fromkeys(edge.SIGNALS, 0.9)
@@ -86,12 +87,25 @@ class ProfitFormula(unittest.TestCase):
         self.assertEqual(res["demand_score"], 1.0)
         self.assertEqual((res["tier"], res["confidence"]), ("Med", "Low"))
 
-    def test_lastfm_data_means_med_confidence_and_high_is_reachable(self):
-        # A big artist (3M listeners, 40 plays each) on a 20-date tour in a top market, capacity unknown.
+    def test_high_is_reachable_when_demand_outruns_seats(self):
+        # 3M listeners (40 plays each) for a 2,000-seat room on a 20-date tour in a top market.
+        signals = edge.demand_signals(3_000_000, 120_000_000, 2000, 20, 1.0, self.cfg)
+        res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
+        self.assertEqual(res["missing_signals"], [])
+        self.assertEqual((res["tier"], res["confidence"]), ("High", "Med"))
+
+    def test_high_needs_listeners_per_seat(self):
+        # Same act, venue capacity unknown: Last.fm data gives Med confidence, but the tier stops at Med.
         signals = edge.demand_signals(3_000_000, 120_000_000, None, 20, 1.0, self.cfg)
         res = edge.evaluate(face_min=None, face_max=None, fee_included=False, signals=signals, snapshot=None, cfg=self.cfg)
-        self.assertEqual(res["missing_signals"], ["listeners_capacity"])
-        self.assertEqual((res["tier"], res["confidence"]), ("High", "Med"))
+        self.assertGreaterEqual(res["demand_score"], 0.70)
+        self.assertEqual((res["tier"], res["confidence"]), ("Med", "Med"))
+
+    def test_listeners_per_seat_dominates(self):
+        # Mid-size artist in a small room beats a bigger artist in an arena.
+        small_room = edge.demand_score(edge.demand_signals(1_000_000, 30_000_000, 600, 10, 1.0, self.cfg), self.cfg)[0]
+        arena = edge.demand_score(edge.demand_signals(4_000_000, 120_000_000, 40_000, 10, 1.0, self.cfg), self.cfg)[0]
+        self.assertGreater(small_room, arena)
 
     def test_signal_scaling(self):
         sc = self.cfg["scaling"]

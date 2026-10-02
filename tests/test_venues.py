@@ -182,6 +182,29 @@ class WikidataParsing(unittest.TestCase):
         self.assertEqual(ve.parse_point(None), (None, None))
 
 
+class OsmBatching(unittest.TestCase):
+    def test_batch_results_are_split_by_distance(self):
+        f = ve.Fetch()
+        fox, msg = (37.80815, -122.27077), (40.7505, -73.9934)
+        els = [{"osm_id": "way/1", "tags": {}, "lat": 37.8079, "lon": -122.2701},     # near the Fox
+               {"osm_id": "way/2", "tags": {}, "lat": 40.7506, "lon": -73.9935},      # near MSG
+               {"osm_id": "way/3", "tags": {}, "lat": 37.8200, "lon": -122.2701}]     # 1.3 km from the Fox: out
+        with mock.patch.object(f, "osm_elements", return_value=els) as q:
+            f.osm_prefetch([fox, msg])
+        self.assertEqual(q.call_count, 1)                                              # one query for both
+        self.assertEqual([e["osm_id"] for e in f.osm_nearby(*fox)], ["way/1"])
+        self.assertEqual([e["osm_id"] for e in f.osm_nearby(*msg)], ["way/2"])
+
+    def test_failed_batch_falls_back_to_single_queries(self):
+        f = ve.Fetch()
+        with mock.patch.object(f, "osm_elements", side_effect=ve.ApiError("OpenStreetMap Overpass", 504, "x")):
+            f.osm_prefetch([(1.0, 2.0)])
+        self.assertEqual(f.osm_cache, {})
+        with mock.patch.object(f, "osm_elements", return_value=[]) as single:
+            f.osm_nearby(1.0, 2.0)
+        single.assert_called_once()
+
+
 class Evaluate(unittest.TestCase):
     def cand(self, source_id, names, lat, lon, types, raw=None, title=None):
         return {"source": "openstreetmap", "source_id": source_id, "names": names, "lat": lat, "lon": lon,
@@ -216,6 +239,9 @@ class FakeFetch:
 
     def wikipedia_lead(self, title):
         return ""
+
+    def osm_prefetch(self, points):
+        pass
 
     def osm_nearby(self, lat, lon):
         if abs(lat - 37.80815) < 0.01:

@@ -17,7 +17,7 @@ import sys
 import traceback
 
 from ingest import (lastfm_job, listenbrainz_job, musicbrainz_job, pageviews_job, ticketmaster_job,
-                    venue_enrichment, wikidata_job, youtube_job)
+                    venue_enrichment, venue_estimates, wikidata_job, youtube_job)
 from ingest.coverage import report
 from ingest.db import open_db, run_log
 
@@ -27,6 +27,7 @@ JOBS = {
     "musicbrainz": musicbrainz_job,
     "wikidata": wikidata_job,
     "venues": venue_enrichment,
+    "estimates": venue_estimates,
     "pageviews": pageviews_job,
     "listenbrainz": listenbrainz_job,
     "youtube": youtube_job,

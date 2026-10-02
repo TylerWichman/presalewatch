@@ -8,11 +8,20 @@
   "face_basis": "mid",
   "live_min_listings": 10,
   "weights": {
-    "listeners": 0.35,
-    "engagement": 0.15,
-    "listeners_capacity": 0.20,
-    "scarcity": 0.15,
+    "listeners": 0.15,
+    "engagement": 0.10,
+    "listeners_capacity": 0.50,
+    "scarcity": 0.10,
     "market": 0.15
+  },
+  "high_requires": ["listeners", "listeners_capacity"],
+  "capacity_estimate": {
+    "_note": "Estimated capacity for venues no source can resolve. Off until the first full enrichment pass (incl. OpenStreetMap) has run and the unlocked-event list is reviewed.",
+    "enabled": false,
+    "basis": "p25_small",
+    "small_max": 3000,
+    "high_check_capacity": 3000,
+    "large_name_pattern": "stadium|field|park|arena|amphithea|bowl|coliseum|dome|center|centre|pavilion|fairground|speedway|casino|resort"
   },
   "scaling": {
     "_note": "Each signal is log10(value) mapped from [low, high] onto 0-1.",

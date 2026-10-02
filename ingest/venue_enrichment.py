@@ -25,7 +25,10 @@ from __future__ import annotations
 import csv
 import json
 import re
+import time
+import urllib.error
 import urllib.parse
+import urllib.request
 from datetime import datetime, timedelta, timezone
 
 from common import ApiError, Http, ROOT, env
@@ -40,6 +43,8 @@ WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 SPARQL = "https://query.wikidata.org/sparql"
 WIKIPEDIA_API = "https://en.wikipedia.org/w/api.php"
 OVERPASS = "https://overpass-api.de/api/interpreter"
+OVERPASS_STATUS = "https://overpass-api.de/api/status"
+OVERPASS_TRIES = 4
 TM_VENUE = "https://app.ticketmaster.com/discovery/v2/venues/{id}.json"
 MANUAL_CSV = ROOT / "config" / "venues.csv"
 
@@ -49,6 +54,7 @@ MAX_VENUES_PER_RUN = 200
 DISAGREE = 0.10          # a re-check differing by more than 10% goes to review instead of overwriting
 SOURCES = ("wikidata", "wikipedia", "openstreetmap")
 OSM_RADIUS_M = 500     # lighter on the public Overpass server; confident matches need 300 m anyway
+OSM_BATCH = 20         # venues per Overpass query
 
 
 # ---- Fetchers ------------------------------------------------------------------------------
@@ -57,8 +63,10 @@ class Fetch:
     def __init__(self):
         self.wikidata = Http("Wikidata", 1.0)
         self.wikipedia = Http("Wikipedia", 0.5)
-        self.osm = Http("OpenStreetMap Overpass", 2.0)
+        # One attempt per call: overpass_query() handles waiting, using the server's own slot status.
+        self.osm = Http("OpenStreetMap Overpass", 2.0, max_retries=1)
         self.tm = Http("Ticketmaster", 0.25)
+        self.osm_cache: dict[tuple[float, float], list[dict]] = {}
 
     @property
     def calls(self) -> int:
@@ -121,22 +129,74 @@ SELECT ?item ?coord (SAMPLE(?l) AS ?label) (GROUP_CONCAT(DISTINCT ?a; separator=
         return ((data.get("parse") or {}).get("wikitext") or {}).get("*", "")
 
     # OpenStreetMap -----------------------------------------------------------------------
-    def osm_nearby(self, lat: float, lon: float) -> list[dict]:
-        kinds = "theatre|nightclub|arts_centre|events_venue|concert_hall|music_venue|stadium|sports_centre|arena|casino|bar|pub|amphitheatre|community_centre|conference_centre|exhibition_centre"
-        query = f"""[out:json][timeout:25];
-(
-  nwr(around:{OSM_RADIUS_M},{lat},{lon})["name"][~"^(amenity|leisure|building)$"~"^({kinds})$"];
-  nwr(around:{OSM_RADIUS_M},{lat},{lon})["name"]["capacity"];
-);
-out tags center 100;"""
-        data = self.osm.get_json(OVERPASS, data=urllib.parse.urlencode({"data": query}).encode(),
-                                 headers={"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"})
+    OSM_KINDS = ("theatre|nightclub|arts_centre|events_venue|concert_hall|music_venue|stadium|sports_centre|arena|casino|bar|pub"
+                 "|amphitheatre|community_centre|conference_centre|exhibition_centre")
+
+    @staticmethod
+    def osm_key(lat: float, lon: float) -> tuple[float, float]:
+        return round(lat, 6), round(lon, 6)
+
+    def osm_elements(self, points: list[tuple[float, float]], timeout: int) -> list[dict]:
+        """One Overpass query covering every point: venue-like or capacity-tagged named elements
+        within OSM_RADIUS_M of any of them."""
+        parts = "".join(
+            f'nwr(around:{OSM_RADIUS_M},{lat},{lon})["name"][~"^(amenity|leisure|building)$"~"^({self.OSM_KINDS})$"];'
+            f'nwr(around:{OSM_RADIUS_M},{lat},{lon})["name"]["capacity"];' for lat, lon in points)
+        data = self.overpass_query(f"[out:json][timeout:{timeout}];({parts});out tags center;")
         out = []
         for el in data.get("elements", []):
-            tags = el.get("tags") or {}
             c = el.get("center") or el
-            out.append({"osm_id": f"{el.get('type')}/{el.get('id')}", "tags": tags, "lat": c.get("lat"), "lon": c.get("lon")})
+            if c.get("lat") is not None:
+                out.append({"osm_id": f"{el.get('type')}/{el.get('id')}", "tags": el.get("tags") or {}, "lat": c["lat"], "lon": c["lon"]})
         return out
+
+    def osm_prefetch(self, points: list[tuple[float, float]]) -> None:
+        """Fetch OSM candidates for many venues in batches of OSM_BATCH (one query each instead of
+        one per venue), and remember each venue's share. A batch that fails is skipped; those
+        venues fall back to a single query in osm_nearby."""
+        for i in range(0, len(points), OSM_BATCH):
+            chunk = points[i:i + OSM_BATCH]
+            try:
+                els = self.osm_elements(chunk, timeout=120)
+            except ApiError:
+                continue
+            for lat, lon in chunk:
+                self.osm_cache[self.osm_key(lat, lon)] = [
+                    el for el in els if haversine_km(lat, lon, el["lat"], el["lon"]) * 1000 <= OSM_RADIUS_M]
+
+    def osm_nearby(self, lat: float, lon: float) -> list[dict]:
+        cached = self.osm_cache.get(self.osm_key(lat, lon))
+        return cached if cached is not None else self.osm_elements([(lat, lon)], timeout=25)
+
+    def overpass_query(self, query: str) -> dict:
+        """Run an Overpass query, waiting for a free slot as the server reports it.
+
+        The public server gives each IP a couple of query slots, each cooling down for a while
+        after a query. On a refusal (429) or timeout (504), ask /api/status how long until a slot
+        frees up and wait exactly that, rather than hammering it with short retries."""
+        body = urllib.parse.urlencode({"data": query}).encode()
+        headers = {"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"}
+        last: ApiError | None = None
+        for _ in range(OVERPASS_TRIES):
+            try:
+                return self.osm.get_json(OVERPASS, data=body, headers=headers)
+            except ApiError as err:
+                last = err
+                time.sleep(self.overpass_wait())
+        raise last or ApiError("OpenStreetMap Overpass", 503, "no free slot")
+
+    def overpass_wait(self) -> float:
+        """Seconds until a query slot frees up, from the server's status page (5-120 s)."""
+        try:
+            req = urllib.request.Request(OVERPASS_STATUS, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                text = resp.read().decode("utf-8", "replace")
+        except (urllib.error.URLError, TimeoutError):
+            return 30.0
+        if re.search(r"[1-9]\d* slots? available now", text):
+            return 5.0
+        waits = [int(m) for m in re.findall(r"in (\d+) seconds", text)]
+        return float(min(max(min(waits) + 2, 5), 120)) if waits else 30.0
 
     # Ticketmaster ------------------------------------------------------------------------
     def ticketmaster_venue(self, venue_id: str) -> dict | None:
@@ -517,8 +577,11 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     outcomes: dict[str, int] = {}
     limit = int(env("VENUE_LIMIT") or MAX_VENUES_PER_RUN)  # override for a one-off backfill
     sources = enabled_sources()
+    venues = due(db, now, limit)
+    if "openstreetmap" in sources:
+        fetch.osm_prefetch([(v["latitude"], v["longitude"]) for v in venues])
     try:
-        for venue in due(db, now, limit):
+        for venue in venues:
             stmts, outcome = enrich_one(fetch, venue, stamp, sources)
             if venue["ticketmaster_checked_at"] is None:
                 stmts += ticketmaster_details(fetch, venue, stamp)

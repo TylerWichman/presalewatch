@@ -25,6 +25,7 @@ SECRET_NAMES = (
     "SEATGEEK_CLIENT_ID",
     "SEATGEEK_CLIENT_SECRET",
     "LASTFM_API_KEY",
+    "CLOUDFLARE_D1_TOKEN",
 )
 
 _dotenv: dict[str, str] | None = None

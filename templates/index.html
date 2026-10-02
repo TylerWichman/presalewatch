@@ -324,7 +324,7 @@ footer p { margin: 4px 0; }
       </section>
       <section>
         <h3>Live vs Estimated</h3>
-        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. Estimated events sort by the midpoint of their range.</p>
+        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. A <b>High demand · est.</b> label means the rating relies on an estimated venue capacity, used only when the show would still rate High in a 3,000-seat room. Estimated events sort by the midpoint of their range.</p>
       </section>
       <section>
         <h3 id="calib-title">Estimates are uncalibrated</h3>
@@ -535,7 +535,7 @@ footer p { margin: 4px 0; }
       items.push(["Demand score", ev.ds.toFixed(2) + " → " + ev.tr + " tier"]);
       items.push(["Resale multiple", mult(ev.ml) + "–" + mult(ev.mh) + " face"]);
       items.push(["Last.fm", inp.lis != null ? big(inp.lis) + " listeners" + (inp.plc != null ? ", " + Math.round(inp.plc / inp.lis) + " plays each" : "") : "artist not found"]);
-      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() : "unknown"]);
+      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() + (inp.cest ? " (estimated)" : "") : "unknown"]);
       items.push(["Tour dates", inp.tour != null ? String(inp.tour) : "unknown"]);
       items.push(["Market", inp.mkt === 1 ? "NYC / LA / Chicago" : "Other metro"]);
       items.push(["Face used", inp.face != null ? money(inp.face) : "not listed (range is face-independent)"]);
@@ -596,7 +596,11 @@ footer p { margin: 4px 0; }
     btn.addEventListener("blur", hideTip);
     btn.addEventListener("click", function () { if (tipOwner === btn) hideTip(); else showTip(btn, ev); });
     side.appendChild(btn);
-    if (ev.m !== "live") side.appendChild(el("span", "chip tier-" + ev.tr, ev.tr + " demand"));
+    if (ev.m !== "live") {
+      var tierChip = el("span", "chip tier-" + ev.tr, ev.tr + " demand" + (ev.he ? " · est." : ""));
+      if (ev.he) tierChip.title = "Estimated: this High rating relies on an estimated venue capacity (no source lists this venue's size)";
+      side.appendChild(tierChip);
+    }
     strip.appendChild(side);
     return strip;
   }
