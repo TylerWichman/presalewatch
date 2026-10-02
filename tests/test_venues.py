@@ -375,6 +375,13 @@ class Database(unittest.TestCase):
         pinned = venue_handfill.unresolved(self.db, pinned=["KV_PIN"])
         self.assertEqual([r["ticketmaster_id"] for r in pinned[:2]], ["KV_PIN", "KV_BIG"])
         self.assertNotIn("KV_PIN", [r["ticketmaster_id"] for r in venue_handfill.unresolved(self.db, pinned=[])])
+        # Pinned with an automated (wrong-configuration) capacity: still listed, with the current value noted.
+        self.db.run("UPDATE venues SET capacity = 17424, capacity_source = 'wikidata' WHERE ticketmaster_id = 'KV_PIN'")
+        row = venue_handfill.unresolved(self.db, pinned=["KV_PIN"])[0]
+        self.assertEqual(row["ticketmaster_id"], "KV_PIN")
+        self.assertIn("currently 17,424 from wikidata", row["review_note"])
+        self.db.run("UPDATE venues SET capacity_verified = 1 WHERE ticketmaster_id = 'KV_PIN'")   # filled by hand: off the list
+        self.assertNotIn("KV_PIN", [r["ticketmaster_id"] for r in venue_handfill.unresolved(self.db, pinned=["KV_PIN"])])
 
     def test_handfill_export_and_import(self):
         self.run_job()
