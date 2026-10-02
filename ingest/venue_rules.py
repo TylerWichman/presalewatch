@@ -2,8 +2,8 @@
 
 Matching (coordinates first):
   confident  within 300 m of Ticketmaster's coordinates AND a matching name AND a venue-like type
-  review     within 300 m with a matching name or a venue type but not both, or 300-1000 m with a
-             matching name
+  review     within 300 m with a name at least 40% alike (ignoring filler words), or 300-1000 m
+             with a matching name. Differently named neighbors are dropped
   no         anything else
 Only confident matches write to venues; review goes to match_review; nothing is guessed.
 
@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 
-from ingest.resolve import haversine_km, same_name, token_overlap
+from ingest.resolve import haversine_km, name_key, same_name, token_overlap
 
 CONFIDENT_M = 300
 REVIEW_M = 1000
@@ -60,10 +60,34 @@ def strip_disambiguation(title: str) -> str:
     return re.sub(r"\s*\([^)]*\)\s*$", "", title or "")
 
 
-def name_matches(name: str, candidate_names: list[str]) -> bool:
+NAME_MATCH = 0.6       # word overlap for a matching name (confident needs this)
+NAME_REVIEW = 0.4      # weaker overlap that's still worth a person's look; below this it's a neighbor
+FILLER = {"the", "at", "of", "and", "a", "an", "in", "on", "by", "presented", "for"}
+
+
+def name_similarity(name: str, candidate_names: list[str]) -> float:
+    """Best match against any candidate name: 1.0 for the same name, otherwise the share of
+    words in common, ignoring filler words ("The Funhouse at Mr. Smalls" vs "Mr. Smalls" = 0.67)."""
     names = [n for n in candidate_names if n]
     names += [strip_disambiguation(n) for n in names]
-    return any(same_name(name, n) or token_overlap(name, n) >= 0.6 for n in names)
+    best = 0.0
+    for n in names:
+        if same_name(name, n):
+            return 1.0
+        a = set(name_key(name).split()) - FILLER
+        b = set(name_key(n).split()) - FILLER
+        if a and b:
+            best = max(best, len(a & b) / len(a | b))
+    return best
+
+
+def name_matches(name: str, candidate_names: list[str]) -> bool:
+    """Strict: the same name, or 60%+ of all words (filler included) in common. Kept stricter than
+    name_similarity on purpose, so "The Funhouse at Mr. Smalls" (a side room) never confidently
+    takes Mr. Smalls' capacity."""
+    names = [n for n in candidate_names if n]
+    names += [strip_disambiguation(n) for n in names]
+    return any(same_name(name, n) or token_overlap(name, n) >= NAME_MATCH for n in names)
 
 
 def classify(*, name: str, lat: float | None, lon: float | None, cand_names: list[str],
@@ -79,7 +103,9 @@ def classify(*, name: str, lat: float | None, lon: float | None, cand_names: lis
     name_ok = name_matches(name, cand_names)
     if meters <= CONFIDENT_M and name_ok and type_ok:
         return "confident", meters
-    if meters <= CONFIDENT_M and (name_ok or type_ok):
+    # Review only when the names are at least somewhat alike. A differently named neighbor
+    # (another theater down the block, a hotel) is just a neighbor, not a possible match.
+    if meters <= CONFIDENT_M and name_similarity(name, cand_names) >= NAME_REVIEW:
         return "review", meters
     if meters <= REVIEW_M and name_ok:
         return "review", meters

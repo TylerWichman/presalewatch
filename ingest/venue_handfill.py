@@ -1,7 +1,8 @@
 """Hand-fill CSV for venues no source could resolve.
 
-Export: venues with upcoming events and no capacity, busiest first, with links to check and any
-open review item. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
+Export: the 50 venues without a capacity whose upcoming artists draw the biggest audiences
+(highest Last.fm listener count among each venue's upcoming billed artists), with links to check
+and any open review item. Those are the venues where a capacity changes scores the most. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
 capacities are marked verified and are never overwritten by an automated source.
 
 Usage:
@@ -22,18 +23,29 @@ from pathlib import Path
 from ingest.db import Database, id_map, now_iso, open_db
 from ingest.venue_enrichment import write_manual
 
-COLUMNS = ["ticketmaster_id", "name", "city", "state", "upcoming_events", "map", "search", "review_note",
-           "capacity", "source_url", "notes"]
+COLUMNS = ["ticketmaster_id", "name", "city", "state", "top_artist", "top_artist_listeners", "upcoming_events",
+           "map", "search", "review_note", "capacity", "source_url", "notes"]
+TOP_N = 50
 
 
-def unresolved(db: Database, limit: int | None = None) -> list[dict]:
+def unresolved(db: Database, limit: int | None = TOP_N) -> list[dict]:
+    """Venues without a capacity, biggest upcoming audience first (venues with no Last.fm data
+    for any upcoming artist come last, then by event count)."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     rows = db.query(
-        "SELECT v.id, v.ticketmaster_id, v.name, v.city, v.state, v.latitude, v.longitude, COUNT(e.id) AS upcoming,"
-        " (SELECT details FROM match_review r WHERE r.external_id = CAST(v.id AS TEXT) AND r.status = 'open'"
-        "   AND r.kind IN ('venue_match', 'venue_capacity') ORDER BY r.last_updated DESC LIMIT 1) AS review"
-        " FROM venues v JOIN events e ON e.venue_id = v.id AND e.event_date >= ?"
-        " WHERE v.capacity IS NULL GROUP BY v.id ORDER BY upcoming DESC, v.name" + (" LIMIT ?" if limit else ""),
+        "WITH up AS (SELECT e.id, e.venue_id FROM events e WHERE e.event_date >= ?),"
+        " reach AS (SELECT up.venue_id, a.name, a.lastfm_listeners,"
+        "   ROW_NUMBER() OVER (PARTITION BY up.venue_id ORDER BY a.lastfm_listeners DESC) AS rn"
+        "   FROM up JOIN event_artists ea ON ea.event_id = up.id JOIN artists a ON a.id = ea.artist_id"
+        "   WHERE a.lastfm_listeners IS NOT NULL)"
+        " SELECT v.id, v.ticketmaster_id, v.name, v.city, v.state, v.latitude, v.longitude,"
+        " (SELECT COUNT(*) FROM up WHERE up.venue_id = v.id) AS upcoming,"
+        " r.name AS top_artist, r.lastfm_listeners AS top_listeners,"
+        " (SELECT details FROM match_review mr WHERE mr.external_id = CAST(v.id AS TEXT) AND mr.status = 'open'"
+        "   AND mr.kind IN ('venue_match', 'venue_capacity') ORDER BY mr.last_updated DESC LIMIT 1) AS review"
+        " FROM venues v LEFT JOIN reach r ON r.venue_id = v.id AND r.rn = 1"
+        " WHERE v.capacity IS NULL AND EXISTS (SELECT 1 FROM up WHERE up.venue_id = v.id)"
+        " ORDER BY r.lastfm_listeners IS NULL, r.lastfm_listeners DESC, upcoming DESC, v.name" + (" LIMIT ?" if limit else ""),
         (today, limit) if limit else (today,))
     for r in rows:
         r["review_note"] = json.loads(r["review"]).get("reason", "") if r["review"] else ""
@@ -49,6 +61,7 @@ def export(db: Database, out: Path) -> int:
             q = urllib.parse.quote_plus(f"{r['name']} {r['city'] or ''} capacity")
             w.writerow({
                 "ticketmaster_id": r["ticketmaster_id"], "name": r["name"], "city": r["city"], "state": r["state"],
+                "top_artist": r["top_artist"] or "", "top_artist_listeners": r["top_listeners"] or "",
                 "upcoming_events": r["upcoming"],
                 "map": f"https://www.openstreetmap.org/?mlat={r['latitude']}&mlon={r['longitude']}#map=18/{r['latitude']}/{r['longitude']}"
                        if r["latitude"] is not None else "",
@@ -93,7 +106,7 @@ def main() -> None:
     args = ap.parse_args()
     db = open_db(args.db)
     if args.cmd == "export":
-        print(f"{export(db, args.out)} venues without a capacity -> {args.out}")
+        print(f"top {export(db, args.out)} venues without a capacity, by audience size -> {args.out}")
         return
     result = import_file(db, args.csv)
     print(f"{result['filled']} capacities imported")

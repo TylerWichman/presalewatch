@@ -12,7 +12,7 @@ from ingest import venue_enrichment as ve
 from ingest import venue_handfill
 from ingest.db import SqliteDatabase
 from ingest.resolve import haversine_km
-from ingest.venue_rules import classify, is_venue, parse_capacity, pick_confident, venue_type
+from ingest.venue_rules import classify, is_venue, name_similarity, parse_capacity, pick_confident, venue_type
 
 NOW = "2026-10-02T12:00:00Z"
 FOX = {"id": 1, "name": "Fox Theater - Oakland", "latitude": 37.80815, "longitude": -122.27077,
@@ -36,10 +36,19 @@ class Matching(unittest.TestCase):
         self.assertEqual(classify(**far, type_ok=True)[0], "review")
         self.assertEqual(classify(**{**ok, "cand_lat": 37.83}, type_ok=True)[0], "no")  # ~2.4 km
 
-    def test_close_but_different_name(self):
-        close = dict(name="The Theater at MSG", lat=40.7505, lon=-73.9934, cand_lat=40.7506, cand_lon=-73.9935)
+    def test_differently_named_neighbors_are_dropped(self):
+        close = dict(name="The Masquerade - Heaven", lat=33.75, lon=-84.39, cand_lat=33.7505, cand_lon=-84.3905)
         self.assertEqual(classify(**close, cand_names=["Pennsylvania Station"], type_ok=False)[0], "no")
-        self.assertEqual(classify(**close, cand_names=["Madison Square Garden"], type_ok=True)[0], "review")
+        self.assertEqual(classify(**close, cand_names=["Strand Theatre"], type_ok=True)[0], "no")   # a venue, but a different one
+
+    def test_partly_similar_names_go_to_review(self):
+        close = dict(name="The Funhouse at Mr. Smalls", lat=40.48, lon=-79.95, cand_lat=40.48003, cand_lon=-79.95003)
+        self.assertEqual(classify(**close, cand_names=["Mr. Smalls"], type_ok=True)[0], "review")   # a room inside the venue
+
+    def test_name_similarity_ignores_filler_words(self):
+        self.assertAlmostEqual(name_similarity("The Funhouse at Mr. Smalls", ["Mr. Smalls"]), 2 / 3)
+        self.assertEqual(name_similarity("Fox Theater - Oakland", ["Fox Oakland Theatre"]), 1.0)
+        self.assertEqual(name_similarity("Citizens House of Blues Boston", ["MGM Music Hall at Fenway"]), 0.0)
 
     def test_disambiguated_titles_and_spelling(self):
         self.assertEqual(classify(name="Neptune Theatre", lat=None, lon=None, cand_names=["Neptune Theatre (Seattle)"],
@@ -272,6 +281,22 @@ class Database(unittest.TestCase):
         self.assertIsNone(self.venue("KV_FOX")["capacity"])
         self.run_job("2026-10-03")                                          # source back up
         self.assertEqual(self.venue("KV_FOX")["capacity"], 2800)
+
+    def test_handfill_sorted_by_biggest_upcoming_artist(self):
+        self.db.run("INSERT INTO venues (ticketmaster_id, name, name_key, latitude, longitude, source, last_updated)"
+                    " VALUES ('KV_BIG', 'Small Room', 'small room', 41.0, -87.0, 't', ?)", (NOW,))
+        big = self.db.scalar("SELECT id FROM venues WHERE ticketmaster_id = 'KV_BIG'")
+        self.db.run("INSERT INTO events (ticketmaster_id, name, venue_id, event_date, first_seen_at, last_seen_at, source, last_updated)"
+                    " VALUES ('BIG-1', 'S', ?, '2099-02-01', ?, ?, 't', ?)", (big, NOW, NOW, NOW))
+        for name, listeners, event in (("Huge Act", 3_000_000, "BIG-1"), ("Local Band", 1_000, "KV_X-0")):
+            self.db.run("INSERT INTO artists (name, name_key, lastfm_listeners, source, last_updated) VALUES (?, ?, ?, 't', ?)",
+                        (name, name.lower(), listeners, NOW))
+            self.db.run("INSERT INTO event_artists (event_id, artist_id, position, source, last_updated)"
+                        " SELECT e.id, a.id, 0, 't', ? FROM events e, artists a WHERE e.ticketmaster_id = ? AND a.name = ?",
+                        (NOW, event, name))
+        rows = venue_handfill.unresolved(self.db)
+        self.assertEqual([(r["ticketmaster_id"], r["top_artist"]) for r in rows[:2]], [("KV_BIG", "Huge Act"), ("KV_X", "Local Band")])
+        self.assertEqual(rows[0]["upcoming"], 1)  # fewer events, but the biggest audience
 
     def test_handfill_export_and_import(self):
         self.run_job()
