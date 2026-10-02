@@ -1,6 +1,6 @@
-# PresaleWatch database
+# PouchIt database
 
-The artist, venue, and event database behind PresaleWatch's demand and resale scoring.
+The artist, venue, and event database behind PouchIt's demand and resale scoring.
 It lives in Cloudflare D1 (SQLite) next to the accounts tables. The schema is in
 [`migrations/0002_intel.sql`](../migrations/0002_intel.sql), and tests are in
 [`tests/test_schema.py`](../tests/test_schema.py).

@@ -8,16 +8,16 @@ import { unsubscribeToken } from "../../src/lib/unsubscribe.ts";
 import { call, fakeFetch, makeEnv, signIn } from "./helpers.ts";
 import { ev, user } from "./fixtures.ts";
 
-const CTX = { origin: "https://pouchit.net", from: "PresaleWatch <alerts@pouchit.net>", unsubscribeSecret: "u".repeat(48), postalAddress: "PO Box 1, Town, ST 00000" };
+const CTX = { origin: "https://pouchit.net", from: "PouchIt <alerts@pouchit.net>", unsubscribeSecret: "u".repeat(48), postalAddress: "PO Box 1, Town, ST 00000" };
 const XSS = `<script>alert(1)</script><img src=x onerror=alert(2)>"'&`;
 
 describe("deliverability", () => {
-  const FROM = "PresaleWatch <alerts@pouchit.net>";
+  const FROM = "PouchIt <alerts@pouchit.net>";
 
-  it("both Cloudflare configs send from PresaleWatch <alerts@pouchit.net>", () => {
+  it("both Cloudflare configs send from PouchIt <alerts@pouchit.net>", () => {
     for (const f of ["wrangler.toml", "worker/wrangler.toml"]) {
       const toml = readFileSync(new URL(`../../${f}`, import.meta.url), "utf8");
-      assert.match(toml, /^EMAIL_FROM = "PresaleWatch <alerts@pouchit\.net>"$/m, f);
+      assert.match(toml, /^EMAIL_FROM = "PouchIt <alerts@pouchit\.net>"$/m, f);
     }
   });
 
@@ -82,7 +82,7 @@ describe("email escaping", () => {
   });
 
   it("refuses header values with line breaks", async () => {
-    assert.throws(() => renderSignIn("PresaleWatch <alerts@pouchit.net>", "a@example.com\r\nBcc: x@example.com", "https://pouchit.net/x"));
+    assert.throws(() => renderSignIn("PouchIt <alerts@pouchit.net>", "a@example.com\r\nBcc: x@example.com", "https://pouchit.net/x"));
     await assert.rejects(() => renderDigest({ user: user({ email: "a@example.com\nBcc: x@example.com" }), follows: [], profit: [ev()] }, CTX));
   });
 });
