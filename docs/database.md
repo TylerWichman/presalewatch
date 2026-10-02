@@ -2,16 +2,66 @@
 
 The artist, venue, and event database behind PouchIt's demand and resale scoring.
 It lives in Cloudflare D1 (SQLite) next to the accounts tables. The schema is in
-[`migrations/0002_intel.sql`](../migrations/0002_intel.sql), and tests are in
-[`tests/test_schema.py`](../tests/test_schema.py).
+[`migrations/0002_intel.sql`](../migrations/0002_intel.sql) and
+[`migrations/0003_demand_sources.sql`](../migrations/0003_demand_sources.sql). Tests are in
+[`tests/test_schema.py`](../tests/test_schema.py) and [`tests/test_ingest.py`](../tests/test_ingest.py).
 
 ## How data gets in
 
-- Ingestion jobs run in GitHub Actions (Python) and write to D1 through Cloudflare's
-  D1 HTTP API in batches. Workers stay limited to accounts and alerts.
-- Each source has its own job: Ticketmaster, Last.fm, MusicBrainz, and capacity drafts.
-  Every job logs itself in `ingest_runs`.
-- The page and alerts keep reading `presales.json`, which is exported from D1.
+- **Where it runs:** ingestion jobs in [`ingest/`](../ingest) run daily in GitHub Actions
+  ([`.github/workflows/ingest.yml`](../.github/workflows/ingest.yml)). They write to D1 through
+  Cloudflare's D1 HTTP API in batches. Workers stay limited to accounts and alerts.
+- **One job per source, in this order:** Ticketmaster → Last.fm → MusicBrainz → Wikidata →
+  Wikipedia pageviews → ListenBrainz → YouTube. Each logs itself in `ingest_runs`, and one
+  failing job doesn't stop the others.
+- **Effect on the live page:** none. The page and alerts still read `presales.json` from
+  the existing pipeline, so scoring doesn't change until deliverable 4.
+- **Running it yourself:**
+
+  ```powershell
+  python -m ingest.run --db sqlite:local.db              # every source, into a local file
+  python -m ingest.run --db d1 --sources lastfm          # one source, into production
+  python -m ingest.coverage --db d1                      # the coverage report
+  python -m ingest.import_prices prices.csv --db d1      # hand-logged prices
+  ```
+
+  Writing to D1 needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_D1_TOKEN` (a token with only
+  D1:Edit; the workflow uses `CLOUDFLARE_BACKEND_TOKEN`).
+
+### How artists and venues are matched
+
+The rule everywhere: accept a match only on strong evidence; anything weaker goes to
+`match_review` for a person. Nothing is guessed.
+
+- **MusicBrainz ID (the main artist key)**, in order of trust:
+  1. Ticketmaster's own MusicBrainz link for the artist.
+  2. The ID Last.fm returns, if Last.fm's artist name matches ours.
+  3. A MusicBrainz search that returns exactly one artist with the same name (or alias) and a
+     full score. Several artists sharing a name ("Low", "Bush") always go to review.
+
+  An ID already held by another artist row is never reassigned; that goes to review too.
+- **Wikidata item:** from the artist's MusicBrainz page, or a Wikidata lookup by MusicBrainz ID
+  (property P434). An item is only kept if it carries our MusicBrainz ID. The Wikipedia title
+  and YouTube channel come from that item.
+- **Venues:** Wikidata items within 1 km of Ticketmaster's coordinates. A match is confident
+  only when the item is that close **and** has the same name (or alias, or 60%+ of the same
+  words, after evening out "Theatre"/"Theater" and similar). Capacity is written only from a
+  confident match with exactly one capacity value, and never over a capacity already there.
+  Several values (e.g. basketball vs concerts) go to review.
+
+### Source terms on storing data
+
+Checked October 2026, before anything was stored.
+
+| Source | License or terms | Retention limits | What we do |
+| --- | --- | --- | --- |
+| Ticketmaster Discovery | May store event content "for reasonable periods" to provide the service. May not derive revenue from the API | Vague: "reasonable periods" | Store only the facts scoring and tour history need. **A paid PouchIt needs Ticketmaster's OK** |
+| Last.fm | **Non-commercial use only** (ToS 3.1). Credit Last.fm. Stored Last.fm data capped at 100 MB (4.3.4) | 100 MB total | Well under the cap. **A paid PouchIt needs a commercial license** |
+| MusicBrainz | Core data (artists, aliases, relationships) is CC0. 1 request/second per IP, contactable User-Agent | None | Core data only |
+| Wikidata | CC0 | None | Contactable User-Agent, one request at a time |
+| Wikipedia pageviews | CC0. User-Agent with contact details required | None | 12-month backfill, then daily |
+| ListenBrainz | CC0, commercial use allowed (MetaBrainz asks commercial users to donate) | None | Totals only; per-user listener names are dropped |
+| YouTube Data API | Developer Policies III.E.4 | **30 days** for public channel statistics (III.E.4.d). **No derived metrics** (III.E.4.h) | Current values only, one row per artist, deleted after 30 days. Not combined with other data and not used in scoring |
 
 ## Conventions
 
@@ -164,6 +214,41 @@ whenever API data is missing.
 | `source` | Where it was seen, e.g. "StubHub listing" |
 | `import_batch` | Which CSV import added the row |
 
+### Demand sources (migration 0003)
+
+**New columns on `artists`**
+
+| Field | Meaning |
+| --- | --- |
+| `wikidata_id` | The artist's Wikidata item, e.g. `Q44190` |
+| `wikipedia_title` | English Wikipedia article title |
+| `youtube_channel_id` | Official YouTube channel, from Wikidata (P2397) |
+| `artist_type` | MusicBrainz type: Person, Group, Orchestra, Choir, Character, Other |
+| `country` | MusicBrainz country code |
+| `mbid_source` | How the MusicBrainz ID was found: `ticketmaster`, `lastfm`, `musicbrainz_search`, or `manual` |
+| `wikidata_checked_at`, `listenbrainz_checked_at`, `pageviews_checked_at` | When each source was last asked |
+
+**`artist_aliases`**: other names an artist goes by (from MusicBrainz), with a normalized
+`alias_key` for matching.
+
+**New columns on `artist_metrics_snapshots`**: `listenbrainz_listeners` (people who've listened)
+and `listenbrainz_listens` (total plays), on rows whose `source` is `listenbrainz`.
+
+**`artist_pageviews`**: daily human views of the artist's English Wikipedia article (`day`,
+`views`, and the `article` title they were counted for). It's backfilled 12 months, then
+updated daily.
+
+**`artist_youtube_current`**: subscriber, view, and video counts for the artist's channel.
+**Current values only**: one row per artist, replaced on each refresh and deleted after 30
+days, as YouTube's policies require. `subscriber_count` is NULL when a channel hides it.
+
+**New column on `venues`**: `wikidata_checked_at`.
+
+**`event_status_history`**: one row each time Ticketmaster's status for an event changes
+(`onsale`, `offsale`, `cancelled`, `postponed`, `rescheduled`). The change happened between
+`previous_seen_at` and `seen_at`. Ingestion re-checks events for 30 days after on-sale, since
+that's when sellouts happen.
+
 ### Matching and bookkeeping
 
 **`match_review`**: anything a person needs to look at. One table covers artists and
@@ -191,6 +276,11 @@ status, API calls, and rows written.
 | `v_venue_premium`, `v_venue_type_premium` | Median markup per venue and per venue type, kept separate for asks and sales |
 | `v_artist_premium` | Median markup per headliner, plus sellout rate over events where sellout is known |
 | `venue_market` | Each venue's metro population and its state's resale rules |
+| `v_artist_pageview_momentum` | Average daily Wikipedia views over the last 7, 30, and 90 days, and the change vs the period before each (0.5 = up 50%). A window counts only if 90% of its days have data. `views_spike` = 1 when the 7-day average is more than twice the 90-day average |
+| `v_artist_listenbrainz` | Latest ListenBrainz listener and listen totals per artist |
+| `v_event_demand_sources` | Listeners per venue seat **for each source as its own column** (Last.fm, ListenBrainz), plus the pageview momentum. YouTube is deliberately left out: its policies forbid metrics derived from its data |
+| `v_event_sellout_proxy` | **Proxy, not a sellout record.** Hours from public on-sale to the first time Ticketmaster showed the event as off sale before the show. Off sale doesn't always mean sold out (held tickets, sales moving elsewhere), so `is_proxy` is always 1. `uncertainty_hours` is how long the change could have gone unseen between checks. Cancelled, postponed, and rescheduled events are left out |
+| `v_artist_sellout_proxy`, `v_venue_sellout_proxy` | Median hours-to-off-sale per headliner and per venue (also proxies) |
 | `v_event_features` | Everything above in one row per event. Scoring reads this |
 
 **Expected margin is not a view.** It uses the existing Profit % formula in `edge.py`:

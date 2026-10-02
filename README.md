@@ -16,6 +16,7 @@ See [EDGE_SPEC.md](EDGE_SPEC.md) for the edge model and [SPEC.md](SPEC.md) for t
 | `config/model.json` | Fees, weights, tier cutoffs, and multiple ranges |
 | `config/venues.csv` | Venue capacities, entered by hand. Seeded for NYC |
 | `db/`, `data/` | Generated tables and `presales.json`. Kept on the `data` branch, not `main` |
+| `ingest/` | Daily jobs filling the D1 intelligence database (see [docs/database.md](docs/database.md)). They don't affect the live page yet |
 
 The data pipeline uses only the Python standard library, so there is nothing to `pip install`.
 The accounts API and alerts are TypeScript on Cloudflare; see [Accounts and alerts](#accounts-and-alerts).
