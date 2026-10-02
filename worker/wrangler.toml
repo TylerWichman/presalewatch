@@ -11,7 +11,7 @@ crons = ["20 * * * *"]
 
 [vars]
 APP_ORIGIN = "https://pouchit.net"
-EMAIL_FROM = "PresaleWatch <alerts@pouchit.net>"
+EMAIL_FROM = "PouchIt <alerts@pouchit.net>"
 # "false" sends real email. Anything else only logs what would be sent (user IDs, no addresses).
 DRY_RUN = "true"
 # Stays under Resend's free tier of 100 emails/day. Users past the cap get their digest next hour.

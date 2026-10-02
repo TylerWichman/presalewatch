@@ -1,4 +1,4 @@
-# PresaleWatch
+# PouchIt
 
 A shareable page listing upcoming US concert presales, ranked by **edge**:
 the expected resale return per dollar spent, after seller and primary fees.
@@ -215,6 +215,10 @@ npx wrangler pages project create presalewatch --production-branch=main
 The site is served at `https://presalewatch.pages.dev`. If that name is already
 taken on Cloudflare, you'll get a suffixed subdomain instead; the exact URL is
 printed in the deploy step's log and shown under **Workers & Pages** in the dashboard.
+
+The product is called PouchIt, but the Cloudflare Pages project (`presalewatch`), the D1
+database (`presalewatch`), and the alert Worker (`presalewatch-alerts`) keep their original
+names. Cloudflare can't rename them in place, and visitors only ever see `pouchit.net`.
 
 ### How the refresh works
 

@@ -18,7 +18,7 @@ import urllib.parse
 from common import ApiError, Http, env
 
 API_URL = "https://ws.audioscrobbler.com/2.0/"
-USER_AGENT = "PresaleWatch/1.0 (+https://pouchit.net)"
+USER_AGENT = "PouchIt/1.0 (+https://pouchit.net)"
 # Last.fm error codes that mean "no such artist", as opposed to a key or rate problem.
 NOT_FOUND_CODES = {6}
 FATAL_CODES = {4, 9, 10, 26, 29}  # auth failed, bad session, invalid key, suspended key, rate limit

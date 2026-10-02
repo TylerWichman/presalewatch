@@ -95,7 +95,7 @@ export async function renderDigest(d: Digest, ctx: DigestContext): Promise<Messa
   const unsubPage = unsubscribePageUrl(ctx.origin, d.user.id, token);
   const oneClick = oneClickUrl(ctx.origin, d.user.id, token);
   const count = d.profit.length + d.follows.length;
-  const subject = `PresaleWatch: ${count} new presale alert${count === 1 ? "" : "s"}`;
+  const subject = `PouchIt: ${count} new presale alert${count === 1 ? "" : "s"}`;
   const hasEstimates = d.profit.some((e) => e.mode !== "live") || d.follows.some((e) => e.mode !== "live");
 
   const htmlSections: string[] = [];
@@ -113,7 +113,7 @@ export async function renderDigest(d: Digest, ctx: DigestContext): Promise<Messa
     ? "Items marked Estimate are predictions from demand signals, not live resale prices."
     : "";
   const footer = [
-    "You get this email because you turned on alerts at PresaleWatch.",
+    "You get this email because you turned on alerts at PouchIt.",
     `Manage alerts: ${ctx.origin}/alerts`,
     `Unsubscribe: ${unsubPage}`,
     ctx.postalAddress,
@@ -148,9 +148,9 @@ Not financial advice. Always confirm prices on the ticketing site.
 /** Short and plain on purpose: no images, buttons, or styling, which reads as a personal
  * transactional message to spam filters. The HTML part is the text with the link clickable. */
 export function renderSignIn(from: string, to: string, link: string): Message {
-  const subject = "Your PresaleWatch sign-in link";
+  const subject = "Your PouchIt sign-in link";
   assertHeaderSafe(from, to, subject);
-  const lines = ["Sign in to PresaleWatch:", link, "This link works once and expires in 15 minutes. If you didn't ask for it, ignore this email."];
+  const lines = ["Sign in to PouchIt:", link, "This link works once and expires in 15 minutes. If you didn't ask for it, ignore this email."];
   const text = `${lines[0]}\n\n${lines[1]}\n\n${lines[2]}\n`;
   const html = `<!doctype html><html><body>
 <p>${escapeHtml(lines[0])}</p>

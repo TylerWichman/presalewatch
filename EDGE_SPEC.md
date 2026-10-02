@@ -1,4 +1,4 @@
-# PresaleWatch — Profit % / Edge Feature Spec
+# PouchIt — Profit % / Edge Feature Spec
 
 Sep 26, 2026 · @Tyler
 

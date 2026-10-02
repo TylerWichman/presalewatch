@@ -1,10 +1,10 @@
-# PresaleWatch
+# PouchIt
 
 Read this before starting any work in this repo.
 
-## 1. What PresaleWatch is
+## 1. What PouchIt is
 
-PresaleWatch alerts people to exclusive ticket drops and presales that are
+PouchIt alerts people to exclusive ticket drops and presales that are
 often resold for a profit.
 
 The current stage is an MVP: a shareable web page that lists upcoming US
@@ -106,6 +106,9 @@ To see a design change without new data, edit `templates/index.html` and run
   GitHub repo secrets for the automatic job.
 - The site is hosted on Cloudflare Pages at https://pouchit.net. Alert emails
   come from alerts@pouchit.net through Resend.
+- The product is called **PouchIt** (it used to be PresaleWatch). The Cloudflare
+  Pages project, D1 database, and alert Worker keep their original `presalewatch`
+  names, because Cloudflare can't rename them in place. Visitors never see those names.
 - Account and email secrets live only in Cloudflare (`wrangler secret`) and
   GitHub secrets, never in the repo, page code, or logs.
 - Every merge to `main` goes live automatically. The same job also refreshes
