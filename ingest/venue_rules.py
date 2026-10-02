@@ -159,7 +159,15 @@ def pick_confident(classified: list[dict]) -> dict | None:
 
 # ---- Capacity parsing ---------------------------------------------------------------------
 
-CONCERT = re.compile(r"concert|music|end[- ]?stage|centre[- ]?stage|center[- ]?stage|performance|show", re.I)
+CONCERT = re.compile(r"concert|music|end[- ]?stage|centre[- ]?stage|center[- ]?stage|central[- ]?stage|in[- ]the[- ]round"
+                     r"|performance|show", re.I)
+
+
+def is_concert_figure(cap: dict | None) -> bool:
+    """A parsed capacity whose label names a concert configuration ("27,000 (concert)")."""
+    return bool(cap and cap.get("label") and CONCERT.search(cap["label"]))
+
+
 APPROX = re.compile(r"approx|about|around|circa|~|over|more than|up to|nearly|almost|est\.?", re.I)
 YEAR_CONTEXT = re.compile(r"(since|in|from|until|as of|opened|built|renovat|expanded|\()\s*$", re.I)
 NUMBER = re.compile(r"\d{1,3}(?:,\d{3})+(?!\d)|\d+")
@@ -192,6 +200,9 @@ def clean_wikitext(raw: str) -> str:
     s = re.sub(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]", r"\1", s)
     s = s.replace("'''", "").replace("''", "").replace("&nbsp;", " ")
     s = re.sub(r"[*•]", "\n", s)
+    # A label in parentheses on its own line belongs to the number before it:
+    # "16,980<br />(center stage concerts)".
+    s = re.sub(r"\n\s*(\([^()\n]*\))", r" \1", s)
     return "\n".join(" ".join(line.split()) for line in s.splitlines() if line.strip())
 
 

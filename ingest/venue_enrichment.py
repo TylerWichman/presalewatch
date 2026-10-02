@@ -35,7 +35,7 @@ from common import ApiError, Http, ROOT, env
 from ingest import mediawiki
 from ingest.db import Database, now_iso, review, rows_in
 from ingest.resolve import haversine_km
-from ingest.venue_rules import (CONFIDENT_M, choose_capacity, classify, is_venue, looks_large, parse_capacity,
+from ingest.venue_rules import (CONFIDENT_M, choose_capacity, classify, is_concert_figure, is_venue, looks_large, parse_capacity,
                                  pick_confident, venue_type)
 
 USER_AGENT = "PouchIt/1.0 (https://pouchit.net) python-urllib"
@@ -490,7 +490,14 @@ def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = S
                 stmts.append(observation(venue["id"], m, result["capacity"], now))
             cap = result["capacity"]
             if cap and cap["confidence"] in ("high", "medium"):
+                if resolved and not is_concert_figure(cap):
+                    break  # Wikipedia had no concert figure: keep Wikidata's
                 resolved = (m, cap)
+                # A Wikidata number with no configuration label is often a stadium's sports seating
+                # (DICK'S Sporting Goods Park: 17,424 for soccer, 27,000 for concerts). Check the
+                # venue's Wikipedia article and prefer its concert-labeled figure if it has one.
+                if source == "wikidata" and not cap.get("label") and known_title and "wikipedia" in sources:
+                    continue
                 break
             if cap:
                 low_caps.append((m, cap))

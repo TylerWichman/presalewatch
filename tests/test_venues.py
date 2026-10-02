@@ -116,6 +116,9 @@ class CapacityParsing(unittest.TestCase):
 
     def test_several_concert_values_take_largest(self):
         self.check("Concerts: 21,000 (end stage)<br>23,000 (center stage concerts)", 23000, "medium")
+        # Found in the concert-figure preview: BOK Center and Casey's Center.
+        self.check("Central stage: 19,199<br>Basketball: 17,839<br>End stage: 13,644", 19199, "medium")
+        self.check("16,980<br />(center stage concerts)<br />16,285 (end stage concerts)<br />16,110 (basketball)", 16980, "medium")
 
     def test_unlabeled_several_take_largest(self):
         self.check("Seated: 2,195<br />Standing: 3,000", 3000, "medium")
@@ -239,6 +242,48 @@ class FakeFetch:
 
     def ticketmaster_venue(self, venue_id):
         return {"timezone": "America/Los_Angeles", "url": "https://www.ticketmaster.com/fox"}
+
+
+class ConcertFigurePreferred(unittest.TestCase):
+    """A Wikidata number with no configuration label gives way to Wikipedia's concert figure."""
+    VENUE = {"id": 1, "ticketmaster_id": "KV_DSG", "name": "DICK'S Sporting Goods Park", "latitude": 39.8056, "longitude": -104.8919,
+             "capacity": None, "capacity_source": None, "capacity_verified": 0, "capacity_checked_at": None, "wikidata_id": None}
+    INFOBOX = ("{{Infobox stadium\n| name = Dick's Sporting Goods Park\n"
+               "| capacity = 18,061 (soccer)<ref>x</ref><br />27,000 (concert)\n}}")
+
+    def run_one(self, wikidata_label, infobox):
+        cand = {"source": "wikidata", "source_id": "Q1210268", "url": "https://www.wikidata.org/wiki/Q1210268",
+                "names": ["Dick's Sporting Goods Park"], "lat": 39.8061, "lon": -104.8922, "type_texts": ["stadium"],
+                "capacity_values": [{"n": 17424, "label": wikidata_label, "approx": False, "range": False}], "capacity_raw": "17,424",
+                "opened": None, "operator": None, "wikipedia_title": "Dick's Sporting Goods Park"}
+
+        class Fetch(FakeFetch):
+            def wikidata_candidates(self, lat, lon):
+                return [{"qid": "Q1210268", "label": cand["names"][0], "aliases": [], "lat": cand["lat"], "lon": cand["lon"]}]
+
+            def wikidata_entities(self, qids, props="", languages=None):
+                return {"Q1210268": {}}
+
+            def wikipedia_lead(self, title):
+                return infobox
+
+        with mock.patch.object(ve, "wikidata_candidate", return_value=cand):
+            stmts, outcome = ve.enrich_one(Fetch(), dict(self.VENUE), NOW)
+        caps = [p for sql, p in stmts if sql.startswith("UPDATE venues SET capacity = ?")]
+        return outcome, caps[0] if caps else None
+
+    def test_unlabeled_wikidata_gives_way_to_wikipedia_concert_figure(self):
+        outcome, params = self.run_one(None, self.INFOBOX)
+        self.assertEqual(outcome, "resolved")
+        self.assertEqual((params[0], params[2]), (27000, "wikipedia"))
+
+    def test_wikidata_kept_when_wikipedia_has_no_concert_figure(self):
+        outcome, params = self.run_one(None, self.INFOBOX.replace("<br />27,000 (concert)", ""))
+        self.assertEqual((params[0], params[2]), (17424, "wikidata"))
+
+    def test_labeled_wikidata_figure_is_not_second_guessed(self):
+        outcome, params = self.run_one("concerts", self.INFOBOX)
+        self.assertEqual((params[0], params[2]), (17424, "wikidata"))
 
 
 class Database(unittest.TestCase):

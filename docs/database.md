@@ -283,7 +283,10 @@ At most 200 venues a run. Verified (hand-entered) venues are never re-processed.
 When two entries describe the same building, the tie-breakers are, in order: the only one carrying a capacity, the only one with a Wikipedia article, then one at least twice as close as the next. Still tied goes to review.
 
 **Capacity parsing** handles messy values like "20,000 (concerts)", "Basketball: 19,722 / Concerts: 20,000", or "Seated: 2,195 / Standing: 3,000":
-- **Which value:** the one labeled for concerts. Otherwise the largest.
+- **Which value:** the one labeled for concerts (including end, center, or central stage). Otherwise the largest.
+- **Wikidata vs Wikipedia:** when Wikidata's capacity has no configuration label, the venue's Wikipedia
+  infobox is checked too, and a concert-labeled figure there wins. An unlabeled Wikidata number is often
+  a stadium's sports seating: DICK'S Sporting Goods Park is 17,424 for soccer and 27,000 for concerts.
 - **High confidence:** one clear value, or exactly one concert value.
 - **Medium confidence:** the largest of several values, or a value marked approximate.
 - **Low confidence:** a range ("1,500–2,000") or an implausible number (under 20 or over 150,000). **Low never writes**; it goes to `match_review`.
