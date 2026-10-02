@@ -26,6 +26,18 @@ class MaxLag(unittest.TestCase):
                 mediawiki.get(http, "u", {})
         self.assertEqual(ctx.exception.status, 503)
 
+    def test_query_service_lag_resends_without_maxlag(self):
+        # Wikidata counts SPARQL-service lag toward maxlag; our reads don't use that service.
+        wdqs = {"error": {"code": "maxlag", "lag": 9.7, "type": "wikibase-queryservice", "queryserviceLag": 584}}
+        http = Http("Wikidata", 0)
+        url = "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q1&maxlag=5&format=json"
+        with mock.patch.object(http, "get_json", side_effect=[wdqs, OK]) as g,                 mock.patch.object(mediawiki.time, "sleep") as sleep:
+            self.assertEqual(mediawiki.get(http, url, {}), OK)
+        sleep.assert_not_called()
+        retried = g.call_args_list[1].args[0]
+        self.assertNotIn("maxlag", retried)
+        self.assertIn("ids=Q1", retried)
+
     def test_other_api_errors_raise(self):
         http = Http("Wikipedia", 0)
         with mock.patch.object(http, "get_json", return_value={"error": {"code": "badvalue", "info": "nope"}}):
