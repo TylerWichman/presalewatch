@@ -4,7 +4,8 @@ Export: the 50 venues without a capacity whose upcoming artists draw the biggest
 (highest Last.fm listener count among each venue's upcoming billed artists), with links to check
 and any open review item. Those are the venues where a capacity changes scores the most. Venues
 listed in config capacity_estimate.hand_fill_venues (rooms inside resorts that no source or estimate
-handles well) always come first. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
+handles well, or whose automated capacity is the wrong configuration, such as a soccer stadium's
+seating) always come first, even when an automated source gave them a capacity. Fill in the `capacity` column (and ideally `source_url`), then import. Imported
 capacities are marked verified and are never overwritten by an automated source.
 
 Usage:
@@ -44,18 +45,22 @@ def unresolved(db: Database, limit: int | None = TOP_N, pinned: list[str] | None
         "   ROW_NUMBER() OVER (PARTITION BY up.venue_id ORDER BY a.lastfm_listeners DESC) AS rn"
         "   FROM up JOIN event_artists ea ON ea.event_id = up.id JOIN artists a ON a.id = ea.artist_id"
         "   WHERE a.lastfm_listeners IS NOT NULL)"
-        " SELECT v.id, v.ticketmaster_id, v.name, v.city, v.state, v.latitude, v.longitude,"
+        " SELECT v.id, v.ticketmaster_id, v.name, v.city, v.state, v.latitude, v.longitude, v.capacity AS current, v.capacity_source,"
         " (SELECT COUNT(*) FROM up WHERE up.venue_id = v.id) AS upcoming,"
         " r.name AS top_artist, r.lastfm_listeners AS top_listeners,"
         " (SELECT details FROM match_review mr WHERE mr.external_id = CAST(v.id AS TEXT) AND mr.status = 'open'"
         "   AND mr.kind IN ('venue_match', 'venue_capacity') ORDER BY mr.last_updated DESC LIMIT 1) AS review"
         " FROM venues v LEFT JOIN reach r ON r.venue_id = v.id AND r.rn = 1"
-        f" WHERE v.capacity IS NULL AND (EXISTS (SELECT 1 FROM up WHERE up.venue_id = v.id) OR v.ticketmaster_id IN ({pins}))"
+        f" WHERE ((v.capacity IS NULL AND EXISTS (SELECT 1 FROM up WHERE up.venue_id = v.id))"
+        f"   OR (v.ticketmaster_id IN ({pins}) AND v.capacity_verified = 0))"
         f" ORDER BY v.ticketmaster_id IN ({pins}) DESC, r.lastfm_listeners IS NULL, r.lastfm_listeners DESC, upcoming DESC, v.name"
         + (" LIMIT ?" if limit else ""),
         (today, *pinned, *pinned, limit) if limit else (today, *pinned, *pinned))
     for r in rows:
         r["review_note"] = json.loads(r["review"]).get("reason", "") if r["review"] else ""
+        if r["current"] is not None:  # pinned despite an automated value: say what it is now
+            r["review_note"] = (f"currently {r['current']:,} from {r['capacity_source']}; pinned for a concert figure"
+                                + (f"; {r['review_note']}" if r["review_note"] else ""))
     return rows
 
 

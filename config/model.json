@@ -23,13 +23,13 @@
     "min_pool": 50
   },
   "capacity_estimate": {
-    "_note": "Estimated capacity for small venues no source can resolve. hand_fill_venues (Ticketmaster venue IDs) are never estimated and always on the hand-fill list.",
+    "_note": "Estimated capacity for small venues no source can resolve. hand_fill_venues (Ticketmaster venue IDs) are never estimated and always on the hand-fill list: The Cosmopolitan of Las Vegas, Fontainebleau Las Vegas, and DICK'S Sporting Goods Park (its 17,424 is soccer seating).",
     "enabled": true,
     "basis": "p25_small",
     "small_max": 3000,
     "min_measured": 100,
     "high_check_capacity": 3000,
-    "hand_fill_venues": ["KovZpZAJAJeA", "KovZ917AcIV"],
+    "hand_fill_venues": ["KovZpZAJAJeA", "KovZ917AcIV", "KovZpZAE7aJA"],
     "large_name_pattern": "stadium|field|park|arena|amphithea|bowl|coliseum|dome|center|centre|pavilion|fairground|speedway|casino|resort|hotel"
   },
   "scaling": {
