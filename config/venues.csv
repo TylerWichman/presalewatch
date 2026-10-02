@@ -1,52 +1,52 @@
-venue_id,name,city,state,capacity,market_tier
-KovZpZAdt7AA,The Stone Pony,Asbury Park,NJ,850,1
-KovZpakS7e,MetLife Stadium,East Rutherford,NJ,82500,1
-KovZpZAEAIIA,PNC Bank Arts Center,Holmdel,NJ,17500,1
-KovZpZA6vkJA,White Eagle Hall,Jersey City,NJ,800,1
-KovZpZAJvIeA,The Wellmont Theater,Montclair,NJ,2500,1
-KovZpa6Vxe,New Jersey Performing Arts Center,Newark,NJ,2750,1
-KovZpZAE7vaA,Prudential Center,Newark,NJ,18700,1
-Z7r9jZadBb,Prudential Hall at New Jersey PAC,Newark,NJ,2800,1
-Z7r9jZaAbA,Count Basie Center for the Arts,Red Bank,NJ,1568,1
-KovZpaFbwe,Starland Ballroom,Sayreville,NJ,2000,1
-KovZ917APye,UBS Arena,Belmont Park,NY,17500,1
-KovZpZA6t77A,Yankee Stadium,Bronx,NY,47000,1
-KovZpZAJd6AA,Baby's All Right,Brooklyn,NY,280,1
-KovZ917AtP3,Barclays Center,Brooklyn,NY,19000,1
-KovZpZAIetFA,Brooklyn Bowl,Brooklyn,NY,600,1
-KovZpZA77ldA,Brooklyn Paramount,Brooklyn,NY,2700,1
-KovZ917AC-V,Brooklyn Steel,Brooklyn,NY,1800,1
-KovZpZA6enaA,Elsewhere,Brooklyn,NY,700,1
-KovZpZAJEa6A,Kings Theatre,Brooklyn,NY,3000,1
-KovZpZA77eIA,Music Hall of Williamsburg,Brooklyn,NY,650,1
-KovZpZAdJtAA,Warsaw,Brooklyn,NY,1000,1
-KovZpZA777nA,Forest Hills Stadium,Forest Hills,NY,13000,1
-KovZpZAEAEtA,The Paramount,Huntington,NY,1555,1
-KovZpZAFIv7A,Arlene's Grocery,New York,NY,150,1
-KovZpZAEAd6A,Beacon Theatre,New York,NY,2894,1
-KovZpZA7dkJA,Bowery Ballroom,New York,NY,575,1
-KovZpZA1dnJA,Carnegie Hall,New York,NY,2804,1
-KovZpZAEAdaA,Gramercy Theatre,New York,NY,650,1
-KovZpZA7kvlA,Infosys Theater at Madison Square Garden,New York,NY,5600,1
-KovZpaFPje,Irving Plaza Powered By Verizon 5G,New York,NY,1025,1
-KovZpZA7AAEA,Madison Square Garden,New York,NY,19500,1
-KovZpZAEAE6A,Manhattan Center Hammerstein Ballroom,New York,NY,2200,1
-KovZpZAklEeA,Map Room at Bowery Electric,New York,NY,200,1
-KovZpZAJAkAA,Mercury Lounge,New York,NY,250,1
-KovZpZAFI76A,Pianos NYC,New York,NY,150,1
-Z7r9jZa7MU,Racket NYC,New York,NY,400,1
-KovZpZAE7vdA,Radio City Music Hall,New York,NY,5960,1
-KovZ917A9F0,Rockwood Music Hall,New York,NY,250,1
-KovZ917Ah5Q,Sony Hall,New York,NY,1000,1
-KovZpZAFkn6A,Terminal 5,New York,NY,3000,1
-KovZpZA7AAIA,The Apollo's Historic Theater,New York,NY,1500,1
-KovZpZAatEFA,The Rooftop at Pier 17,New York,NY,3400,1
-Za5ju3rKuqZDdXG75B9LcZ2hN1xigpNiJo,The Town Hall,New York,NY,1495,1
-KovZpa6WFe,Webster Hall,New York,NY,1500,1
-KovZpaFtpe,Palladium Times Square,New York City,NY,2100,1
-KovZ917Ax6H,The Capitol Theatre,Port Chester,NY,1800,1
-KovZpZAalvtA,Citi Field,Queens,NY,42000,1
-KovZpZAEteAA,Knockdown Center,Queens,NY,3000,1
-KovZpa4PZe,St. George Theatre,Staten Island,NY,2800,1
-KovZpZA7deEA,Nassau Veterans Memorial Coliseum,Uniondale,NY,15000,1
-KovZpZAE6eAA,Northwell at Jones Beach Theater,Wantagh,NY,15000,1
+venue_id,name,city,state,capacity
+KovZpZAdt7AA,The Stone Pony,Asbury Park,NJ,850
+KovZpakS7e,MetLife Stadium,East Rutherford,NJ,82500
+KovZpZAEAIIA,PNC Bank Arts Center,Holmdel,NJ,17500
+KovZpZA6vkJA,White Eagle Hall,Jersey City,NJ,800
+KovZpZAJvIeA,The Wellmont Theater,Montclair,NJ,2500
+KovZpa6Vxe,New Jersey Performing Arts Center,Newark,NJ,2750
+KovZpZAE7vaA,Prudential Center,Newark,NJ,18700
+Z7r9jZadBb,Prudential Hall at New Jersey PAC,Newark,NJ,2800
+Z7r9jZaAbA,Count Basie Center for the Arts,Red Bank,NJ,1568
+KovZpaFbwe,Starland Ballroom,Sayreville,NJ,2000
+KovZ917APye,UBS Arena,Belmont Park,NY,17500
+KovZpZA6t77A,Yankee Stadium,Bronx,NY,47000
+KovZpZAJd6AA,Baby's All Right,Brooklyn,NY,280
+KovZ917AtP3,Barclays Center,Brooklyn,NY,19000
+KovZpZAIetFA,Brooklyn Bowl,Brooklyn,NY,600
+KovZpZA77ldA,Brooklyn Paramount,Brooklyn,NY,2700
+KovZ917AC-V,Brooklyn Steel,Brooklyn,NY,1800
+KovZpZA6enaA,Elsewhere,Brooklyn,NY,700
+KovZpZAJEa6A,Kings Theatre,Brooklyn,NY,3000
+KovZpZA77eIA,Music Hall of Williamsburg,Brooklyn,NY,650
+KovZpZAdJtAA,Warsaw,Brooklyn,NY,1000
+KovZpZA777nA,Forest Hills Stadium,Forest Hills,NY,13000
+KovZpZAEAEtA,The Paramount,Huntington,NY,1555
+KovZpZAFIv7A,Arlene's Grocery,New York,NY,150
+KovZpZAEAd6A,Beacon Theatre,New York,NY,2894
+KovZpZA7dkJA,Bowery Ballroom,New York,NY,575
+KovZpZA1dnJA,Carnegie Hall,New York,NY,2804
+KovZpZAEAdaA,Gramercy Theatre,New York,NY,650
+KovZpZA7kvlA,Infosys Theater at Madison Square Garden,New York,NY,5600
+KovZpaFPje,Irving Plaza Powered By Verizon 5G,New York,NY,1025
+KovZpZA7AAEA,Madison Square Garden,New York,NY,19500
+KovZpZAEAE6A,Manhattan Center Hammerstein Ballroom,New York,NY,2200
+KovZpZAklEeA,Map Room at Bowery Electric,New York,NY,200
+KovZpZAJAkAA,Mercury Lounge,New York,NY,250
+KovZpZAFI76A,Pianos NYC,New York,NY,150
+Z7r9jZa7MU,Racket NYC,New York,NY,400
+KovZpZAE7vdA,Radio City Music Hall,New York,NY,5960
+KovZ917A9F0,Rockwood Music Hall,New York,NY,250
+KovZ917Ah5Q,Sony Hall,New York,NY,1000
+KovZpZAFkn6A,Terminal 5,New York,NY,3000
+KovZpZA7AAIA,The Apollo's Historic Theater,New York,NY,1500
+KovZpZAatEFA,The Rooftop at Pier 17,New York,NY,3400
+Za5ju3rKuqZDdXG75B9LcZ2hN1xigpNiJo,The Town Hall,New York,NY,1495
+KovZpa6WFe,Webster Hall,New York,NY,1500
+KovZpaFtpe,Palladium Times Square,New York City,NY,2100
+KovZ917Ax6H,The Capitol Theatre,Port Chester,NY,1800
+KovZpZAalvtA,Citi Field,Queens,NY,42000
+KovZpZAEteAA,Knockdown Center,Queens,NY,3000
+KovZpa4PZe,St. George Theatre,Staten Island,NY,2800
+KovZpZA7deEA,Nassau Veterans Memorial Coliseum,Uniondale,NY,15000
+KovZpZAE6eAA,Northwell at Jones Beach Theater,Wantagh,NY,15000

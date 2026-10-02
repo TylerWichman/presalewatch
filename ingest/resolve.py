@@ -69,6 +69,23 @@ def choose_mbid(*, ticketmaster_mbid: str | None, lastfm_mbid: str | None, lastf
     return None, None
 
 
+ERA_START = 1900   # a person born before this can't be a touring act
+ERA_END = 1970     # an act that ended before this isn't the one on tour now
+
+
+def implausible_era(artist_type: str | None, begin: int | None, end: int | None) -> str | None:
+    """Why a MusicBrainz artist can't be the act on a current tour, or None if it can.
+
+    Catches IDs that point at a namesake: the composer Engelbert Humperdinck (1854-1921) for the
+    singer, a 1960s band for the Southern rock Outlaws. Groups may be older than 1900 (orchestras).
+    """
+    if end is not None and end < ERA_END:
+        return f"ended in {end}"
+    if artist_type == "Person" and begin is not None and begin < ERA_START:
+        return f"born in {begin}"
+    return None
+
+
 def pick_search_result(name: str, results: list[dict]) -> tuple[dict | None, str]:
     """Pick a MusicBrainz artist search result for `name`, or explain why not.
 
@@ -83,31 +100,6 @@ def pick_search_result(name: str, results: list[dict]) -> tuple[dict | None, str
     if (matches[0].get("score") or 0) < 100:
         return None, "only a partial match"
     return matches[0], "ok"
-
-
-# ---- Venues ----------------------------------------------------------------------------
-
-VENUE_MAX_KM = 1.0
-
-
-def venue_match(*, name: str, lat: float | None, lon: float | None,
-                cand_name: str, cand_aliases: list[str], cand_lat: float | None, cand_lon: float | None) -> tuple[str, float | None]:
-    """'confident', 'review', or 'no' for a Wikidata venue candidate, plus the distance in km.
-
-    Confident needs both: within 1 km of Ticketmaster's coordinates AND a matching name (same
-    name or alias, or at least 60% of words in common). Close but differently named, or same
-    name with no coordinates to compare, goes to review.
-    """
-    names = [cand_name, *cand_aliases]
-    name_ok = any(same_name(name, n) or token_overlap(name, n) >= 0.6 for n in names)
-    if None in (lat, lon, cand_lat, cand_lon):
-        return ("review" if name_ok else "no"), None
-    km = haversine_km(lat, lon, cand_lat, cand_lon)
-    if km <= VENUE_MAX_KM and name_ok:
-        return "confident", km
-    if km <= VENUE_MAX_KM or (name_ok and km <= 25):
-        return "review", km
-    return "no", km
 
 
 # ---- Ticketmaster details ------------------------------------------------------------

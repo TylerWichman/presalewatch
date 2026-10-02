@@ -54,6 +54,7 @@ function pct(f: number): string {
 
 function edgeText(ev: FeedEvent): string {
   if (ev.mode === "live") return `${pct(ev.profit ?? 0)} Profit %, based on asking prices`;
+  if (ev.profitLow === null || ev.profitHigh === null) return "Not rated: no artist listening data";
   return `Estimate: ${pct(ev.profitLow ?? 0)} to ${pct(ev.profitHigh ?? 0)} (midpoint ${pct(edgeOf(ev))}), ${ev.tier ?? "unknown"} demand`;
 }
 

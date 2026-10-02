@@ -8,11 +8,28 @@
   "face_basis": "mid",
   "live_min_listings": 10,
   "weights": {
-    "listeners": 0.35,
-    "engagement": 0.15,
-    "listeners_capacity": 0.20,
-    "scarcity": 0.15,
-    "market": 0.15
+    "listeners": 0.15,
+    "engagement": 0.10,
+    "listeners_capacity": 0.50,
+    "scarcity": 0.10,
+    "market": 0.075
+  },
+  "high_requires": ["listeners", "listeners_capacity"],
+  "tiering": {
+    "_note": "percentile: rank rated events that have a venue capacity by demand score; the top high_share are High, the next med_share Med. Below min_pool events, the fixed min_score cutoffs in tiers apply.",
+    "method": "percentile",
+    "high_share": 0.10,
+    "med_share": 0.40,
+    "min_pool": 50
+  },
+  "capacity_estimate": {
+    "_note": "Estimated capacity for small venues no source can resolve. hand_fill_venues (Ticketmaster venue IDs) are never estimated and always on the hand-fill list.",
+    "enabled": true,
+    "basis": "p25_small",
+    "small_max": 3000,
+    "high_check_capacity": 3000,
+    "hand_fill_venues": ["KovZpZAJAJeA", "KovZ917AcIV"],
+    "large_name_pattern": "stadium|field|park|arena|amphithea|bowl|coliseum|dome|center|centre|pavilion|fairground|speedway|casino|resort|hotel"
   },
   "scaling": {
     "_note": "Each signal is log10(value) mapped from [low, high] onto 0-1.",
@@ -21,10 +38,11 @@
     "listeners_per_seat_log10": [0.0, 4.0]
   },
   "refit_missing_value": 0.5,
-  "market": {
-    "top_market_ids": ["35", "55", "27", "3"],
-    "top": 1.0,
-    "other": 0.5
+  "market_population": {
+    "_note": "Market = everyone within radius_km of the venue (2020 Census tracts), log-scaled from low (0) to high (1).",
+    "radius_km": 80,
+    "low": 250000,
+    "high": 20000000
   },
   "tiers": [
     {"name": "High", "min_score": 0.70, "multiple_low": 1.8, "multiple_high": 3.0},

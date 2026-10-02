@@ -13,8 +13,8 @@ import urllib.parse
 from datetime import datetime, timedelta, timezone
 
 from common import ApiError, Http
-from ingest.db import Database, now_iso, review, set_mbid, upsert
-from ingest.resolve import is_mbid, name_key, pick_search_result
+from ingest.db import Database, now_iso, reject_mbid, review, set_mbid, upsert
+from ingest.resolve import implausible_era, is_mbid, name_key, pick_search_result
 
 SOURCE = "musicbrainz"
 API = "https://musicbrainz.org/ws/2"
@@ -71,7 +71,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     detail_before = (now - timedelta(days=DETAIL_TTL_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
     held = {r["mbid"]: r["id"] for r in db.query("SELECT id, mbid FROM artists WHERE mbid IS NOT NULL")}
     taken_qids = {r["wikidata_id"] for r in db.query("SELECT wikidata_id FROM artists WHERE wikidata_id IS NOT NULL")}
-    resolved = reviewed = detailed = 0
+    resolved = reviewed = detailed = rejected = 0
     try:
         # 1. Artists with no MBID: strict name search.
         for row in db.query(
@@ -99,7 +99,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
 
         # 2. Artists with an MBID: details, aliases, and the Wikidata item.
         for row in db.query(
-                "SELECT id, mbid, wikidata_id FROM artists WHERE mbid IS NOT NULL"
+                "SELECT id, name, mbid, wikidata_id FROM artists WHERE mbid IS NOT NULL"
                 " AND (musicbrainz_checked_at IS NULL OR musicbrainz_checked_at < ? OR artist_type IS NULL AND musicbrainz_checked_at < ?)"
                 " ORDER BY musicbrainz_checked_at IS NOT NULL, musicbrainz_checked_at", (detail_before, retry_before)):
             if http.calls >= MAX_CALLS or not is_mbid(row["mbid"]):
@@ -112,6 +112,12 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
                               ("UPDATE artists SET musicbrainz_checked_at = ? WHERE id = ?", (stamp, row["id"]))])
                     continue
                 raise
+            why = implausible_era(d["artist_type"], d["active_from"], d["active_to"])
+            if why:
+                db.batch(reject_mbid(row["id"], row["mbid"], row["name"], why, stamp))
+                del held[row["mbid"]]
+                rejected += 1
+                continue
             qid = d["wikidata_id"] if d["wikidata_id"] and not row["wikidata_id"] and d["wikidata_id"] not in taken_qids else None
             if qid:
                 taken_qids.add(qid)
@@ -127,4 +133,5 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
             detailed += 1
     finally:
         stats["api_calls"] += http.calls
-    print(f"  MusicBrainz: {resolved} MBIDs found by search, {reviewed} sent to review, {detailed} artists detailed ({http.calls} calls)")
+    print(f"  MusicBrainz: {resolved} MBIDs found by search, {reviewed} sent to review, {detailed} artists detailed,"
+          f" {rejected} MBIDs rejected as a namesake from another era ({http.calls} calls)")

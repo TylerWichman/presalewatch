@@ -1,8 +1,10 @@
 """Run the ingestion jobs against D1 (production) or a local SQLite file.
 
-Order matters: Ticketmaster creates the artists, Last.fm and MusicBrainz resolve their
-MusicBrainz IDs, Wikidata turns those into Wikipedia titles and YouTube channel IDs, and the
-rest read those IDs. A job that fails is logged in ingest_runs and the others still run.
+Order matters: Ticketmaster creates the artists and venues, Last.fm and MusicBrainz resolve
+MusicBrainz IDs, Wikidata turns those into Wikipedia titles and YouTube channel IDs, venue
+enrichment fills capacities, catchment adds the population around each venue, and the rest
+read those IDs. A job that fails is logged in
+ingest_runs and the others still run.
 
 Usage:
     python -m ingest.run --db sqlite:local.db                 # every source
@@ -15,8 +17,8 @@ import argparse
 import sys
 import traceback
 
-from ingest import (lastfm_job, listenbrainz_job, musicbrainz_job, pageviews_job, ticketmaster_job,
-                    wikidata_job, youtube_job)
+from ingest import (catchment, lastfm_job, listenbrainz_job, musicbrainz_job, pageviews_job, ticketmaster_job,
+                    venue_enrichment, venue_estimates, wikidata_job, youtube_job)
 from ingest.coverage import report
 from ingest.db import open_db, run_log
 
@@ -25,6 +27,9 @@ JOBS = {
     "lastfm": lastfm_job,
     "musicbrainz": musicbrainz_job,
     "wikidata": wikidata_job,
+    "venues": venue_enrichment,
+    "estimates": venue_estimates,
+    "catchment": catchment,
     "pageviews": pageviews_job,
     "listenbrainz": listenbrainz_job,
     "youtube": youtube_job,

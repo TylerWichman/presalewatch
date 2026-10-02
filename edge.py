@@ -17,8 +17,9 @@ from __future__ import annotations
 import math
 
 SIGNALS = ("listeners", "engagement", "listeners_capacity", "scarcity", "market")
-# Without Last.fm data confidence is Low and the tier is capped at Med, since market
-# and tour size alone can't show that people want the tickets.
+UNRATED = "Unrated"  # no Last.fm data: no demand tier, no estimated range
+# Without Last.fm data confidence is Low. An event is capped at Med unless every signal
+# in config high_requires is known (Last.fm listeners and listeners per venue seat).
 
 
 def all_in_cost(face: float, cfg: dict, fee_included: bool = False) -> float:
@@ -50,9 +51,13 @@ def face_price(face_min: float | None, face_max: float | None, cfg: dict) -> flo
     return sum(values) / len(values)
 
 
-def market_tier(market_ids: list[str], cfg: dict) -> float:
-    top = set(cfg["market"]["top_market_ids"])
-    return cfg["market"]["top"] if top.intersection(market_ids) else cfg["market"]["other"]
+def market_value(catchment: float | None, cfg: dict) -> float | None:
+    """Market size from the population within radius_km of the venue, log-scaled: 250K -> 0,
+    20M -> 1 (config market_population). None when unknown."""
+    if not catchment:
+        return None
+    m = cfg["market_population"]
+    return log_scale(catchment, math.log10(m["low"]), math.log10(m["high"]))
 
 
 def log_scale(value: float, lo: float, hi: float) -> float:
@@ -61,12 +66,13 @@ def log_scale(value: float, lo: float, hi: float) -> float:
 
 
 def demand_signals(listeners: float | None, playcount: float | None, capacity: float | None,
-                   tour_dates: float | None, market: float | None, cfg: dict) -> dict:
+                   tour_dates: float | None, catchment: float | None, cfg: dict) -> dict:
     """Scale raw inputs to 0-1 signals. Missing inputs come back as None.
 
     listeners: Last.fm listeners, log-scaled (reach).
     engagement: Last.fm plays per listener, log-scaled (how hard fans listen).
     listeners_capacity: listeners per venue seat, log-scaled (demand vs supply).
+    catchment: people living within 80 km of the venue; becomes the market signal.
     """
     s = cfg["scaling"]
     out: dict[str, float | None] = dict.fromkeys(SIGNALS)
@@ -78,8 +84,9 @@ def demand_signals(listeners: float | None, playcount: float | None, capacity: f
             out["listeners_capacity"] = log_scale(listeners / capacity, *s["listeners_per_seat_log10"])
     if tour_dates is not None and tour_dates >= 1:
         out["scarcity"] = clip(1 / tour_dates)
+    market = market_value(catchment, cfg)
     if market is not None:
-        out["market"] = clip(market)
+        out["market"] = market
     return out
 
 
@@ -103,32 +110,86 @@ def has_artist_data(missing: list[str]) -> bool:
     return "listeners" not in missing
 
 
-def tier_for(score: float, cfg: dict) -> dict:
+def tier_for(score: float, cfg: dict, cutoffs: dict | None = None) -> dict:
+    """The tier for a demand score. cutoffs ({"High": x, "Med": y}, from percentile_cutoffs)
+    replace the fixed min_score values in config when given."""
     tiers = sorted(cfg["tiers"], key=lambda t: t["min_score"], reverse=True)
     for tier in tiers:
-        if score >= tier["min_score"]:
+        if score >= (cutoffs or {}).get(tier["name"], tier["min_score"]):
             return tier
     return tiers[-1]
 
 
+def pool_score(signals: dict, check_signals: dict | None, capacity_estimated: bool, cfg: dict) -> float | None:
+    """An event's score for percentile ranking, or None when it isn't ranked.
+
+    Ranked: events with Last.fm data and a venue capacity (the signals High requires). An
+    estimated capacity ranks at the 3,000-seat check, so a guessed small room can't push it up.
+    """
+    sig = check_signals if capacity_estimated else signals
+    if sig is None or any(sig.get(k) is None for k in cfg.get("high_requires", ["listeners"])):
+        return None
+    return demand_score(sig, cfg)[0]
+
+
+def percentile_cutoffs(scores: list[float], cfg: dict) -> dict | None:
+    """Score cutoffs that put the top high_share of ranked events in High and the next med_share
+    in Med (config tiering). None means use the fixed cutoffs: method isn't percentile, or too few
+    events to rank."""
+    t = cfg.get("tiering") or {}
+    if t.get("method") != "percentile" or len(scores) < t.get("min_pool", 50):
+        return None
+    ranked = sorted(scores, reverse=True)
+    at = lambda share: ranked[max(math.ceil(len(ranked) * share), 1) - 1]  # noqa: E731
+    return {"High": at(t["high_share"]), "Med": at(t["high_share"] + t["med_share"])}
+
+
 def evaluate(*, face_min: float | None, face_max: float | None, fee_included: bool,
-             signals: dict, snapshot: dict | None, cfg: dict) -> dict:
-    """Pick Mode A or B and compute the edge for one event."""
-    score, missing = demand_score(signals, cfg)
-    tier = tier_for(score, cfg)
-    if not has_artist_data(missing) and tier["name"] == "High":
-        tier = next(t for t in cfg["tiers"] if t["name"] == "Med")
+             signals: dict, snapshot: dict | None, cfg: dict,
+             capacity_estimated: bool = False, check_signals: dict | None = None,
+             cutoffs: dict | None = None) -> dict:
+    """Pick Mode A or B and compute the edge for one event.
+
+    capacity_estimated: the venue capacity behind `signals` is an estimate, not a measurement.
+    check_signals: the same signals recomputed at the top of the small-venue range (3,000
+    seats). An estimate can only make an event High if it's still High at that capacity.
+    cutoffs: percentile tier cutoffs for this run (percentile_cutoffs); None uses the fixed ones.
+    """
+    listings = (snapshot or {}).get("listing_count")
+    median = (snapshot or {}).get("median")
     face = face_price(face_min, face_max, cfg)
+    is_live = bool(face and median and listings is not None and listings >= cfg["live_min_listings"])
+    if not is_live and signals.get("listeners") is None:
+        # No Last.fm data: the demand score would rest on market and tour size alone, which
+        # can't show that people want the tickets. Don't rate the event at all.
+        return {"mode": "predicted", "tier": UNRATED, "confidence": "Low", "demand_score": None,
+                "missing_signals": [k for k in SIGNALS if signals.get(k) is None], "face": face,
+                "capacity_estimated": capacity_estimated, "high_estimated": False,
+                "multiple_low": None, "multiple_high": None, "profit": None, "profit_low": None,
+                "profit_high": None, "edge_sort": None}
+    score, missing = demand_score(signals, cfg)
+    tier = tier_for(score, cfg, cutoffs)
+    med = next(t for t in cfg["tiers"] if t["name"] == "Med")
+    # High needs the signals that show demand outrunning supply (config: high_requires).
+    # Without them the rescaled weights fall on market and raw popularity, which overrate
+    # big-market shows and big artists in big rooms.
+    if tier["name"] == "High" and any(k in missing for k in cfg.get("high_requires", ["listeners"])):
+        tier = med
+    if tier["name"] == "High" and capacity_estimated:
+        check_score, _ = demand_score(check_signals or {}, cfg)
+        if check_signals is None or tier_for(check_score, cfg, cutoffs)["name"] != "High":
+            tier = med
     result = {
         "demand_score": round(score, 4),
         "tier": tier["name"],
         "missing_signals": missing,
         "face": face,
+        "capacity_estimated": capacity_estimated,
+        # Shown on the page as "estimated": this High depends on an estimated venue capacity.
+        "high_estimated": tier["name"] == "High" and capacity_estimated,
     }
 
-    listings = (snapshot or {}).get("listing_count")
-    median = (snapshot or {}).get("median")
-    if face and median and listings is not None and listings >= cfg["live_min_listings"]:
+    if is_live:
         resale = sale_price(median, cfg)
         profit = profit_pct(resale, face, cfg, fee_included)
         result.update({

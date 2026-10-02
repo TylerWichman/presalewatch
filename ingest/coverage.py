@@ -9,9 +9,10 @@ from __future__ import annotations
 import argparse
 
 from ingest.db import Database, open_db
+from ingest.venue_enrichment import capacity_coverage
 
 TABLES = ["artists", "artist_aliases", "artist_tags", "artist_similar", "artist_metrics_snapshots", "artist_pageviews",
-          "artist_youtube_current", "venues", "events", "event_artists", "presales", "event_status_history",
+          "artist_youtube_current", "venues", "venue_capacity_observations", "events", "event_artists", "presales", "event_status_history",
           "resale_snapshots", "observed_prices", "match_review", "ingest_runs"]
 
 
@@ -49,6 +50,7 @@ def numbers(db: Database) -> dict:
 
 def report(db: Database) -> str:
     n = numbers(db)
+    cov = capacity_coverage(db)
     a, v, e = n["artists"], n["venues"], n["events"]
     lines = [
         "Coverage report",
@@ -62,11 +64,13 @@ def report(db: Database) -> str:
         f"  Pageview history     {n['pageviews']:>5}  {pct(n['pageviews'], a)}",
         f"Venues: {v}",
         f"  Capacity             {n['venue_capacity']:>5}  {pct(n['venue_capacity'], v)}",
+        f"  With upcoming events {cov['venues']:>5}, capacity known for {cov['venues_filled']} ({pct(cov['venues_filled'], cov['venues'])})",
         f"  Wikidata item        {n['venue_wikidata']:>5}  {pct(n['venue_wikidata'], v)}",
         f"  Coordinates          {n['venue_coords']:>5}  {pct(n['venue_coords'], v)}",
         f"Events: {e} ({n['upcoming']} upcoming)",
         f"  Face value           {n['event_face']:>5}  {pct(n['event_face'], e)}",
-        f"  Venue capacity       {n['event_capacity']:>5}  {pct(n['event_capacity'], e)}",
+        f"  Venue capacity       {n['event_capacity']:>5}  {pct(n['event_capacity'], e)}"
+        f"   (upcoming: {cov['events_filled']} of {cov['events']}, {pct(cov['events_filled'], cov['events'])})",
         f"  Resale snapshot      {n['event_resale']:>5}  {pct(n['event_resale'], e)}",
         f"  Logged prices        {n['event_observed']:>5}  {pct(n['event_observed'], e)}",
         "Open review items: " + (", ".join(f"{k} {c}" for k, c in sorted(n["review"].items())) or "none"),

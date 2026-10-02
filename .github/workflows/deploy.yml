@@ -69,6 +69,11 @@ jobs:
           SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
           SEATGEEK_CLIENT_SECRET: ${{ secrets.SEATGEEK_CLIENT_SECRET }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          # Venue capacities (measured, and estimated when enabled) from the intelligence database.
+          # If D1 can't be reached, the pipeline warns and scores without them.
+          INTEL_DB: d1
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_TOKEN: ${{ secrets.CLOUDFLARE_BACKEND_TOKEN }}
         run: |
           python pipeline.py
           python calibrate.py

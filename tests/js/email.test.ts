@@ -71,6 +71,12 @@ describe("email escaping", () => {
     assert.match(msg.text, /Items marked Estimate are predictions/);
   });
 
+  it("shows unrated events (no artist listening data) as not rated", async () => {
+    const msg = await renderDigest({ user: user(), follows: [ev({ tier: null, profitLow: null, profitHigh: null, edge: null })], profit: [] }, CTX);
+    assert.match(msg.text, /Not rated: no artist listening data/);
+    assert.ok(!msg.text.includes("Estimate: +0%"));
+  });
+
   it("includes unsubscribe links, one-click headers, and the postal address", async () => {
     const msg = await renderDigest({ user: user(), follows: [], profit: [ev()] }, CTX);
     const token = await unsubscribeToken(CTX.unsubscribeSecret, user().id, user().unsub_nonce);

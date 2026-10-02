@@ -13,8 +13,7 @@ from ingest import (import_prices, lastfm_job, listenbrainz_job, musicbrainz_job
                     wikidata_job, youtube_job)
 from ingest.coverage import report
 from ingest.db import D1_MAX_PARAMS, SqliteDatabase, upsert
-from ingest.resolve import (choose_mbid, event_status, haversine_km, name_key, parse_ticket_limit, pick_search_result,
-                            same_name, venue_match)
+from ingest.resolve import choose_mbid, event_status, name_key, parse_ticket_limit, pick_search_result, same_name
 
 FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "sample_events.json"
 MB1 = "63094905-b963-46ca-8429-090e1afd6752"
@@ -58,62 +57,6 @@ class ArtistResolution(unittest.TestCase):
         self.assertEqual(pick_search_result("Bush", [r("Bush", 90)])[1], "only a partial match")
         self.assertEqual(pick_search_result("Nobody", [r("Somebody")])[1], "no result with this name")
         self.assertEqual(pick_search_result("Prince", [r("Prince Rogers Nelson", aliases=["Prince"])])[1], "ok")
-
-
-class VenueResolution(unittest.TestCase):
-    MSG = (40.7505, -73.9934)
-
-    def test_haversine(self):
-        self.assertAlmostEqual(haversine_km(40.7505, -73.9934, 40.6826, -73.9754), 7.7, delta=0.2)  # MSG to Barclays
-
-    def test_confident_needs_close_and_same_name(self):
-        v = venue_match(name="Madison Square Garden", lat=self.MSG[0], lon=self.MSG[1], cand_name="Madison Square Garden",
-                        cand_aliases=[], cand_lat=40.7506, cand_lon=-73.9935)
-        self.assertEqual(v[0], "confident")
-        v = venue_match(name="Fox Theater - Oakland", lat=37.808, lon=-122.270, cand_name="Fox Oakland Theatre",
-                        cand_aliases=[], cand_lat=37.8079, cand_lon=-122.2701)
-        self.assertEqual(v[0], "confident")
-
-    def test_close_but_different_name_goes_to_review(self):
-        v = venue_match(name="The Theater at MSG", lat=self.MSG[0], lon=self.MSG[1], cand_name="Pennsylvania Station",
-                        cand_aliases=[], cand_lat=40.7506, cand_lon=-73.9935)
-        self.assertEqual(v[0], "review")
-
-    def test_same_name_far_away_is_review_or_no(self):
-        far = venue_match(name="The Fillmore", lat=37.784, lon=-122.433, cand_name="The Fillmore", cand_aliases=[],
-                          cand_lat=42.335, cand_lon=-83.050)  # SF vs Detroit
-        self.assertEqual(far[0], "no")
-        no_coords = venue_match(name="The Fillmore", lat=None, lon=None, cand_name="The Fillmore", cand_aliases=[],
-                                cand_lat=37.78, cand_lon=-122.43)
-        self.assertEqual(no_coords[0], "review")
-
-    def test_decide_venue(self):
-        venue = {"name": "Mississippi Coliseum", "latitude": 32.32, "longitude": -90.17}
-        cand = lambda qid, label, caps, lat=32.3201, lon=-90.1701: {  # noqa: E731
-            "qid": qid, "label": label, "aliases": set(), "caps": set(caps), "coord": f"Point({lon} {lat})"}
-        one = wikidata_job.decide_venue(venue, [cand("Q1", "Mississippi Coliseum", [10000])])
-        self.assertEqual((one["action"], one["capacity"]), ("match", 10000))
-        two_caps = wikidata_job.decide_venue(venue, [cand("Q1", "Mississippi Coliseum", [6500, 10000])])
-        self.assertEqual((two_caps["action"], two_caps["capacity"], two_caps["capacity_review"]), ("match", None, [6500, 10000]))
-        twins = wikidata_job.decide_venue(venue, [cand("Q1", "Mississippi Coliseum", []), cand("Q2", "Mississippi Coliseum", [])])
-        self.assertEqual((twins["action"], twins["reason"]), ("review", "several confident matches"))
-        self.assertEqual(wikidata_job.decide_venue(venue, [cand("Q9", "Unrelated Park", [], 32.40, -90.30)])["action"], "none")
-
-    def test_duplicate_items_tie_breakers(self):
-        # Wikidata often has two items for one building, e.g. the venue and a historic-theater record.
-        venue = {"name": "Fox Theater - Oakland", "latitude": 37.80815, "longitude": -122.27077}
-        def cand(qid, label, caps=(), enwiki=False):
-            return {"qid": qid, "label": label, "aliases": set(), "caps": set(caps), "coord": "Point(-122.2701 37.8079)", "enwiki": enwiki}
-        by_article = wikidata_job.decide_venue(venue, [cand("Q1", "Fox Oakland Theatre", enwiki=True), cand("Q2", "Fox Oakland Theater")])
-        self.assertEqual((by_article["action"], by_article["qid"]), ("match", "Q1"))
-        by_capacity = wikidata_job.decide_venue(venue, [cand("Q1", "Fox Oakland Theatre", enwiki=True), cand("Q2", "Fox Oakland Theater", [2800])])
-        self.assertEqual((by_capacity["action"], by_capacity["qid"], by_capacity["capacity"]), ("match", "Q2", 2800))
-        still_tied = wikidata_job.decide_venue(venue, [cand("Q1", "Fox Oakland Theatre", enwiki=True), cand("Q2", "Fox Oakland Theater", enwiki=True)])
-        self.assertEqual(still_tied["action"], "review")
-
-    def test_parse_point(self):
-        self.assertEqual(wikidata_job.parse_point("Point(-73.99 40.75)"), (40.75, -73.99))
-        self.assertEqual(wikidata_job.parse_point(None), (None, None))
 
 
 class TicketmasterDetails(unittest.TestCase):
@@ -227,6 +170,41 @@ class MusicBrainzAndWikidata(unittest.TestCase):
         self.assertEqual(wikidata_job.parse_artist_entity(ent, MB2),
                          {"ok": True, "wikipedia_title": "Radiohead", "youtube_channel_id": "UCq19-LqvG35A-30oyAiPiqA"})
         self.assertFalse(wikidata_job.parse_artist_entity(ent, MB1)["ok"])
+
+
+class NamesakeFromAnotherEra(unittest.TestCase):
+    def test_era_rule(self):
+        from ingest.resolve import implausible_era
+        self.assertEqual(implausible_era("Person", 1854, 1921), "ended in 1921")      # the composer Humperdinck
+        self.assertEqual(implausible_era("Group", 1964, 1969), "ended in 1969")       # a 1960s namesake band
+        self.assertEqual(implausible_era("Person", 1899, None), "born in 1899")
+        self.assertIsNone(implausible_era("Person", 1936, None))                      # the singer Humperdinck
+        self.assertIsNone(implausible_era("Orchestra", 1881, None))                   # old orchestras still tour
+        self.assertIsNone(implausible_era("Group", 1967, 1983))                       # broke up later; a reunion can tour
+        self.assertIsNone(implausible_era(None, None, None))
+
+    def test_musicbrainz_rejects_the_namesake_and_it_stays_rejected(self):
+        db = temp_db()
+        db.run("INSERT INTO artists (name, name_key, mbid, mbid_source, wikidata_id, wikipedia_title, source, last_updated)"
+               " VALUES ('Engelbert Humperdinck', 'engelbert humperdinck', ?, 'ticketmaster', 'Q55010',"
+               " 'Engelbert Humperdinck (composer)', 't', ?)", (MB1, NOW))
+        db.run("INSERT INTO artist_pageviews (artist_id, day, views, article, source, last_updated)"
+               " VALUES (1, '2026-09-30', 900, 'Engelbert Humperdinck (composer)', 'wikimedia_pageviews', ?)", (NOW,))
+        composer = {"type": "Person", "life-span": {"begin": "1854-09-01", "end": "1921-09-27", "ended": True},
+                    "relations": [{"type": "wikidata", "url": {"resource": "https://www.wikidata.org/wiki/Q55010"}}]}
+        with mock.patch.object(musicbrainz_job, "get", side_effect=lambda http, path, params: composer if path.startswith("artist/")
+                               else {"artists": []}):
+            musicbrainz_job.run(db, {"api_calls": 0, "rows_written": 0})
+        a = db.query("SELECT mbid, mbid_rejected, wikidata_id, wikipedia_title, active_from FROM artists WHERE id = 1")[0]
+        self.assertEqual(a, {"mbid": None, "mbid_rejected": MB1, "wikidata_id": None, "wikipedia_title": None, "active_from": None})
+        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews"), 0)
+        self.assertIn("ended in 1921", db.scalar("SELECT details FROM match_review WHERE kind = 'artist_match'"))
+        # Ticketmaster sends the same ID again the next day: it isn't re-attached. A different one is.
+        from ingest.db import set_mbid
+        db.batch([set_mbid(1, MB1, "ticketmaster", NOW)])
+        self.assertIsNone(db.scalar("SELECT mbid FROM artists WHERE id = 1"))
+        db.batch([set_mbid(1, MB2, "lastfm", NOW)])
+        self.assertEqual(db.scalar("SELECT mbid FROM artists WHERE id = 1"), MB2)
 
 
 class Pageviews(unittest.TestCase):

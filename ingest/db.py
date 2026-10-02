@@ -188,7 +188,28 @@ def set_mbid(artist_id: int, mbid: str, how: str, now: str) -> Statement:
     """Give an artist an MBID unless it already has one or another row holds that MBID.
     The guard is in the SQL itself, so a conflict skips this row instead of failing the batch."""
     return ("UPDATE artists SET mbid = ?, mbid_source = ?, last_updated = ? WHERE id = ? AND mbid IS NULL"
-            " AND NOT EXISTS (SELECT 1 FROM artists other WHERE other.mbid = ?)", (mbid, how, now, artist_id, mbid))
+            " AND mbid_rejected IS NOT ?"
+            " AND NOT EXISTS (SELECT 1 FROM artists other WHERE other.mbid = ?)", (mbid, how, now, artist_id, mbid, mbid))
+
+
+def reject_mbid(artist_id: int, mbid: str, name: str, reason: str, now: str) -> list[Statement]:
+    """Unlink a MusicBrainz ID that belongs to someone else, and everything found through it.
+
+    The ID is kept in mbid_rejected so no job (Ticketmaster supplies some of these) attaches it
+    again; the artist is searched by name again on the next MusicBrainz run.
+    """
+    return [
+        ("UPDATE artists SET mbid = NULL, mbid_source = NULL, mbid_rejected = ?, wikidata_id = NULL, wikipedia_title = NULL,"
+         " youtube_channel_id = NULL, artist_type = NULL, country = NULL, active_from = NULL, active_to = NULL,"
+         " musicbrainz_checked_at = NULL, wikidata_checked_at = NULL, listenbrainz_checked_at = NULL,"
+         " pageviews_checked_at = NULL, last_updated = ? WHERE id = ?", (mbid, now, artist_id)),
+        ("DELETE FROM artist_aliases WHERE artist_id = ? AND source = 'musicbrainz'", (artist_id,)),
+        ("DELETE FROM artist_metrics_snapshots WHERE artist_id = ? AND source = 'listenbrainz'", (artist_id,)),
+        ("DELETE FROM artist_pageviews WHERE artist_id = ?", (artist_id,)),
+        ("DELETE FROM artist_youtube_current WHERE artist_id = ?", (artist_id,)),
+        review("artist_match", "musicbrainz", str(artist_id), name,
+               {"reason": f"MusicBrainz ID rejected: that artist {reason}", "mbid": mbid}),
+    ]
 
 
 def review(kind: str, source: str, external_id: str, name: str, details: dict,
