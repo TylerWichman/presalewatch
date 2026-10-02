@@ -74,7 +74,7 @@ export function makeEnv(db = new FakeD1()): Env & { DB: FakeD1 & D1Database } {
   return {
     DB: db as FakeD1 & D1Database,
     APP_ORIGIN: ORIGIN,
-    EMAIL_FROM: "PouchIt <alerts@pouchit.net>",
+    EMAIL_FROM: "PresaleWatch <alerts@pouchit.net>",
     RESEND_API_KEY: "re_test_key_not_real",
     TURNSTILE_SECRET: "turnstile_test_secret",
     UNSUBSCRIBE_SECRET: "u".repeat(48),
