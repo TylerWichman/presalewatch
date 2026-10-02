@@ -5,8 +5,9 @@ rather than the median because measured small venues skew large: a club with a W
 is usually a notable, bigger one.
 
 A venue gets an estimate only if all of these hold:
-  * it has no measured capacity, and every source has been tried (capacity_checked_at is set;
-    venues deferred or skipped for a source error are left for the next run);
+  * it has no measured capacity, and every source has been tried: Wikidata and Wikipedia
+    (capacity_checked_at) and OpenStreetMap (osm_checked_at). Venues deferred, skipped for a
+    source error, or still waiting for the capped OpenStreetMap step are left for later runs;
   * nothing about it is open in match_review;
   * its name doesn't suggest a large venue (stadium, arena, field, park, amphitheater, center,
     casino, ...) and its known type isn't stadium, arena, amphitheater, or festival. Unprocessed
@@ -38,7 +39,8 @@ def p25(values: list[int]) -> int | None:
 
 def eligible(venue: dict, large_name: re.Pattern) -> bool:
     """Pure: may this venue get an estimate?"""
-    return (venue["capacity"] is None and venue["capacity_checked_at"] is not None and not venue["open_review"]
+    return (venue["capacity"] is None and venue["capacity_checked_at"] is not None and venue["osm_checked_at"] is not None
+            and not venue["open_review"]
             and not large_name.search(venue["name"] or "") and (venue["venue_type"] or "") not in LARGE_TYPES)
 
 
@@ -59,7 +61,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     basis = f"25th percentile of {len(measured)} measured venues <= {small_max:,}"
     large_name = re.compile(cfg.get("large_name_pattern", "stadium|arena"), re.I)
     venues = db.query(
-        "SELECT v.id, v.name, v.capacity, v.capacity_checked_at, v.venue_type, v.capacity_estimate,"
+        "SELECT v.id, v.name, v.capacity, v.capacity_checked_at, v.osm_checked_at, v.venue_type, v.capacity_estimate,"
         " EXISTS (SELECT 1 FROM match_review r WHERE r.external_id = CAST(v.id AS TEXT) AND r.status = 'open'"
         "   AND r.kind IN ('venue_match', 'venue_capacity')) AS open_review FROM venues v")
     stmts, given, cleared = [], 0, 0

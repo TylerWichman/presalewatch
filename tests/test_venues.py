@@ -182,29 +182,6 @@ class WikidataParsing(unittest.TestCase):
         self.assertEqual(ve.parse_point(None), (None, None))
 
 
-class OsmBatching(unittest.TestCase):
-    def test_batch_results_are_split_by_distance(self):
-        f = ve.Fetch()
-        fox, msg = (37.80815, -122.27077), (40.7505, -73.9934)
-        els = [{"osm_id": "way/1", "tags": {}, "lat": 37.8079, "lon": -122.2701},     # near the Fox
-               {"osm_id": "way/2", "tags": {}, "lat": 40.7506, "lon": -73.9935},      # near MSG
-               {"osm_id": "way/3", "tags": {}, "lat": 37.8200, "lon": -122.2701}]     # 1.3 km from the Fox: out
-        with mock.patch.object(f, "osm_elements", return_value=els) as q:
-            f.osm_prefetch([fox, msg])
-        self.assertEqual(q.call_count, 1)                                              # one query for both
-        self.assertEqual([e["osm_id"] for e in f.osm_nearby(*fox)], ["way/1"])
-        self.assertEqual([e["osm_id"] for e in f.osm_nearby(*msg)], ["way/2"])
-
-    def test_failed_batch_falls_back_to_single_queries(self):
-        f = ve.Fetch()
-        with mock.patch.object(f, "osm_elements", side_effect=ve.ApiError("OpenStreetMap Overpass", 504, "x")):
-            f.osm_prefetch([(1.0, 2.0)])
-        self.assertEqual(f.osm_cache, {})
-        with mock.patch.object(f, "osm_elements", return_value=[]) as single:
-            f.osm_nearby(1.0, 2.0)
-        single.assert_called_once()
-
-
 class Evaluate(unittest.TestCase):
     def cand(self, source_id, names, lat, lon, types, raw=None, title=None):
         return {"source": "openstreetmap", "source_id": source_id, "names": names, "lat": lat, "lon": lon,
@@ -240,11 +217,11 @@ class FakeFetch:
     def wikipedia_lead(self, title):
         return ""
 
-    def osm_prefetch(self, points):
-        pass
+    osm_queries: list = []
 
-    def osm_nearby(self, lat, lon):
-        if abs(lat - 37.80815) < 0.01:
+    def osm_elements(self, points, timeout):
+        self.osm_queries.append(len(points))
+        if any(abs(lat - 37.80815) < 0.01 for lat, _ in points):
             return [{"osm_id": "way/1", "tags": {"name": "Fox Oakland Theatre", "amenity": "theatre", "capacity": "2800"},
                      "lat": 37.8079, "lon": -122.2701}]
         return []
@@ -266,8 +243,8 @@ class Database(unittest.TestCase):
                 self.db.run("INSERT INTO events (ticketmaster_id, name, venue_id, event_date, first_seen_at, last_seen_at, source, last_updated)"
                             " VALUES (?, 'S', ?, '2099-01-0' || ?, ?, ?, 't', ?)", (f"{tm}-{i}", vid, i + 1, NOW, NOW, NOW))
 
-    def run_job(self, when="2026-10-02"):
-        with mock.patch.object(ve, "Fetch", FakeFetch):
+    def run_job(self, when="2026-10-02", fetch=None):
+        with mock.patch.object(ve, "Fetch", fetch or FakeFetch):
             ve.run(self.db, {"api_calls": 0, "rows_written": 0}, now=datetime.fromisoformat(when).replace(tzinfo=timezone.utc))
 
     def venue(self, tm):
@@ -288,9 +265,11 @@ class Database(unittest.TestCase):
                          (2800, "openstreetmap", "high", "2800"))
         self.assertEqual((fox["venue_type"], fox["osm_id"], fox["timezone"]), ("theater", "way/1", "America/Los_Angeles"))
         self.assertEqual(self.db.scalar("SELECT parsed_capacity FROM venue_capacity_observations WHERE venue_id = ?", (fox["id"],)), 2800)
+        self.assertIsNotNone(fox["osm_checked_at"])
         mystery = self.venue("KV_X")
         self.assertIsNone(mystery["capacity"])
         self.assertIsNotNone(mystery["capacity_checked_at"])
+        self.assertIsNotNone(mystery["osm_checked_at"])
 
     def test_order_new_first_then_busiest(self):
         order = [v["ticketmaster_id"] for v in ve.due(self.db, datetime(2026, 10, 2, tzinfo=timezone.utc), 10)]
@@ -304,22 +283,66 @@ class Database(unittest.TestCase):
         self.assertEqual(due("2027-04-05"), {"KV_X", "KV_FOX"})    # filled: re-verified after 180 days
 
     def test_reverify_disagreement_goes_to_review(self):
-        self.run_job("2026-10-02")
+        class WikiFox(FakeFetch):
+            def wikipedia_nearby(self, lat, lon):
+                return [{"title": "Fox Oakland Theatre", "meters": 150.0}] if abs(lat - 37.80815) < 0.01 else []
+
+            def wikipedia_lead(self, title):
+                return "{{Infobox venue\n| name = Fox Oakland Theatre\n| type = Theatre\n| capacity = 2,800\n}}"
+        self.run_job("2026-10-02", WikiFox)
+        self.assertEqual(self.venue("KV_FOX")["capacity_source"], "wikipedia")
         self.db.run("UPDATE venues SET capacity = 1500 WHERE ticketmaster_id = 'KV_FOX'")
-        self.run_job("2027-04-05")
+        self.run_job("2027-04-05", WikiFox)
         self.assertEqual(self.venue("KV_FOX")["capacity"], 1500)    # not overwritten
         self.assertEqual(self.db.scalar("SELECT COUNT(*) FROM match_review WHERE kind = 'venue_capacity'"), 1)
 
-    def test_source_down_is_retried_next_run(self):
+    def test_osm_timeout_is_skipped_not_fatal(self):
         class Down(FakeFetch):
-            def osm_nearby(self, lat, lon):
+            def osm_elements(self, points, timeout):
                 raise ve.ApiError("OpenStreetMap Overpass", 504, "timeout")
-        with mock.patch.object(ve, "Fetch", Down):
-            ve.run(self.db, {"api_calls": 0, "rows_written": 0}, now=datetime(2026, 10, 2, tzinfo=timezone.utc))
-        self.assertIsNone(self.venue("KV_X")["capacity_checked_at"])      # not stamped: retried next run
-        self.assertIsNone(self.venue("KV_FOX")["capacity"])
-        self.run_job("2026-10-03")                                          # source back up
+        self.run_job("2026-10-02", Down)                                    # no exception
+        fox = self.venue("KV_FOX")
+        self.assertIsNotNone(fox["capacity_checked_at"])                    # Wikidata + Wikipedia done
+        self.assertIsNone(fox["osm_checked_at"])                            # OSM skipped: tried next run
+        self.assertIsNone(fox["capacity"])
+        self.run_job("2026-10-03")                                          # OSM back up
         self.assertEqual(self.venue("KV_FOX")["capacity"], 2800)
+
+    def test_wikidata_error_leaves_venue_for_next_run(self):
+        class Lagged(FakeFetch):
+            def wikidata_candidates(self, lat, lon):
+                raise ve.ApiError("Wikidata", 503, "lagged")
+        self.run_job("2026-10-02", Lagged)
+        self.assertIsNone(self.venue("KV_X")["capacity_checked_at"])        # not stamped: retried next run
+
+    def test_osm_pass_is_capped_and_batched(self):
+        for i in range(25):
+            self.db.run("INSERT INTO venues (ticketmaster_id, name, name_key, latitude, longitude, capacity_checked_at, source, last_updated)"
+                        " VALUES (?, ?, ?, 41.0, ?, ?, 't', ?)", (f"KV_{i}", f"Room {i}", f"room {i}", -87.0 - i / 100, NOW, NOW))
+            vid = self.db.scalar("SELECT id FROM venues WHERE ticketmaster_id = ?", (f"KV_{i}",))
+            self.db.run("INSERT INTO events (ticketmaster_id, name, venue_id, event_date, first_seen_at, last_seen_at, source, last_updated)"
+                        " VALUES (?, 'S', ?, '2099-03-01', ?, ?, 't', ?)", (f"E_{i}", vid, NOW, NOW, NOW))
+        fetch = FakeFetch()
+        fetch.osm_queries = []
+        with mock.patch.object(ve, "OSM_PER_RUN", 20):
+            out = ve.osm_pass(self.db, fetch, datetime(2026, 10, 2, tzinfo=timezone.utc), NOW, limit=20)
+        self.assertEqual(fetch.osm_queries, [10, 10])                       # 20 venues, 10 per query
+        self.assertEqual(sum(out.values()), 20)
+        self.assertEqual(self.db.scalar("SELECT COUNT(*) FROM venues WHERE osm_checked_at IS NOT NULL"), 20)
+
+    def test_crash_mid_run_keeps_earlier_venues(self):
+        class CrashSecond(FakeFetch):
+            seen = 0
+
+            def wikidata_candidates(self, lat, lon):
+                CrashSecond.seen += 1
+                if CrashSecond.seen == 2:
+                    raise MemoryError("simulated crash")
+                return []
+        with self.assertRaises(MemoryError):
+            self.run_job("2026-10-02", CrashSecond)
+        checked = self.db.scalar("SELECT COUNT(*) FROM venues WHERE capacity_checked_at IS NOT NULL AND capacity_verified = 0")
+        self.assertEqual(checked, 1)                                         # the first venue's writes were committed
 
     def test_handfill_sorted_by_biggest_upcoming_artist(self):
         self.db.run("INSERT INTO venues (ticketmaster_id, name, name_key, latitude, longitude, source, last_updated)"

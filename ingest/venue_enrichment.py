@@ -52,9 +52,11 @@ RETRY_DAYS = 30
 REVERIFY_DAYS = 180
 MAX_VENUES_PER_RUN = 200
 DISAGREE = 0.10          # a re-check differing by more than 10% goes to review instead of overwriting
-SOURCES = ("wikidata", "wikipedia", "openstreetmap")
+SOURCES = ("wikidata", "wikipedia")       # tried in order for every due venue
+ALL_SOURCES = (*SOURCES, "openstreetmap")  # OpenStreetMap runs as its own capped step (osm_pass)
 OSM_RADIUS_M = 500     # lighter on the public Overpass server; confident matches need 300 m anyway
-OSM_BATCH = 20         # venues per Overpass query
+OSM_BATCH = 10         # venues per Overpass query
+OSM_PER_RUN = 60       # venues per daily run; the public server is slow and often overloaded
 
 
 # ---- Fetchers ------------------------------------------------------------------------------
@@ -66,7 +68,6 @@ class Fetch:
         # One attempt per call: overpass_query() handles waiting, using the server's own slot status.
         self.osm = Http("OpenStreetMap Overpass", 2.0, max_retries=1)
         self.tm = Http("Ticketmaster", 0.25)
-        self.osm_cache: dict[tuple[float, float], list[dict]] = {}
 
     @property
     def calls(self) -> int:
@@ -132,10 +133,6 @@ SELECT ?item ?coord (SAMPLE(?l) AS ?label) (GROUP_CONCAT(DISTINCT ?a; separator=
     OSM_KINDS = ("theatre|nightclub|arts_centre|events_venue|concert_hall|music_venue|stadium|sports_centre|arena|casino|bar|pub"
                  "|amphitheatre|community_centre|conference_centre|exhibition_centre")
 
-    @staticmethod
-    def osm_key(lat: float, lon: float) -> tuple[float, float]:
-        return round(lat, 6), round(lon, 6)
-
     def osm_elements(self, points: list[tuple[float, float]], timeout: int) -> list[dict]:
         """One Overpass query covering every point: venue-like or capacity-tagged named elements
         within OSM_RADIUS_M of any of them."""
@@ -149,24 +146,6 @@ SELECT ?item ?coord (SAMPLE(?l) AS ?label) (GROUP_CONCAT(DISTINCT ?a; separator=
             if c.get("lat") is not None:
                 out.append({"osm_id": f"{el.get('type')}/{el.get('id')}", "tags": el.get("tags") or {}, "lat": c["lat"], "lon": c["lon"]})
         return out
-
-    def osm_prefetch(self, points: list[tuple[float, float]]) -> None:
-        """Fetch OSM candidates for many venues in batches of OSM_BATCH (one query each instead of
-        one per venue), and remember each venue's share. A batch that fails is skipped; those
-        venues fall back to a single query in osm_nearby."""
-        for i in range(0, len(points), OSM_BATCH):
-            chunk = points[i:i + OSM_BATCH]
-            try:
-                els = self.osm_elements(chunk, timeout=120)
-            except ApiError:
-                continue
-            for lat, lon in chunk:
-                self.osm_cache[self.osm_key(lat, lon)] = [
-                    el for el in els if haversine_km(lat, lon, el["lat"], el["lon"]) * 1000 <= OSM_RADIUS_M]
-
-    def osm_nearby(self, lat: float, lon: float) -> list[dict]:
-        cached = self.osm_cache.get(self.osm_key(lat, lon))
-        return cached if cached is not None else self.osm_elements([(lat, lon)], timeout=25)
 
     def overpass_query(self, query: str) -> dict:
         """Run an Overpass query, waiting for a free slot as the server reports it.
@@ -453,10 +432,12 @@ def capacity_statements(venue: dict, c: dict, cap: dict, now: str) -> list:
              (cap["capacity"], c.get("capacity_raw"), c["source"], c.get("url"), cap["confidence"], now, venue["id"]))]
 
 
-def enabled_sources() -> tuple[str, ...]:
-    """VENUE_SOURCES (e.g. 'wikidata,wikipedia') limits a one-off run; default is every source."""
+def enabled_sources(all_sources: bool = False) -> tuple[str, ...]:
+    """VENUE_SOURCES (e.g. 'wikidata,wikipedia') limits a one-off run; default is every source.
+    all_sources=True includes OpenStreetMap, which runs as its own step (osm_pass)."""
+    pool = ALL_SOURCES if all_sources else SOURCES
     wanted = [x.strip() for x in (env("VENUE_SOURCES") or "").split(",") if x.strip()]
-    return tuple(x for x in SOURCES if x in wanted) if wanted else SOURCES
+    return tuple(x for x in pool if x in wanted) if wanted else pool
 
 
 def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = SOURCES) -> tuple[list, str]:
@@ -495,8 +476,6 @@ def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = S
                 cands = [c for c in (wikipedia_candidate(t["title"], t["meters"], fetch.wikipedia_lead(t["title"])) for t in titles) if c]
                 if known_title:  # the title came from a confident Wikidata match: trust it
                     cands = [{**c, "names": [venue["name"], *c["names"]], "type_texts": [*c["type_texts"], "venue"]} for c in cands]
-            else:
-                cands = [osm_candidate(el) for el in fetch.osm_nearby(venue["latitude"], venue["longitude"])]
         except ApiError as err:
             # A source that's down (e.g. Overpass timing out) is skipped for this venue, and the
             # venue isn't marked checked unless resolved, so it's retried on the next run.
@@ -517,6 +496,21 @@ def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = S
                 low_caps.append((m, cap))
         else:
             reviews += [{**c, "source": source} for c in result["review"]]
+    settled, outcome = settle(venue, resolved, low_caps, reviews, now)
+    stmts += settled
+    if failed and not resolved:
+        return stmts, "source_error"  # not stamped: retried next run once the source is back
+    if len(sources) < len(SOURCES) and not resolved:
+        return stmts, "deferred"  # some sources were skipped: not stamped, so the next full run tries them
+    stmts.append(("UPDATE venues SET capacity_checked_at = ? WHERE id = ?", (now, venue["id"])))
+    return stmts, outcome
+
+
+def settle(venue: dict, resolved: tuple | None, low_caps: list, reviews: list, now: str) -> tuple[list, str]:
+    """Writes for a venue's result, shared by the main pass and the OpenStreetMap pass, so the
+    rules are identical: write a usable capacity (or send a disagreement to review), send a
+    low-confidence capacity to review, or queue the nearby candidates for review."""
+    stmts: list = []
     if resolved:
         m, cap = resolved
         if venue["capacity"] is not None and abs(cap["capacity"] - venue["capacity"]) <= DISAGREE * venue["capacity"]:
@@ -544,12 +538,59 @@ def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = S
         outcome = "review"
     else:
         outcome = "unresolved"
-    if failed and not resolved:
-        return stmts, "source_error"  # not stamped: retried next run once the source is back
-    if len(sources) < len(SOURCES) and not resolved:
-        return stmts, "deferred"  # some sources were skipped: not stamped, so the next full run tries them
-    stmts.append(("UPDATE venues SET capacity_checked_at = ? WHERE id = ?", (now, venue["id"])))
     return stmts, outcome
+
+
+
+
+def osm_due(db: Database, now: datetime, limit: int) -> list[dict]:
+    """Venues still without a capacity after Wikidata and Wikipedia, not yet checked against
+    OpenStreetMap (or last checked 30+ days ago), busiest first."""
+    today = now.strftime("%Y-%m-%d")
+    retry = (now - timedelta(days=RETRY_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return db.query(
+        "SELECT v.id, v.name, v.latitude, v.longitude, v.capacity, v.capacity_source, COUNT(e.id) AS upcoming"
+        " FROM venues v JOIN events e ON e.venue_id = v.id AND e.event_date >= ?"
+        " WHERE v.latitude IS NOT NULL AND v.capacity IS NULL AND v.capacity_verified = 0 AND v.capacity_checked_at IS NOT NULL"
+        "   AND (v.osm_checked_at IS NULL OR v.osm_checked_at < ?)"
+        " GROUP BY v.id ORDER BY v.osm_checked_at IS NOT NULL, upcoming DESC LIMIT ?", (today, retry, limit))
+
+
+def osm_pass(db: Database, fetch: "Fetch", now: datetime, stamp: str, limit: int = OSM_PER_RUN) -> dict[str, int]:
+    """OpenStreetMap for venues the main pass couldn't resolve, OSM_BATCH venues per query.
+    A batch that times out or is refused is skipped (those venues stay unchecked and are tried on
+    the next run); it never fails the job. Each venue's writes are committed as soon as it's done."""
+    outcomes: dict[str, int] = {}
+    venues = osm_due(db, now, limit)
+    for i in range(0, len(venues), OSM_BATCH):
+        chunk = venues[i:i + OSM_BATCH]
+        try:
+            elements = fetch.osm_elements([(v["latitude"], v["longitude"]) for v in chunk], timeout=60)
+        except ApiError as err:
+            outcomes["skipped"] = outcomes.get("skipped", 0) + len(chunk)
+            print(f"  OpenStreetMap: batch of {len(chunk)} skipped (HTTP {err.status}); retried next run", flush=True)
+            continue
+        for v in chunk:
+            near = [el for el in elements if haversine_km(v["latitude"], v["longitude"], el["lat"], el["lon"]) * 1000 <= OSM_RADIUS_M]
+            result = evaluate(v, [osm_candidate(el) for el in near])
+            stmts, resolved, low_caps, reviews = [], None, [], []
+            if result["match"]:
+                m, cap = result["match"], result["capacity"]
+                stmts.append(details_update(v, m, stamp))
+                if m.get("capacity_raw"):
+                    stmts.append(observation(v["id"], m, cap, stamp))
+                if cap and cap["confidence"] in ("high", "medium"):
+                    resolved = (m, cap)
+                elif cap:
+                    low_caps.append((m, cap))
+            else:
+                reviews = [{**c, "source": "openstreetmap"} for c in result["review"]]
+            settled, outcome = settle(v, resolved, low_caps, reviews, stamp)
+            stmts += settled
+            stmts.append(("UPDATE venues SET osm_checked_at = ? WHERE id = ?", (stamp, v["id"])))
+            db.batch(stmts)
+            outcomes[outcome] = outcomes.get(outcome, 0) + 1
+    return outcomes
 
 
 def ticketmaster_details(fetch: Fetch, venue: dict, now: str) -> list:
@@ -578,8 +619,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     limit = int(env("VENUE_LIMIT") or MAX_VENUES_PER_RUN)  # override for a one-off backfill
     sources = enabled_sources()
     venues = due(db, now, limit)
-    if "openstreetmap" in sources:
-        fetch.osm_prefetch([(v["latitude"], v["longitude"]) for v in venues])
+    osm: dict[str, int] = {}
     try:
         for venue in venues:
             stmts, outcome = enrich_one(fetch, venue, stamp, sources)
@@ -591,9 +631,11 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
             done = sum(outcomes.values())
             if done % 50 == 0:
                 print(f"  venues: {done} processed so far {json.dumps(outcomes)}", flush=True)
+        if "openstreetmap" in enabled_sources(all_sources=True):
+            osm = osm_pass(db, fetch, now, stamp)
     finally:
         stats["api_calls"] += fetch.calls
     cov = capacity_coverage(db)
-    print(f"  Venues: {sum(outcomes.values())} processed {json.dumps(outcomes)} ({fetch.calls} calls);"
+    print(f"  Venues: {sum(outcomes.values())} processed {json.dumps(outcomes)}; OpenStreetMap {json.dumps(osm)} ({fetch.calls} calls);"
           f" capacity known for {cov['venues_filled']}/{cov['venues']} venues with upcoming events,"
           f" {cov['events_filled']}/{cov['events']} upcoming events")
