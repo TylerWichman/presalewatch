@@ -45,6 +45,19 @@ class Matching(unittest.TestCase):
         close = dict(name="The Funhouse at Mr. Smalls", lat=40.48, lon=-79.95, cand_lat=40.48003, cand_lon=-79.95003)
         self.assertEqual(classify(**close, cand_names=["Mr. Smalls"], type_ok=True)[0], "review")   # a room inside the venue
 
+    def test_renamed_stadium_matches_by_type_within_300m(self):
+        renamed = dict(name="Daikin Park", lat=29.7573, lon=-95.3555, cand_names=["Minute Maid Park"],
+                       cand_lat=29.7570, cand_lon=-95.3554, type_ok=True)
+        self.assertEqual(classify(**renamed, cand_stadium_or_arena=True)[0], "confident")
+        self.assertEqual(classify(**renamed, cand_stadium_or_arena=False)[0], "no")           # no type: no match
+        far = {**renamed, "cand_lat": 29.7610}                                                 # ~400 m
+        self.assertEqual(classify(**far, cand_stadium_or_arena=True)[0], "no")
+
+    def test_room_inside_an_arena_never_takes_its_capacity(self):
+        theater = dict(name="The Theater at MSG", lat=40.7505, lon=-73.9934, cand_names=["Madison Square Garden"],
+                       cand_lat=40.7506, cand_lon=-73.9935, type_ok=True)
+        self.assertEqual(classify(**theater, cand_stadium_or_arena=True)[0], "no")
+
     def test_name_similarity_ignores_filler_words(self):
         self.assertAlmostEqual(name_similarity("The Funhouse at Mr. Smalls", ["Mr. Smalls"]), 2 / 3)
         self.assertEqual(name_similarity("Fox Theater - Oakland", ["Fox Oakland Theatre"]), 1.0)

@@ -31,7 +31,9 @@ from datetime import datetime, timedelta, timezone
 from common import ApiError, Http, ROOT, env
 from ingest import mediawiki
 from ingest.db import Database, now_iso, review, rows_in
-from ingest.venue_rules import choose_capacity, classify, is_venue, parse_capacity, pick_confident, venue_type
+from ingest.resolve import haversine_km
+from ingest.venue_rules import (CONFIDENT_M, choose_capacity, classify, is_venue, looks_large, parse_capacity,
+                                 pick_confident, venue_type)
 
 USER_AGENT = "PouchIt/1.0 (https://pouchit.net) python-urllib"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
@@ -298,7 +300,8 @@ def evaluate(venue: dict, candidates: list[dict]) -> dict:
     classified = []
     for c in candidates:
         verdict, meters = classify(name=venue["name"], lat=venue["latitude"], lon=venue["longitude"], cand_names=c["names"],
-                                   cand_lat=c.get("lat"), cand_lon=c.get("lon"), type_ok=is_venue(c["type_texts"]), meters=c.get("meters"))
+                                   cand_lat=c.get("lat"), cand_lon=c.get("lon"), type_ok=is_venue(c["type_texts"]), meters=c.get("meters"),
+                                   cand_stadium_or_arena=c["source"] == "wikidata" and venue_type(c["type_texts"]) in ("stadium", "arena"))
         if verdict != "no":
             classified.append({**c, "verdict": verdict, "meters": meters})
     match = pick_confident(classified)
@@ -408,9 +411,15 @@ def enrich_one(fetch: Fetch, venue: dict, now: str, sources: tuple[str, ...] = S
         try:
             if source == "wikidata":
                 items = fetch.wikidata_candidates(venue["latitude"], venue["longitude"])
-                near = [i for i in items if i["lat"] is not None and classify(
-                    name=venue["name"], lat=venue["latitude"], lon=venue["longitude"], cand_names=[i["label"], *i["aliases"]],
-                    cand_lat=i["lat"], cand_lon=i["lon"], type_ok=True)[0] != "no"][:50]
+                # Keep plausible matches. For a large-sounding venue, also keep everything within
+                # 300 m, so a renamed stadium or arena can be recognized by its type.
+                large = looks_large(venue["name"])
+                near = [i for i in items if i["lat"] is not None and (
+                    classify(name=venue["name"], lat=venue["latitude"], lon=venue["longitude"], cand_names=[i["label"], *i["aliases"]],
+                             cand_lat=i["lat"], cand_lon=i["lon"], type_ok=True)[0] != "no"
+                    or (large and haversine_km(venue["latitude"], venue["longitude"], i["lat"], i["lon"]) * 1000 <= CONFIDENT_M))]
+                near.sort(key=lambda i: haversine_km(venue["latitude"], venue["longitude"], i["lat"], i["lon"]))
+                near = near[:50]
                 ents = fetch.wikidata_entities([i["qid"] for i in near]) if near else {}
                 label_ids = {q for e in ents.values() for p in ("P31", "P137") for q in claim_qids(e, p)}
                 label_ids |= {c["part"] for e in ents.values() for c in wikidata_capacities(e) if c["part"]}
