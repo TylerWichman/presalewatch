@@ -44,19 +44,28 @@ def eligible(venue: dict, large_name: re.Pattern, hand_fill: frozenset = frozens
             and not large_name.search(venue["name"] or "") and (venue["venue_type"] or "") not in LARGE_TYPES)
 
 
+def clear_all(db: Database) -> None:
+    db.run("UPDATE venues SET capacity_estimate = NULL, capacity_estimate_basis = NULL, capacity_estimate_at = NULL"
+           " WHERE capacity_estimate IS NOT NULL")
+
+
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     cfg = load_config().get("capacity_estimate") or {}
     stamp = now_iso()
     if not cfg.get("enabled"):
-        db.run("UPDATE venues SET capacity_estimate = NULL, capacity_estimate_basis = NULL, capacity_estimate_at = NULL"
-               " WHERE capacity_estimate IS NOT NULL")
+        clear_all(db)
         print("  Estimates: off (config capacity_estimate.enabled); any existing estimates cleared")
         return
     small_max = cfg.get("small_max", 3000)
     measured = [r["capacity"] for r in db.query("SELECT capacity FROM venues WHERE capacity IS NOT NULL AND capacity <= ?", (small_max,))]
-    value = p25(measured)
+    # A percentile from a thin sample swings a lot (51 venues gave 600 seats, 125 gave 850), and a
+    # too-small estimate inflates listeners per seat. Below the minimum, estimates are off this run.
+    min_measured = cfg.get("min_measured", 100)
+    value = p25(measured) if len(measured) >= min_measured else None
     if value is None:
-        print("  Estimates: too few measured small venues to estimate from; skipped")
+        clear_all(db)
+        print(f"  Estimates: off this run; only {len(measured)} measured venues <= {small_max:,}"
+              f" (need {min_measured}); any existing estimates cleared")
         return
     basis = f"25th percentile of {len(measured)} measured venues <= {small_max:,}"
     large_name = re.compile(cfg.get("large_name_pattern", "stadium|arena"), re.I)
