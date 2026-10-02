@@ -335,6 +335,10 @@ measured values.
 | `capacity_estimate_basis` | How it was made, e.g. "25th percentile of 97 measured venues <= 3,000" |
 | `capacity_estimate_at` | When it was set |
 
+- **Minimum sample:** estimates apply only when at least **100** measured venues of 3,000 seats or fewer
+  back the percentile (`capacity_estimate.min_measured`). Below that, estimates are off for the run and
+  any existing ones are cleared: on the first production run, 51 venues gave 600 seats, against 850
+  from 125.
 - **The value** is the **25th percentile** of measured venues of 3,000 seats or fewer. The 25th
   rather than the median, because measured small venues skew large: a club with a Wikipedia page is
   usually a notable, bigger one.

@@ -27,6 +27,7 @@
     "enabled": true,
     "basis": "p25_small",
     "small_max": 3000,
+    "min_measured": 100,
     "high_check_capacity": 3000,
     "hand_fill_venues": ["KovZpZAJAJeA", "KovZ917AcIV"],
     "large_name_pattern": "stadium|field|park|arena|amphithea|bowl|coliseum|dome|center|centre|pavilion|fairground|speedway|casino|resort|hotel"

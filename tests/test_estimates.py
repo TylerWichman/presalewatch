@@ -95,10 +95,11 @@ class EstimatesJob(unittest.TestCase):
         self.db.run("INSERT INTO match_review (kind, source, external_id, external_name, status, created_at, last_updated)"
                     " VALUES ('venue_match', 'enrichment', ?, 'Reviewed Club', 'open', ?, ?)", (str(vid), NOW, NOW))
 
-    def run_job(self, enabled, hand_fill=()):
+    def run_job(self, enabled, hand_fill=(), min_measured=4):
         cfg = load_config()
         cfg["capacity_estimate"]["enabled"] = enabled
         cfg["capacity_estimate"]["hand_fill_venues"] = list(hand_fill)
+        cfg["capacity_estimate"]["min_measured"] = min_measured   # the fixture has 4 measured small venues
         with mock.patch.object(venue_estimates, "load_config", return_value=cfg):
             venue_estimates.run(self.db, {"api_calls": 0, "rows_written": 0})
 
@@ -113,6 +114,13 @@ class EstimatesJob(unittest.TestCase):
         for tm in ("U2", "U3", "U4", "U5", "M1", "M5"):   # large name, not tried, under review, OSM pending, measured
             self.assertIsNone(est[tm], tm)
         self.assertIn("25th percentile of 4 measured venues", self.db.scalar("SELECT capacity_estimate_basis FROM venues WHERE ticketmaster_id = 'U1'"))
+
+    def test_too_few_measured_venues_turns_estimates_off_for_the_run(self):
+        self.run_job(True)
+        self.assertIsNotNone(self.estimates()["U1"])
+        self.run_job(True, min_measured=100)              # 4 measured small venues < 100
+        self.assertTrue(all(v is None for v in self.estimates().values()))
+        self.assertEqual(load_config()["capacity_estimate"]["min_measured"], 100)
 
     def test_hand_fill_venues_are_never_estimated(self):
         self.run_job(True)
