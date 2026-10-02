@@ -69,6 +69,23 @@ def choose_mbid(*, ticketmaster_mbid: str | None, lastfm_mbid: str | None, lastf
     return None, None
 
 
+ERA_START = 1900   # a person born before this can't be a touring act
+ERA_END = 1970     # an act that ended before this isn't the one on tour now
+
+
+def implausible_era(artist_type: str | None, begin: int | None, end: int | None) -> str | None:
+    """Why a MusicBrainz artist can't be the act on a current tour, or None if it can.
+
+    Catches IDs that point at a namesake: the composer Engelbert Humperdinck (1854-1921) for the
+    singer, a 1960s band for the Southern rock Outlaws. Groups may be older than 1900 (orchestras).
+    """
+    if end is not None and end < ERA_END:
+        return f"ended in {end}"
+    if artist_type == "Person" and begin is not None and begin < ERA_START:
+        return f"born in {begin}"
+    return None
+
+
 def pick_search_result(name: str, results: list[dict]) -> tuple[dict | None, str]:
     """Pick a MusicBrainz artist search result for `name`, or explain why not.
 

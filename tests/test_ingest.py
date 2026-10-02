@@ -172,6 +172,41 @@ class MusicBrainzAndWikidata(unittest.TestCase):
         self.assertFalse(wikidata_job.parse_artist_entity(ent, MB1)["ok"])
 
 
+class NamesakeFromAnotherEra(unittest.TestCase):
+    def test_era_rule(self):
+        from ingest.resolve import implausible_era
+        self.assertEqual(implausible_era("Person", 1854, 1921), "ended in 1921")      # the composer Humperdinck
+        self.assertEqual(implausible_era("Group", 1964, 1969), "ended in 1969")       # a 1960s namesake band
+        self.assertEqual(implausible_era("Person", 1899, None), "born in 1899")
+        self.assertIsNone(implausible_era("Person", 1936, None))                      # the singer Humperdinck
+        self.assertIsNone(implausible_era("Orchestra", 1881, None))                   # old orchestras still tour
+        self.assertIsNone(implausible_era("Group", 1967, 1983))                       # broke up later; a reunion can tour
+        self.assertIsNone(implausible_era(None, None, None))
+
+    def test_musicbrainz_rejects_the_namesake_and_it_stays_rejected(self):
+        db = temp_db()
+        db.run("INSERT INTO artists (name, name_key, mbid, mbid_source, wikidata_id, wikipedia_title, source, last_updated)"
+               " VALUES ('Engelbert Humperdinck', 'engelbert humperdinck', ?, 'ticketmaster', 'Q55010',"
+               " 'Engelbert Humperdinck (composer)', 't', ?)", (MB1, NOW))
+        db.run("INSERT INTO artist_pageviews (artist_id, day, views, article, source, last_updated)"
+               " VALUES (1, '2026-09-30', 900, 'Engelbert Humperdinck (composer)', 'wikimedia_pageviews', ?)", (NOW,))
+        composer = {"type": "Person", "life-span": {"begin": "1854-09-01", "end": "1921-09-27", "ended": True},
+                    "relations": [{"type": "wikidata", "url": {"resource": "https://www.wikidata.org/wiki/Q55010"}}]}
+        with mock.patch.object(musicbrainz_job, "get", side_effect=lambda http, path, params: composer if path.startswith("artist/")
+                               else {"artists": []}):
+            musicbrainz_job.run(db, {"api_calls": 0, "rows_written": 0})
+        a = db.query("SELECT mbid, mbid_rejected, wikidata_id, wikipedia_title, active_from FROM artists WHERE id = 1")[0]
+        self.assertEqual(a, {"mbid": None, "mbid_rejected": MB1, "wikidata_id": None, "wikipedia_title": None, "active_from": None})
+        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews"), 0)
+        self.assertIn("ended in 1921", db.scalar("SELECT details FROM match_review WHERE kind = 'artist_match'"))
+        # Ticketmaster sends the same ID again the next day: it isn't re-attached. A different one is.
+        from ingest.db import set_mbid
+        db.batch([set_mbid(1, MB1, "ticketmaster", NOW)])
+        self.assertIsNone(db.scalar("SELECT mbid FROM artists WHERE id = 1"))
+        db.batch([set_mbid(1, MB2, "lastfm", NOW)])
+        self.assertEqual(db.scalar("SELECT mbid FROM artists WHERE id = 1"), MB2)
+
+
 class Pageviews(unittest.TestCase):
     def test_parse(self):
         self.assertEqual(pageviews_job.parse({"items": [{"timestamp": "2026093000", "views": 120}, {"timestamp": "x", "views": 1}]}),

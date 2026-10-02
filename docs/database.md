@@ -125,7 +125,14 @@ Checked October 2026, before anything was stored.
 **`artist_similar`**: similar artists. `match` is Last.fm's 0-1 similarity.
 `similar_artist_id` links to our own row when we track that artist too.
 
-**`artist_metrics_snapshots`**: one row per artist, per day, per source.
+**`artist_metrics_snapshots`**: one row per artist, per day, per source. The daily Last.fm job
+refreshes each artist every 7 days (`refresh.lastfm_ttl_hours`) and stores listeners and playcount
+with each refresh, so an artist gets a reading about weekly.
+
+**Recency signal to test (not in the score yet):** Last.fm plays gained over the last 30 days, per venue
+seat. Test it once 30 days of snapshots exist (first snapshots: 2 October 2026), and only after resale
+price data exists to check it against. Wikipedia pageviews per seat were tried for this and rejected:
+they track who reads Wikipedia (older, established acts) more than current demand.
 
 | Field | Meaning |
 | --- | --- |
@@ -225,6 +232,7 @@ whenever API data is missing.
 | `artist_type` | MusicBrainz type: Person, Group, Orchestra, Choir, Character, Other |
 | `country` | MusicBrainz country code |
 | `mbid_source` | How the MusicBrainz ID was found: `ticketmaster`, `lastfm`, `musicbrainz_search`, or `manual` |
+| `mbid_rejected` | A MusicBrainz ID found to belong to a namesake from another era (a person born before 1900, or an act that ended before 1970), so it's never attached again. Set by the MusicBrainz job, which also clears the Wikidata, Wikipedia, YouTube, pageview, and ListenBrainz data found through that ID and opens a review item. Migration 0006 |
 | `wikidata_checked_at`, `listenbrainz_checked_at`, `pageviews_checked_at` | When each source was last asked |
 
 **`artist_aliases`**: other names an artist goes by (from MusicBrainz), with a normalized
