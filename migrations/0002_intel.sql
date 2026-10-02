@@ -207,6 +207,10 @@ CREATE TABLE observed_prices (
   price_basis TEXT CHECK (price_basis IN ('ask', 'sold')),   -- resale only: listing price or sale price
   section_tier TEXT,                         -- e.g. 'GA floor', 'Sec 104', 'Platinum'
   standard_ticket INTEGER NOT NULL DEFAULT 1 CHECK (standard_ticket IN (0, 1)),  -- 0 for VIP/Platinum
+  -- 'single': one ticket's price (a listing or a sale). 'get_in': the cheapest listing for the
+  -- whole event at that moment. 'median': a marketplace's own median. Get-in rows feed the
+  -- get-in view only, since mixing cheapest-listing prices into medians would drag them down.
+  price_point TEXT NOT NULL DEFAULT 'single' CHECK (price_point IN ('single', 'get_in', 'median')),
   price REAL NOT NULL CHECK (price > 0),     -- per ticket
   fees_included INTEGER CHECK (fees_included IN (0, 1)),
   currency TEXT NOT NULL DEFAULT 'USD',
@@ -215,7 +219,8 @@ CREATE TABLE observed_prices (
   notes TEXT,
   import_batch TEXT NOT NULL,                -- CSV file name + import time
   last_updated TEXT NOT NULL,
-  CHECK (kind = 'face' OR price_basis IS NOT NULL)
+  CHECK (kind = 'face' OR price_basis IS NOT NULL),
+  CHECK (price_point <> 'get_in' OR (kind = 'resale' AND price_basis = 'ask'))  -- get-in is always a listing price
 );
 CREATE INDEX observed_prices_event ON observed_prices (event_id, kind);
 
@@ -340,7 +345,7 @@ WITH o AS (
     COUNT(*) OVER (PARTITION BY event_id, kind, price_basis) AS n,
     MAX(observed_on) OVER (PARTITION BY event_id, kind, price_basis) AS latest_on
   FROM observed_prices
-  WHERE event_id IS NOT NULL AND standard_ticket = 1
+  WHERE event_id IS NOT NULL AND standard_ticket = 1 AND price_point <> 'get_in'
 )
 SELECT event_id, kind, basis, n AS observations, latest_on, AVG(price) AS median_price
 FROM o WHERE rn IN ((n + 1) / 2, (n + 2) / 2)
@@ -437,6 +442,42 @@ FROM venues v
 LEFT JOIN metros mt ON mt.id = v.metro_id
 LEFT JOIN state_resale_rules r ON r.state = v.state;
 
+-- Get-in price: the cheapest listing for the event, over time. Readings come from API snapshots
+-- (`lowest`) when an event has any, otherwise from hand-logged get-in observations.
+--   get_in / get_in_as_of: the latest reading.
+--   get_in_7d_ago: the latest reading 5-9 days before that (a window, so logging every few
+--     days still produces a trend). NULL when there isn't one.
+--   get_in_trend_7d: get_in ÷ get_in_7d_ago − 1 (0.25 = up 25% in about a week).
+CREATE VIEW v_event_get_in AS
+WITH all_readings AS (
+  SELECT event_id, lowest AS price, captured_at AS at, source, 1 AS from_api
+  FROM resale_snapshots WHERE lowest IS NOT NULL
+  UNION ALL
+  SELECT event_id, price, observed_on AS at, 'observed' AS source, 0 AS from_api
+  FROM observed_prices
+  WHERE event_id IS NOT NULL AND price_point = 'get_in' AND standard_ticket = 1
+),
+readings AS (
+  SELECT r.* FROM all_readings r
+  WHERE r.from_api = 1
+     OR NOT EXISTS (SELECT 1 FROM resale_snapshots s WHERE s.event_id = r.event_id AND s.lowest IS NOT NULL)
+),
+latest AS (
+  SELECT event_id, price, at, source,
+    ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY julianday(at) DESC, price) AS rn
+  FROM readings
+),
+trend AS (
+  SELECT l.event_id, l.price AS get_in, l.source AS get_in_source, l.at AS get_in_as_of,
+    (SELECT r.price FROM readings r WHERE r.event_id = l.event_id
+       AND julianday(r.at) BETWEEN julianday(l.at) - 9 AND julianday(l.at) - 5
+     ORDER BY julianday(r.at) DESC, r.price LIMIT 1) AS get_in_7d_ago
+  FROM latest l WHERE l.rn = 1
+)
+SELECT event_id, get_in, get_in_source, get_in_as_of, get_in_7d_ago,
+  CASE WHEN get_in_7d_ago > 0 THEN get_in / get_in_7d_ago - 1 END AS get_in_trend_7d
+FROM trend;
+
 -- Everything scoring needs, one row per event.
 CREATE VIEW v_event_features AS
 SELECT e.id AS event_id, e.ticketmaster_id, e.name, e.event_date, e.status, e.venue_id,
@@ -444,9 +485,11 @@ SELECT e.id AS event_id, e.ticketmaster_id, e.name, e.event_date, e.status, e.ve
   d.capacity, d.listeners_per_seat,
   s.tour_dates, s.dates_in_market_on_tour, s.days_since_last_in_market, s.dates_last_365d,
   vm.metro_population, vm.has_price_cap, vm.restricts_transfer,
-  pr.face, pr.face_source, pr.face_fee_included, pr.resale, pr.resale_basis, pr.resale_source, pr.resale_as_of
+  pr.face, pr.face_source, pr.face_fee_included, pr.resale, pr.resale_basis, pr.resale_source, pr.resale_as_of,
+  gi.get_in, gi.get_in_source, gi.get_in_as_of, gi.get_in_7d_ago, gi.get_in_trend_7d
 FROM events e
 LEFT JOIN v_event_demand d ON d.event_id = e.id
 LEFT JOIN v_event_scarcity s ON s.event_id = e.id
 LEFT JOIN venue_market vm ON vm.venue_id = e.venue_id
-LEFT JOIN v_event_prices pr ON pr.event_id = e.id;
+LEFT JOIN v_event_prices pr ON pr.event_id = e.id
+LEFT JOIN v_event_get_in gi ON gi.event_id = e.id;

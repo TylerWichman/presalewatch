@@ -56,11 +56,19 @@ class Fixture:
             "INSERT INTO resale_snapshots (event_id, captured_at, median, price_basis, source, last_updated)"
             " VALUES (?, ?, ?, ?, 'seatgeek', ?)", (event_id, at, median, basis, T))
 
-    def observed(self, event_id, kind, price, basis=None, standard=1, day="2026-10-01"):
+    def observed(self, event_id, kind, price, basis=None, standard=1, day="2026-10-01", point="single"):
         self.db.execute(
-            "INSERT INTO observed_prices (event_id, event_ref, kind, price_basis, price, standard_ticket, observed_on, source,"
-            " import_batch, last_updated) VALUES (?, 'ref', ?, ?, ?, ?, ?, 'manual', 'batch1', ?)",
-            (event_id, kind, basis, price, standard, day, T))
+            "INSERT INTO observed_prices (event_id, event_ref, kind, price_basis, price, standard_ticket, price_point,"
+            " observed_on, source, import_batch, last_updated) VALUES (?, 'ref', ?, ?, ?, ?, ?, ?, 'manual', 'batch1', ?)",
+            (event_id, kind, basis, price, standard, point, day, T))
+
+    def get_in(self, event_id, day, price):
+        self.observed(event_id, "resale", price, basis="ask", day=day, point="get_in")
+
+    def snapshot_lowest(self, event_id, at, lowest):
+        self.db.execute(
+            "INSERT INTO resale_snapshots (event_id, captured_at, lowest, source, last_updated)"
+            " VALUES (?, ?, ?, 'seatgeek', ?)", (event_id, at, lowest, T))
 
     def one(self, sql, *args):
         return self.db.execute(sql, args).fetchone()
@@ -95,6 +103,15 @@ class Constraints(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             self.f.observed(e, "resale", 150, basis=None)
         self.f.observed(e, "face", 80)  # face needs none
+
+    def test_get_in_must_be_a_resale_listing_price(self):
+        a, v = self.f.artist("A"), self.f.venue("V")
+        e = self.f.event(a, v, "2026-11-01")
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.f.observed(e, "resale", 90, basis="sold", point="get_in")
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.f.observed(e, "face", 90, point="get_in")
+        self.f.get_in(e, "2026-10-01", 90)
 
     def test_bad_values_rejected(self):
         with self.assertRaises(sqlite3.IntegrityError):
@@ -188,6 +205,42 @@ class Views(unittest.TestCase):
         none = self.f.event(a, v, "2026-11-03")
         p = self.f.one("SELECT face, resale FROM v_event_prices WHERE event_id = ?", none)
         self.assertEqual((p["face"], p["resale"]), (None, None))   # stays NULL, never guessed
+
+    def test_get_in_and_7_day_trend_from_logged_prices(self):
+        a, v = self.f.artist("A"), self.f.venue("V")
+        e = self.f.event(a, v, "2026-11-01")
+        self.f.get_in(e, "2026-09-20", 60)   # 12 days back: outside the 5-9 day window
+        self.f.get_in(e, "2026-09-24", 80)   # 8 days back: the comparison point
+        self.f.get_in(e, "2026-09-29", 90)   # 3 days back: too recent
+        self.f.get_in(e, "2026-10-02", 100)
+        g = self.f.one("SELECT * FROM v_event_get_in WHERE event_id = ?", e)
+        self.assertEqual((g["get_in"], g["get_in_as_of"], g["get_in_7d_ago"], g["get_in_source"]), (100, "2026-10-02", 80, "observed"))
+        self.assertAlmostEqual(g["get_in_trend_7d"], 0.25)
+        f = self.f.one("SELECT get_in, get_in_trend_7d FROM v_event_features WHERE event_id = ?", e)
+        self.assertAlmostEqual(f["get_in_trend_7d"], 0.25)
+
+    def test_get_in_trend_is_null_without_a_week_of_history(self):
+        a, v = self.f.artist("A"), self.f.venue("V")
+        e = self.f.event(a, v, "2026-11-01")
+        self.f.get_in(e, "2026-10-01", 70)
+        self.f.get_in(e, "2026-10-02", 75)
+        g = self.f.one("SELECT get_in, get_in_7d_ago, get_in_trend_7d FROM v_event_get_in WHERE event_id = ?", e)
+        self.assertEqual((g["get_in"], g["get_in_7d_ago"], g["get_in_trend_7d"]), (75, None, None))
+
+    def test_get_in_prefers_api_and_stays_out_of_medians(self):
+        a, v = self.f.artist("A"), self.f.venue("V")
+        e = self.f.event(a, v, "2026-11-01")
+        self.f.get_in(e, "2026-10-02", 50)                               # ignored: the API has readings
+        self.f.snapshot_lowest(e, "2026-09-25T12:00:00Z", 100)
+        self.f.snapshot_lowest(e, "2026-10-01T12:00:00Z", 110)
+        g = self.f.one("SELECT get_in, get_in_source, get_in_7d_ago FROM v_event_get_in WHERE event_id = ?", e)
+        self.assertEqual((g["get_in"], g["get_in_source"], g["get_in_7d_ago"]), (110, "seatgeek", 100))
+        manual = self.f.event(a, v, "2026-11-02")
+        self.f.get_in(manual, "2026-10-01", 40)                          # cheapest listing...
+        self.f.observed(manual, "resale", 200, basis="ask")
+        self.f.observed(manual, "resale", 220, basis="ask")
+        resale = self.f.one("SELECT resale FROM v_event_prices WHERE event_id = ?", manual)[0]
+        self.assertEqual(resale, 210)                                    # ...doesn't drag the median down
 
     def test_premiums_use_medians(self):
         a, b = self.f.artist("A"), self.f.artist("B")

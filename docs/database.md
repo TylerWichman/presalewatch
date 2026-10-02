@@ -157,6 +157,7 @@ whenever API data is missing.
 | `price_basis` | For resale: `ask` (a listing) or `sold` (a sale). Required for resale |
 | `section_tier` | e.g. "GA floor", "Sec 104", "Platinum" |
 | `standard_ticket` | 0 for VIP or Platinum; only standard tickets count toward medians |
+| `price_point` | `single` (one ticket's listing or sale price), `get_in` (the cheapest listing for the whole event at that moment), or `median` (a marketplace's own median). Get-in rows must be resale listing prices, and they're kept out of medians |
 | `price` | Price per ticket |
 | `fees_included` | 1 if the price includes fees |
 | `observed_on` | Date the price was seen |
@@ -186,6 +187,7 @@ status, API calls, and rows written.
 | `v_observed_medians` | Median hand-logged price per event and kind (standard tickets only) |
 | `v_event_prices` | One face price and one resale price per event. API data comes first; hand-logged prices fill gaps, preferring sales over asks. The view also says where each price came from |
 | `v_event_markup` | Resale ÷ face, where both exist |
+| `v_event_get_in` | **Get-in price**: the cheapest listing for the event, now and about a week ago, plus the 7-day trend (0.25 means up 25%). Readings come from API snapshots when an event has any, otherwise from hand-logged get-in prices. The "week ago" reading is the latest one 5-9 days back, so logging every few days is enough. In scoring, get-in gives a **floor Profit %**: what you'd make selling at today's cheapest listing |
 | `v_venue_premium`, `v_venue_type_premium` | Median markup per venue and per venue type, kept separate for asks and sales |
 | `v_artist_premium` | Median markup per headliner, plus sellout rate over events where sellout is known |
 | `venue_market` | Each venue's metro population and its state's resale rules |
