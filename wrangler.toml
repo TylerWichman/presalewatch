@@ -7,7 +7,7 @@ compatibility_date = "2026-09-26"
 
 [vars]
 APP_ORIGIN = "https://pouchit.net"
-EMAIL_FROM = "PresaleWatch <alerts@pouchit.net>"
+EMAIL_FROM = "PouchIt <alerts@pouchit.net>"
 
 [[d1_databases]]
 binding = "DB"

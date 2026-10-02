@@ -1,4 +1,4 @@
-# PresaleWatch — MVP Spec (Product Demo)
+# PouchIt — MVP Spec (Product Demo)
 
 ## 1. Goal
 A single shareable web page showing **upcoming concert presales**: who, when it opens, and how to get access. The purpose is to show the product to a friend and see whether the data is useful. It has no accounts, no alerts, and no payments.

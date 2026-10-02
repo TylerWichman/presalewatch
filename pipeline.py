@@ -1,4 +1,4 @@
-"""PresaleWatch data pipeline: pull sources, compute edge, write tables and presales.json.
+"""PouchIt data pipeline: pull sources, compute edge, write tables and presales.json.
 
 1. Pull upcoming events and presales (Ticketmaster).
 2. Enrich with artist (Last.fm listeners and plays, tour size) and venue (capacity, market) data.

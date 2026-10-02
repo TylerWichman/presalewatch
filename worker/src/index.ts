@@ -1,4 +1,4 @@
-// PresaleWatch alert sender. Runs hourly on a cron trigger and has no fetch handler, no
+// PouchIt alert sender. Runs hourly on a cron trigger and has no fetch handler, no
 // workers.dev URL, and no routes, so nothing on the internet can call it.
 //
 // Each run: clean up expired rows, fetch alerts.json from the site, and if the data is new since
