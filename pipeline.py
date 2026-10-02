@@ -324,9 +324,15 @@ def presale_rows(parsed: list[dict], results: dict[str, dict], artists: dict, ve
                     "seatgeek_listings": snap.get("listing_count"),
                 },
             })
-    # Edge descending (predicted rows by range midpoint); ties go to the sooner presale.
-    rows.sort(key=lambda r: (-r["edge_sort"], r["presale_start"], r["artist"].lower()))
+    rows.sort(key=presale_sort_key)
     return rows
+
+
+def presale_sort_key(row: dict) -> tuple:
+    """Edge descending (predicted rows by range midpoint), Unrated rows (no edge) last; ties go
+    to the sooner presale."""
+    edge_sort = row["edge_sort"]
+    return (edge_sort is None, -(edge_sort or 0.0), row["presale_start"] or "", row["artist"].lower())
 
 
 def main() -> None:

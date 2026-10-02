@@ -170,6 +170,17 @@ class ProfitFormula(unittest.TestCase):
         self.assertEqual(edge.demand_signals(10**9, None, None, None, None, self.cfg)["listeners"], 1.0)
 
 
+class PresaleOrder(unittest.TestCase):
+    def test_unrated_rows_sort_last_without_crashing(self):
+        import pipeline
+        rows = [{"edge_sort": None, "presale_start": "2026-10-03T14:00:00Z", "artist": "Tribute Act"},
+                {"edge_sort": 0.2, "presale_start": "2026-10-05T14:00:00Z", "artist": "B"},
+                {"edge_sort": 0.9, "presale_start": "2026-10-04T14:00:00Z", "artist": "A"},
+                {"edge_sort": 0.2, "presale_start": "2026-10-04T14:00:00Z", "artist": "C"}]
+        rows.sort(key=pipeline.presale_sort_key)
+        self.assertEqual([r["artist"] for r in rows], ["A", "C", "B", "Tribute Act"])
+
+
 class PresaleTypes(unittest.TestCase):
     def test_classification(self):
         cases = {
