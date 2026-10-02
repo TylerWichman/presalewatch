@@ -48,17 +48,21 @@ Fees default to 15% seller and 25% of face for primary (`config/model.json`).
   | Plays per listener (log scale, 3 to 100) | Last.fm | 0.10 |
   | **Listeners per venue seat** (log scale) | Last.fm + venue capacity | **0.50** |
   | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.10 |
-  | Market, 1 for NYC/LA/Chicago, 0.5 otherwise | Ticketmaster | 0.15 |
+  | Market: people within 80 km of the venue (log scale, 250K to 20M) | 2020 Census | 0.15 |
 
   Listeners per seat dominates: a big audience for a small room is what drives resale
   prices, so raw popularity counts for less. A missing signal is left out and the
   other weights are rescaled to add up to 1, so a gap doesn't pull the score toward
-  a made-up middle value. Confidence is Med when Last.fm knows the artist and Low
-  when it doesn't.
+  a made-up middle value. Confidence is Med.
 
-  **High demand needs both Last.fm data and a venue capacity.** Without them the
-  rescaled weights fall on market and raw popularity, which overrate big-market shows
-  and big artists in big rooms, so such events are capped at Med.
+  **No Last.fm data means Unrated.** Without listener data the score would rest on
+  market and tour size alone, which can't show that people want the tickets, so the
+  event gets no tier and no estimated range. The page shows it as "Unrated" and sorts
+  it below rated events.
+
+  **High demand needs a venue capacity too.** Without it the rescaled weights fall on
+  market and raw popularity, which overrate big-market shows and big artists in big
+  rooms, so such events are capped at Med.
 
   **Where the capacity comes from**, in order: the hand-entered value in
   `config/venues.csv`; a measured capacity from the intelligence database (Wikidata,
@@ -129,8 +133,9 @@ git archive origin/data | tar -x -f -
 ### Adding venue capacities
 
 Every venue seen is listed in `db/venues.csv`; ones without a capacity have a blank
-there. To add one, copy its row into `config/venues.csv`, fill in `capacity`
-(and `market_tier`: `1` for NYC, LA, or Chicago, `0.5` otherwise), and open a pull request.
+there. To add one, copy its row into `config/venues.csv`, fill in `capacity`, and open a
+pull request. Market size isn't entered by hand: it's the population within 80 km of the
+venue, from the 2020 Census.
 
 ## Calibration
 

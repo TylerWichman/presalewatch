@@ -12,7 +12,8 @@ It lives in Cloudflare D1 (SQLite) next to the accounts tables. The schema is in
   ([`.github/workflows/ingest.yml`](../.github/workflows/ingest.yml)). They write to D1 through
   Cloudflare's D1 HTTP API in batches. Workers stay limited to accounts and alerts.
 - **One job per source, in this order:** Ticketmaster → Last.fm → MusicBrainz → Wikidata →
-  venue enrichment → Wikipedia pageviews → ListenBrainz → YouTube. Each logs itself in `ingest_runs`, and one
+  venue enrichment → capacity estimates → catchment population → Wikipedia pageviews → ListenBrainz
+  → YouTube. Each logs itself in `ingest_runs`, and one
   failing job doesn't stop the others.
 - **Effect on the live page:** none. The page and alerts still read `presales.json` from
   the existing pipeline, so scoring doesn't change until deliverable 4.
@@ -337,6 +338,26 @@ measured values.
   be High at 3,000 seats. The page labels that rating "High demand · est."
 - **Switch:** `capacity_estimate.enabled` in `config/model.json`. Turning it off clears every estimate
   on the next run.
+
+### Catchment population (migration 0005)
+
+The market signal in the demand score is the number of people living within 80 km of the venue.
+`ingest/catchment.py` (daily) sums the 2020 Census tract populations whose population-weighted center
+is within that radius. It replaces the old hand-set top-market list, which counted casinos two hours
+from New York as New York and every other city as the same.
+
+| Field | Meaning |
+| --- | --- |
+| `catchment_population` | People living within the radius |
+| `catchment_basis` | Source and radius, e.g. "2020 Census tract centers of population, within 80 km" |
+| `catchment_at` | When it was computed |
+
+- **Source:** the Census Bureau's tract centers-of-population file (public domain), downloaded once per
+  run. It only changes each decennial census.
+- **Recomputed** only for venues without a value or whose basis changed (a new radius in
+  `market_population.radius_km`).
+- **In scoring:** log scale from 250,000 people (0) to 20 million (1), set in
+  `config/model.json` `market_population`. Weight 0.15.
 
 **`event_status_history`**: one row each time Ticketmaster's status for an event changes
 (`onsale`, `offsale`, `cancelled`, `postponed`, `rescheduled`). The change happened between

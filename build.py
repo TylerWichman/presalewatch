@@ -84,7 +84,7 @@ def compact(data: dict) -> dict:
                     "cap": inp["venue_capacity"],
                     "cest": inp.get("capacity_estimated") or None,
                     "tour": inp["tour_date_count"],
-                    "mkt": inp["market_tier"],
+                    "pop": inp.get("catchment_population"),
                     "sig": inp["signals"],
                     "miss": inp["missing_signals"] or None,
                     "sgn": inp["seatgeek_listings"],

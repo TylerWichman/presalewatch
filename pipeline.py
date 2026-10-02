@@ -38,7 +38,7 @@ ARTIST_FIELDS = [
     "artist_id", "name", "lastfm_lookup", "lastfm_name", "lastfm_listeners", "lastfm_playcount",
     "tour_date_count", "lastfm_checked_at", "updated_at",
 ]
-VENUE_FIELDS = ["venue_id", "name", "city", "state", "capacity", "market_tier"]
+VENUE_FIELDS = ["venue_id", "name", "city", "state", "capacity"]
 SNAPSHOT_FIELDS = ["event_id", "seatgeek_id", "captured_at", "listing_count", "low", "median", "avg"]
 PREDICTION_FIELDS = [
     "event_id", "predicted_at", "mode", "demand_score", "tier", "multiple_low", "multiple_high",
@@ -105,7 +105,7 @@ def upsert_artists(parsed: list[dict], now: datetime, cfg: dict) -> dict[str, di
 
 
 def upsert_venues(parsed: list[dict], cfg: dict) -> dict[str, dict]:
-    """Every venue seen so far, with capacities and market tiers from the manual table.
+    """Every venue seen so far, with capacities from the manual table.
 
     db/venues.csv lists venues with a blank capacity so someone can look them up;
     capacities are entered in config/venues.csv, which always wins.
@@ -118,8 +118,6 @@ def upsert_venues(parsed: list[dict], cfg: dict) -> dict[str, dict]:
         row = venues.setdefault(v["venue_id"], {"venue_id": v["venue_id"], "capacity": ""})
         for k in ("name", "city", "state"):
             row[k] = row.get(k) or v[k]
-        if not row.get("market_tier"):
-            row["market_tier"] = edge.market_tier(v["market_ids"], cfg)
     for vid, manual in by_key(read_csv(VENUES_MANUAL_PATH), "venue_id").items():
         row = venues.setdefault(vid, {})
         row.update({k: val for k, val in manual.items() if val})
@@ -135,7 +133,7 @@ def intel_capacities(venue_ids: list[str]) -> dict[str, dict]:
         return {}
     try:
         from ingest.db import open_db, rows_in
-        rows = rows_in(open_db(target), "venues", "ticketmaster_id, capacity, capacity_source, capacity_estimate",
+        rows = rows_in(open_db(target), "venues", "ticketmaster_id, capacity, capacity_source, capacity_estimate, catchment_population",
                        "ticketmaster_id", venue_ids)
     except (Exception, SystemExit) as err:  # noqa: BLE001 - the page must still build without it (incl. a missing token)
         warn(f"intelligence database unavailable, scoring without its capacities: {type(err).__name__}: {str(err)[:150]}")
@@ -320,7 +318,7 @@ def presale_rows(parsed: list[dict], results: dict[str, dict], artists: dict, ve
                     "venue_capacity_source": res["capacity_source"],
                     "capacity_estimated": res["capacity_estimated"],
                     "tour_date_count": integer(artist.get("tour_date_count")),
-                    "market_tier": num(venue.get("market_tier")),
+                    "catchment_population": integer(res["catchment"]),
                     "signals": res["signals"],
                     "missing_signals": res["missing_signals"],
                     "seatgeek_listings": snap.get("listing_count"),
@@ -366,9 +364,7 @@ def main() -> None:
         e = p["event"]
         artist = artists.get(e["artist_id"], {})
         venue = venues.get(e["venue_id"] or "", {})
-        market = num(venue.get("market_tier"))
-        if market is None:
-            market = edge.market_tier(p["venue"]["market_ids"], cfg)
+        catchment = num((intel.get(e["venue_id"] or "") or {}).get("catchment_population"))
         capacity, capacity_source, estimated = venue_capacity(venue, intel.get(e["venue_id"] or ""), cfg)
 
         def signals_at(cap):
@@ -377,7 +373,7 @@ def main() -> None:
                 playcount=num(artist.get("lastfm_playcount")),
                 capacity=cap,
                 tour_dates=num(artist.get("tour_date_count")),
-                market=market,
+                catchment=catchment,
                 cfg=cfg,
             )
         signals = signals_at(capacity)
@@ -388,9 +384,11 @@ def main() -> None:
         res["signals"] = {k: (None if v is None else round(v, 4)) for k, v in signals.items()}
         res["snapshot"] = snap
         res["capacity"], res["capacity_source"] = capacity, capacity_source
+        res["catchment"] = catchment
         results[e["event_id"]] = res
     live = sum(1 for r in results.values() if r["mode"] == "live")
-    tiers = {t["name"]: sum(1 for r in results.values() if r["tier"] == t["name"]) for t in cfg["tiers"]}
+    tiers = {name: sum(1 for r in results.values() if r["tier"] == name)
+             for name in [*(t["name"] for t in cfg["tiers"]), edge.UNRATED]}
     with_cap = sum(1 for r in results.values() if r["capacity"] and not r["capacity_estimated"])
     est = sum(1 for r in results.values() if r["capacity_estimated"])
     print(f"  {live} live, {len(results) - live} predicted; tiers {tiers}; capacity measured for {with_cap},"

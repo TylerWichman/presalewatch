@@ -77,6 +77,8 @@ def score(now: datetime, cfg: dict) -> list[dict]:
         if not before:
             continue  # first seen after on-sale: nothing was actually predicted
         pred = max(before, key=lambda r: r["predicted_at"])
+        if pred.get("tier") == edge.UNRATED:
+            continue  # no Last.fm data: nothing was predicted
         face = num(pred["face"]) or edge.face_price(num(ev.get("face_min")), num(ev.get("face_max")), cfg)
         if not face:
             continue

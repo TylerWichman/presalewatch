@@ -30,10 +30,11 @@
     "listeners_per_seat_log10": [0.0, 4.0]
   },
   "refit_missing_value": 0.5,
-  "market": {
-    "top_market_ids": ["35", "55", "27", "3"],
-    "top": 1.0,
-    "other": 0.5
+  "market_population": {
+    "_note": "Market = everyone within radius_km of the venue (2020 Census tracts), log-scaled from low (0) to high (1).",
+    "radius_km": 80,
+    "low": 250000,
+    "high": 20000000
   },
   "tiers": [
     {"name": "High", "min_score": 0.70, "multiple_low": 1.8, "multiple_high": 3.0},
