@@ -1,9 +1,11 @@
 name: Ingest intelligence data
 
 # Fills the D1 intelligence database from Ticketmaster, Last.fm, MusicBrainz, Wikidata,
-# Wikipedia pageviews, ListenBrainz, and YouTube (current values only). Runs daily and on
-# demand. It writes only to the intelligence tables in D1; the live page and its scoring
-# still come from the existing pipeline. The coverage report goes into the run summary.
+# venue enrichment (Wikidata, Wikipedia, OpenStreetMap), Wikipedia pageviews, ListenBrainz,
+# and YouTube (current values only). Runs daily and on demand. It writes only to the
+# intelligence tables in D1; the live page and its scoring still come from the existing
+# pipeline. The coverage report goes into the run summary, and the venues still missing a
+# capacity are attached as venues_to_fill.csv for filling in by hand.
 on:
   schedule:
     - cron: "40 9 * * *"     # daily, 09:40 UTC
@@ -47,3 +49,19 @@ jobs:
           set -o pipefail
           python -u -m ingest.run --db d1 --sources "$SOURCES" | tee ingest.log
           { echo '```'; sed -n '/^Coverage report/,$p' ingest.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Hand-fill list of venues without a capacity
+        if: always()
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_TOKEN: ${{ secrets.CLOUDFLARE_BACKEND_TOKEN }}
+        run: python -m ingest.venue_handfill export --db d1 --out venues_to_fill.csv
+
+      - name: Attach the hand-fill list
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: venues_to_fill
+          path: venues_to_fill.csv
+          if-no-files-found: ignore
+          retention-days: 30

@@ -12,7 +12,7 @@ It lives in Cloudflare D1 (SQLite) next to the accounts tables. The schema is in
   ([`.github/workflows/ingest.yml`](../.github/workflows/ingest.yml)). They write to D1 through
   Cloudflare's D1 HTTP API in batches. Workers stay limited to accounts and alerts.
 - **One job per source, in this order:** Ticketmaster → Last.fm → MusicBrainz → Wikidata →
-  Wikipedia pageviews → ListenBrainz → YouTube. Each logs itself in `ingest_runs`, and one
+  venue enrichment → Wikipedia pageviews → ListenBrainz → YouTube. Each logs itself in `ingest_runs`, and one
   failing job doesn't stop the others.
 - **Effect on the live page:** none. The page and alerts still read `presales.json` from
   the existing pipeline, so scoring doesn't change until deliverable 4.
@@ -43,11 +43,7 @@ The rule everywhere: accept a match only on strong evidence; anything weaker goe
 - **Wikidata item:** from the artist's MusicBrainz page, or a Wikidata lookup by MusicBrainz ID
   (property P434). An item is only kept if it carries our MusicBrainz ID. The Wikipedia title
   and YouTube channel come from that item.
-- **Venues:** Wikidata items within 1 km of Ticketmaster's coordinates. A match is confident
-  only when the item is that close **and** has the same name (or alias, or 60%+ of the same
-  words, after evening out "Theatre"/"Theater" and similar). Capacity is written only from a
-  confident match with exactly one capacity value, and never over a capacity already there.
-  Several values (e.g. basketball vs concerts) go to review.
+- **Venues:** see [Venue enrichment](#venue-enrichment) below.
 
 ### Source terms on storing data
 
@@ -61,6 +57,8 @@ Checked October 2026, before anything was stored.
 | Wikidata | CC0 | None | Contactable User-Agent, one request at a time |
 | Wikipedia pageviews | CC0. User-Agent with contact details required | None | 12-month backfill, then daily |
 | ListenBrainz | CC0, commercial use allowed (MetaBrainz asks commercial users to donate) | None | Totals only; per-user listener names are dropped |
+| Wikipedia (MediaWiki API) | Article text is CC BY-SA 4.0. A capacity number is a fact, and the article is stored as its source link. Sequential requests, descriptive User-Agent, `maxlag` | None | Store the parsed number, the raw infobox text, and the article link. Credit and link Wikipedia wherever a value is shown |
+| OpenStreetMap (Overpass API) | **ODbL**. Credit "© OpenStreetMap contributors". Using OSM data publicly in a database derived from it means offering the OSM-derived part under ODbL on request. Overpass fair use: about 10,000 requests and 1 GB a day | None | Last-resort source. Every value it supplies is marked `capacity_source = 'openstreetmap'`, so it can be shared or removed on its own. **Add the OSM credit to the site before using these values publicly** |
 | YouTube Data API | Developer Policies III.E.4 | **30 days** for public channel statistics (III.E.4.d). **No derived metrics** (III.E.4.h) | Current values only, one row per artist, deleted after 30 days. Not combined with other data and not used in scoring |
 
 ## Conventions
@@ -243,6 +241,72 @@ updated daily.
 days, as YouTube's policies require. `subscriber_count` is NULL when a channel hides it.
 
 **New column on `venues`**: `wikidata_checked_at`.
+
+### Venue enrichment (migration 0004)
+
+Runs daily as part of the ingestion workflow ([`ingest/venue_enrichment.py`](../ingest/venue_enrichment.py)).
+
+**What gets processed each run:** venues with upcoming events, busiest first.
+1. Never-checked venues, so new ones are done on the run they first appear.
+2. Venues still without a capacity, retried every **30 days**.
+3. Filled venues, re-verified every **180 days**.
+
+At most 200 venues a run. Verified (hand-entered) venues are never re-processed.
+
+**Sources, in order.** The first confident match with a usable capacity wins:
+
+| Order | Source | What it gives |
+| --- | --- | --- |
+| 0 | Hand-entered values: `config/venues.csv` and imported hand-fill CSVs | Capacity. Applied first, marked verified, never overwritten |
+| 1 | Wikidata | Capacity (with the configuration it applies to, e.g. concerts), venue type, opening date, operator, Wikipedia article |
+| 2 | Wikipedia | The article's infobox `capacity`. Found from Wikidata's link, or by searching for articles near the coordinates |
+| 3 | OpenStreetMap | The `capacity` tag on a nearby venue (amenity, leisure, or building tags) |
+| – | Ticketmaster venue details | Time zone and venue page, fetched once. Ticketmaster has no capacity field |
+
+**Matching works from coordinates.** For each venue, entries within about 1 km are fetched, then:
+
+| Verdict | Needs |
+| --- | --- |
+| **Confident** | Within **300 m** of Ticketmaster's coordinates, **and** the same name (or alias, or 60%+ of the same words), **and** a venue-like type (theater, arena, stadium, club, concert hall, ...) |
+| **Review** | Within 300 m with only one of name or type, or 300 m to 1 km with a matching name |
+| **No** | Anything else |
+
+When two entries describe the same building, the tie-breakers are, in order: the only one carrying a capacity, the only one with a Wikipedia article, then one at least twice as close as the next. Still tied goes to review.
+
+**Capacity parsing** handles messy values like "20,000 (concerts)", "Basketball: 19,722 / Concerts: 20,000", or "Seated: 2,195 / Standing: 3,000":
+- **Which value:** the one labeled for concerts. Otherwise the largest.
+- **High confidence:** one clear value, or exactly one concert value.
+- **Medium confidence:** the largest of several values, or a value marked approximate.
+- **Low confidence:** a range ("1,500–2,000") or an implausible number (under 20 or over 150,000). **Low never writes**; it goes to `match_review`.
+
+**Writing rules:**
+- Only confident matches with high or medium confidence write a capacity.
+- A re-check that finds a number more than 10% different from the stored one goes to review instead of overwriting.
+- Details (venue type, opening date, operator, Wikipedia title, OSM ID) only fill empty fields.
+
+**New columns on `venues`**
+
+| Field | Meaning |
+| --- | --- |
+| `capacity_raw` | The exact text the capacity was parsed from |
+| `capacity_confidence` | `high`, `medium`, or `low` |
+| `capacity_checked_at` | When the capacity sources were last consulted |
+| `opened`, `operator` | Opening date (`YYYY` or `YYYY-MM-DD`) and operator |
+| `wikipedia_title`, `osm_id` | The matched Wikipedia article and OpenStreetMap element |
+| `timezone`, `url` | From Ticketmaster's venue details |
+| `ticketmaster_checked_at` | When those details were fetched |
+
+`capacity_source` is now one of `manual`, `wikidata`, `wikipedia`, or `openstreetmap`.
+
+**`venue_capacity_observations`**: every capacity any source reported for a venue, with the source, its link, the raw text, the parsed number, the configuration label, the confidence, and the distance between the two sets of coordinates. `venues.capacity` holds the one in use; this table shows where it came from and any disagreement.
+
+**Hand-fill fallback.** Venues nothing resolves keep `capacity` NULL. Each workflow run attaches `venues_to_fill.csv`, sorted by upcoming events, with a map link, a Wikipedia search link, and any review note. Fill in `capacity` (and ideally `source_url`), then:
+
+```powershell
+python -m ingest.venue_handfill import venues_to_fill.csv --db d1
+```
+
+Imported values are marked verified and are never overwritten.
 
 **`event_status_history`**: one row each time Ticketmaster's status for an event changes
 (`onsale`, `offsale`, `cancelled`, `postponed`, `rescheduled`). The change happened between
