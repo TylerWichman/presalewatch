@@ -340,7 +340,7 @@ def evaluate(venue: dict, candidates: list[dict]) -> dict:
     for c in candidates:
         verdict, meters = classify(name=venue["name"], lat=venue["latitude"], lon=venue["longitude"], cand_names=c["names"],
                                    cand_lat=c.get("lat"), cand_lon=c.get("lon"), type_ok=is_venue(c["type_texts"]), meters=c.get("meters"),
-                                   cand_stadium_or_arena=c["source"] == "wikidata" and venue_type(c["type_texts"]) in ("stadium", "arena"))
+                                   cand_kind=venue_type(c["type_texts"]) if c["source"] == "wikidata" else None)
         if verdict != "no":
             classified.append({**c, "verdict": verdict, "meters": meters})
     match = pick_confident(classified)

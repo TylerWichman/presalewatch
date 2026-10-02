@@ -93,23 +93,36 @@ def name_matches(name: str, candidate_names: list[str]) -> bool:
 LARGE_VENUE_NAME = re.compile(r"\b(stadium|arena|field|park|center|centre|dome|coliseum|colosseum|ballpark|garden|bowl)\b", re.I)
 
 
+# What a large-sounding name says the venue is. Coliseum is used for both.
+NAME_KINDS = {
+    "stadium": re.compile(r"\b(stadium|field|park|ballpark|dome|bowl|coliseum|colosseum)\b", re.I),
+    "arena": re.compile(r"\b(arena|center|centre|garden|fieldhouse|coliseum|colosseum)\b", re.I),
+}
+
+
 def looks_large(name: str | None) -> bool:
     """Ticketmaster's venue name suggests a stadium or arena ("Daikin Park", "Xfinity Mobile Arena")."""
     return bool(LARGE_VENUE_NAME.search(name or ""))
 
 
+def name_kinds(name: str | None) -> set[str]:
+    """Which of stadium/arena the name allows: "Oakland Arena" -> {"arena"}, "Daikin Park" -> {"stadium"}."""
+    return {kind for kind, pattern in NAME_KINDS.items() if pattern.search(name or "")}
+
+
 def classify(*, name: str, lat: float | None, lon: float | None, cand_names: list[str],
              cand_lat: float | None, cand_lon: float | None, type_ok: bool, meters: float | None = None,
-             cand_stadium_or_arena: bool = False) -> tuple[str, float | None]:
+             cand_kind: str | None = None) -> tuple[str, float | None]:
     """'confident', 'review', or 'no', plus the distance in meters.
 
     `meters` can be passed when the source already measured it (Wikipedia geosearch does).
 
     Renamed stadiums and arenas (naming rights change often, and Wikidata lags): a Wikidata entry
-    typed as a stadium or arena within 300 m is confident WITHOUT a name match, because two of
-    them are never that close. Only when Ticketmaster's own name also sounds large, though, so a
-    room inside an arena ("The Theater at MSG", inside Madison Square Garden) can't take the
-    arena's capacity.
+    typed as a stadium or arena (cand_kind) within 300 m is confident WITHOUT a name match, but
+    only when Ticketmaster's name says the same kind of venue. Arenas often sit next to stadiums
+    (Smoothie King Center by the Superdome, Oakland Arena by the Coliseum), so an "Arena" or
+    "Center" never takes a stadium's capacity, and a room inside an arena ("The Theater at MSG")
+    never takes the arena's.
     """
     if meters is None and None not in (lat, lon, cand_lat, cand_lon):
         meters = haversine_km(lat, lon, cand_lat, cand_lon) * 1000
@@ -118,7 +131,7 @@ def classify(*, name: str, lat: float | None, lon: float | None, cand_names: lis
     name_ok = name_matches(name, cand_names)
     if meters <= CONFIDENT_M and name_ok and type_ok:
         return "confident", meters
-    if meters <= CONFIDENT_M and cand_stadium_or_arena and looks_large(name):
+    if meters <= CONFIDENT_M and cand_kind and cand_kind in name_kinds(name):
         return "confident", meters
     # Review only when the names are at least somewhat alike. A differently named neighbor
     # (another theater down the block, a hotel) is just a neighbor, not a possible match.

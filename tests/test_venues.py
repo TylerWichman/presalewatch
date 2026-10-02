@@ -12,7 +12,7 @@ from ingest import venue_enrichment as ve
 from ingest import venue_handfill
 from ingest.db import SqliteDatabase
 from ingest.resolve import haversine_km
-from ingest.venue_rules import classify, is_venue, name_similarity, parse_capacity, pick_confident, venue_type
+from ingest.venue_rules import classify, is_venue, name_kinds, name_similarity, parse_capacity, pick_confident, venue_type
 
 NOW = "2026-10-02T12:00:00Z"
 FOX = {"id": 1, "name": "Fox Theater - Oakland", "latitude": 37.80815, "longitude": -122.27077,
@@ -48,15 +48,26 @@ class Matching(unittest.TestCase):
     def test_renamed_stadium_matches_by_type_within_300m(self):
         renamed = dict(name="Daikin Park", lat=29.7573, lon=-95.3555, cand_names=["Minute Maid Park"],
                        cand_lat=29.7570, cand_lon=-95.3554, type_ok=True)
-        self.assertEqual(classify(**renamed, cand_stadium_or_arena=True)[0], "confident")
-        self.assertEqual(classify(**renamed, cand_stadium_or_arena=False)[0], "no")           # no type: no match
+        self.assertEqual(classify(**renamed, cand_kind="stadium")[0], "confident")
+        self.assertEqual(classify(**renamed, cand_kind=None)[0], "no")                         # no type: no match
         far = {**renamed, "cand_lat": 29.7610}                                                 # ~400 m
-        self.assertEqual(classify(**far, cand_stadium_or_arena=True)[0], "no")
+        self.assertEqual(classify(**far, cand_kind="stadium")[0], "no")
+        arena = dict(name="Xfinity Mobile Arena", lat=39.9012, lon=-75.1720, cand_names=["Wells Fargo Center"],
+                     cand_lat=39.9013, cand_lon=-75.1719, type_ok=True)
+        self.assertEqual(classify(**arena, cand_kind="arena")[0], "confident")
+
+    def test_arena_next_to_a_stadium_never_takes_its_capacity(self):
+        # Found in the venue pass: Smoothie King Center got the Superdome's 78,133; Oakland Arena the Coliseum's 63,122.
+        for name, stadium in (("Smoothie King Center", "Caesars Superdome"), ("Oakland Arena", "Oakland Coliseum"),
+                              ("Ray Charles Performing Arts Center", "B.T. Harvey Stadium")):
+            near = dict(name=name, lat=29.9490, lon=-90.0821, cand_names=[stadium], cand_lat=29.9505, cand_lon=-90.0812, type_ok=True)
+            self.assertEqual(classify(**near, cand_kind="stadium")[0], "no", name)
+        self.assertEqual(name_kinds("Oakland-Alameda County Coliseum"), {"stadium", "arena"})
 
     def test_room_inside_an_arena_never_takes_its_capacity(self):
         theater = dict(name="The Theater at MSG", lat=40.7505, lon=-73.9934, cand_names=["Madison Square Garden"],
                        cand_lat=40.7506, cand_lon=-73.9935, type_ok=True)
-        self.assertEqual(classify(**theater, cand_stadium_or_arena=True)[0], "no")
+        self.assertEqual(classify(**theater, cand_kind="arena")[0], "no")
 
     def test_name_similarity_ignores_filler_words(self):
         self.assertAlmostEqual(name_similarity("The Funhouse at Mr. Smalls", ["Mr. Smalls"]), 2 / 3)
