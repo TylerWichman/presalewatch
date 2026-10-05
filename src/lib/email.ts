@@ -145,6 +145,66 @@ Not financial advice. Always confirm prices on the ticketing site.
   };
 }
 
+export interface WelcomeUser {
+  id: string;
+  email: string;
+  unsub_nonce: string;
+}
+
+export interface WelcomeSettings {
+  follows: string[];
+  followAlerts: boolean;
+  profitAlerts: boolean;
+  threshold: number;
+}
+
+/** The one-time welcome email: what they follow, their threshold, and what will trigger an alert. */
+export async function renderWelcome(user: WelcomeUser, s: WelcomeSettings, ctx: DigestContext): Promise<Message> {
+  const token = await unsubscribeToken(ctx.unsubscribeSecret, user.id, user.unsub_nonce);
+  const unsubPage = unsubscribePageUrl(ctx.origin, user.id, token);
+  const oneClick = oneClickUrl(ctx.origin, user.id, token);
+  const manage = `${ctx.origin}/alerts`;
+  // The subject names the first artist (the one from "Alert me", if any).
+  const subject = s.follows.length ? `You're set: alerts for ${s.follows[0]}` : "You're set: your PouchIt alerts are on";
+
+  const followLine = s.follows.length
+    ? `You follow: ${s.follows.join(", ")}.`
+    : "You're not following any artists yet. Add some on your alerts page.";
+  const triggers: string[] = [];
+  if (s.followAlerts) triggers.push("a new presale for an artist you follow");
+  if (s.profitAlerts) triggers.push(`any presale with an estimated or live Profit % of ${s.threshold}% or more`);
+  const triggerLine = triggers.length
+    ? `We'll email you about ${triggers.join(", and ")}.`
+    : "Both alert types are off, so we won't email you until you turn one on.";
+  const cadence = "You get at most one email after each data refresh, and never the same event twice.";
+
+  const html = `<!doctype html><html><body style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#111;max-width:600px">
+<h1 style="font-size:18px">You're set</h1>
+<p>${escapeHtml(followLine)}</p>
+<p>${escapeHtml(triggerLine)} ${escapeHtml(cadence)}</p>
+<p><a href="${escapeHtml(manage)}" style="display:inline-block;background:#6d28d9;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">Manage my alerts</a></p>
+<p style="color:#555;font-size:12px;border-top:1px solid #ddd;padding-top:12px">
+You get this email because you signed up for alerts at PouchIt.<br>
+<a href="${escapeHtml(manage)}">Manage alerts</a> · <a href="${escapeHtml(unsubPage)}">Unsubscribe</a><br>
+${escapeHtml(ctx.postalAddress)}
+</p></body></html>`;
+  const text = `You're set\n\n${followLine}\n\n${triggerLine} ${cadence}\n\nManage my alerts: ${manage}\n\n--\n` +
+    `You get this email because you signed up for alerts at PouchIt.\nUnsubscribe: ${unsubPage}\n${ctx.postalAddress}\n`;
+
+  assertHeaderSafe(user.email, subject, oneClick, ctx.from);
+  return {
+    from: ctx.from,
+    to: [user.email],
+    subject,
+    html,
+    text,
+    headers: {
+      "List-Unsubscribe": `<${oneClick}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    },
+  };
+}
+
 /** Short and plain on purpose: no images, buttons, or styling, which reads as a personal
  * transactional message to spam filters. The HTML part is the text with the link clickable. */
 export function renderSignIn(from: string, to: string, link: string, code: string): Message {
