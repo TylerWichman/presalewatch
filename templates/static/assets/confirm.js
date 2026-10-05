@@ -1,6 +1,6 @@
-// Magic-link landing page. The token arrives in the URL fragment (never sent to servers). Opening the
-// page only checks the link; signing in takes a button press, so email link scanners that open links
-// automatically can't use up the one-time token.
+// Sign-in link landing page. The token arrives in the URL fragment (never sent to servers).
+// Opening the page only checks the link; signing in takes a press of "Sign in as …", so email
+// link scanners that open links automatically can't use up the one-time token.
 "use strict";
 
 (async function () {
@@ -11,10 +11,9 @@
   // Drop the token from the address bar and history right away.
   history.replaceState(null, "", location.pathname);
 
-  function fail(text) {
-    $("status").textContent = text;
-    $("confirm").hidden = true;
-    $("retry").hidden = false;
+  // An expired or used link goes straight to the email form, so a new one is one step away.
+  function expired() {
+    location.replace("/alerts?expired=1");
   }
 
   async function verify(confirm) {
@@ -26,17 +25,24 @@
     });
     let data = {};
     try { data = await res.json(); } catch (e) { /* empty body */ }
-    if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+    if (!res.ok) throw Object.assign(new Error(data.error || "Something went wrong. Please try again."), { status: res.status });
     return data;
   }
 
-  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return fail("This sign-in link is invalid, expired, or already used. Request a new one.");
+  function fail(err) {
+    if (err.status === 400) return expired();
+    $("status").textContent = err.message;
+    $("confirm").hidden = true;
+  }
+
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return expired();
   try {
     const peek = await verify(false);
-    $("status").textContent = "Sign in as " + peek.email + "?";
+    $("status").textContent = "Signing in to PouchIt.";
+    $("confirm").textContent = "Sign in as " + peek.email;
     $("confirm").hidden = false;
   } catch (err) {
-    return fail(err.message);
+    return fail(err);
   }
 
   $("confirm").addEventListener("click", async () => {
@@ -45,7 +51,7 @@
       const out = await verify(true);
       location.replace(out.next === "/" ? "/" : "/alerts");
     } catch (err) {
-      fail(err.message);
+      fail(err);
     }
   });
 })();

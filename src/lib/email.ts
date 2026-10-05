@@ -147,15 +147,21 @@ Not financial advice. Always confirm prices on the ticketing site.
 
 /** Short and plain on purpose: no images, buttons, or styling, which reads as a personal
  * transactional message to spam filters. The HTML part is the text with the link clickable. */
-export function renderSignIn(from: string, to: string, link: string): Message {
+export function renderSignIn(from: string, to: string, link: string, code: string): Message {
+  if (!/^[0-9]{6}$/.test(code)) throw new Error("sign-in code must be 6 digits");
   const subject = "Your PouchIt sign-in link";
   assertHeaderSafe(from, to, subject);
-  const lines = ["Sign in to PouchIt:", link, "This link works once and expires in 15 minutes. If you didn't ask for it, ignore this email."];
-  const text = `${lines[0]}\n\n${lines[1]}\n\n${lines[2]}\n`;
+  const lines = [
+    `Your sign-in code: ${code}`,
+    "Or sign in with this link:",
+    link,
+    "The code and link work once and expire in 15 minutes. If you didn't ask for this, ignore this email.",
+  ];
+  const text = `${lines[0]}\n\n${lines[1]}\n${lines[2]}\n\n${lines[3]}\n`;
   const html = `<!doctype html><html><body>
-<p>${escapeHtml(lines[0])}</p>
-<p><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p>
-<p>${escapeHtml(lines[2])}</p>
+<p>${escapeHtml("Your sign-in code:")} <b>${escapeHtml(code)}</b></p>
+<p>${escapeHtml(lines[1])}<br><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p>
+<p>${escapeHtml(lines[3])}</p>
 </body></html>`;
   return { from, to: [to], subject, html, text };
 }

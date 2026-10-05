@@ -23,7 +23,7 @@ describe("deliverability", () => {
 
   it("every email has a plain-text part alongside the HTML", async () => {
     const digest = await renderDigest({ user: user(), follows: [ev({ id: "F" })], profit: [ev()] }, { ...CTX, from: FROM });
-    const signin = renderSignIn(FROM, "a@example.com", "https://pouchit.net/auth/confirm#token=" + "A".repeat(43));
+    const signin = renderSignIn(FROM, "a@example.com", "https://pouchit.net/auth/confirm#token=" + "A".repeat(43), "482913");
     for (const m of [digest, signin]) {
       assert.equal(m.from, FROM);
       assert.ok(m.text.trim().length > 0);
@@ -34,8 +34,10 @@ describe("deliverability", () => {
 
   it("the sign-in email is short and plain", () => {
     const link = "https://pouchit.net/auth/confirm#token=" + "A".repeat(43) + "&next=%2Falerts";
-    const m = renderSignIn(FROM, "a@example.com", link);
+    const m = renderSignIn(FROM, "a@example.com", link, "482913");
     assert.ok(m.text.includes(link));
+    assert.ok(m.text.includes("482913"));
+    assert.throws(() => renderSignIn(FROM, "a@example.com", link, "48291"));
     assert.ok(m.text.length < 300, `text is ${m.text.length} characters`);
     assert.doesNotMatch(m.html, /<img|<style|style=|<table/i);
     assert.equal((m.html.match(/<a /g) ?? []).length, 1);

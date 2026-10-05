@@ -4,13 +4,17 @@ import { randomToken, sha256, TOKEN_PATTERN } from "./crypto.ts";
 import { HttpError, type Env } from "./http.ts";
 
 export const COOKIE = "__Host-pw_session";
-export const ABSOLUTE_TTL = 30 * 24 * 3600;
-export const IDLE_TTL = 7 * 24 * 3600;
+// A session lasts 90 days from its last use (each use extends it), and ends after 30 days idle.
+// Signing out or deleting the account revokes it at once.
+export const SESSION_TTL = 90 * 24 * 3600;
+export const IDLE_TTL = 30 * 24 * 3600;
 const TOUCH_EVERY = 3600;
 
 export interface Session {
   userId: string;
   idHash: string;
+  /** Set when this request extended the session: send it back so the cookie is extended too. */
+  renewedCookie?: string;
 }
 
 export function readCookie(request: Request): string | null {
@@ -26,7 +30,7 @@ export function readCookie(request: Request): string | null {
 }
 
 export function sessionCookie(id: string): string {
-  return `${COOKIE}=${id}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${ABSOLUTE_TTL}`;
+  return `${COOKIE}=${id}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_TTL}`;
 }
 
 export function clearCookie(): string {
@@ -40,11 +44,11 @@ export async function createSession(env: Env, request: Request, userId: string, 
   const id = randomToken(32);
   await env.DB.prepare(
     "INSERT INTO sessions (id_hash, user_id, created_at, last_seen_at, expires_at) VALUES (?1, ?2, ?3, ?3, ?4)",
-  ).bind(await sha256(id), userId, now, now + ABSOLUTE_TTL).run();
+  ).bind(await sha256(id), userId, now, now + SESSION_TTL).run();
   return id;
 }
 
-/** The current session, or null if missing, expired (absolute or idle), or revoked. */
+/** The current session, or null if missing, expired, idle too long, or revoked. */
 export async function getSession(env: Env, request: Request, now: number): Promise<Session | null> {
   const id = readCookie(request);
   if (!id) return null;
@@ -58,7 +62,10 @@ export async function getSession(env: Env, request: Request, now: number): Promi
     return null;
   }
   if (now - row.last_seen_at >= TOUCH_EVERY) {
-    await env.DB.prepare("UPDATE sessions SET last_seen_at = ?2 WHERE id_hash = ?1").bind(idHash, now).run();
+    await env.DB.prepare("UPDATE sessions SET last_seen_at = ?2, expires_at = ?3 WHERE id_hash = ?1")
+      .bind(idHash, now, now + SESSION_TTL)
+      .run();
+    return { userId: row.user_id, idHash, renewedCookie: sessionCookie(id) };
   }
   return { userId: row.user_id, idHash };
 }
