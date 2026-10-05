@@ -11,7 +11,7 @@ import argparse
 from ingest.db import Database, open_db
 from ingest.venue_enrichment import capacity_coverage
 
-TABLES = ["artists", "artist_aliases", "artist_tags", "artist_similar", "artist_metrics_snapshots", "artist_pageviews",
+TABLES = ["artists", "artist_aliases", "artist_tags", "artist_similar", "artist_metrics_snapshots", "artist_pageviews_weekly",
           "artist_youtube_current", "venues", "venue_capacity_observations", "events", "event_artists", "presales", "event_status_history",
           "resale_snapshots", "observed_prices", "match_review", "ingest_runs"]
 
@@ -32,7 +32,7 @@ def numbers(db: Database) -> dict:
         "youtube_stats": one("SELECT COUNT(*) FROM artist_youtube_current"),
         "lastfm": one("SELECT COUNT(*) FROM artists WHERE lastfm_listeners IS NOT NULL"),
         "listenbrainz": one("SELECT COUNT(DISTINCT artist_id) FROM artist_metrics_snapshots WHERE listenbrainz_listeners IS NOT NULL"),
-        "pageviews": one("SELECT COUNT(DISTINCT artist_id) FROM artist_pageviews"),
+        "pageviews": one("SELECT COUNT(DISTINCT artist_id) FROM artist_pageviews_weekly"),
         "venues": one("SELECT COUNT(*) FROM venues"),
         "venue_capacity": one("SELECT COUNT(*) FROM venues WHERE capacity IS NOT NULL"),
         "venue_wikidata": one("SELECT COUNT(*) FROM venues WHERE wikidata_id IS NOT NULL"),

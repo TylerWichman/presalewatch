@@ -76,9 +76,16 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
                 aid = by_channel.get(d["channel_id"])
                 if aid is None:
                     continue
-                # A full replace: a channel that hides its count now must not keep an old one.
-                stmts.append(("INSERT OR REPLACE INTO artist_youtube_current (artist_id, channel_id, subscriber_count,"
-                              " view_count, video_count, fetched_at, source, last_updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                # Every value is overwritten (a channel that hides its count now must not keep an
+                # old one), and fetched_at always moves: retention is counted from the last fetch.
+                # An update in place is one row written; INSERT OR REPLACE would be a delete plus
+                # an insert.
+                stmts.append(("INSERT INTO artist_youtube_current (artist_id, channel_id, subscriber_count,"
+                              " view_count, video_count, fetched_at, source, last_updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                              " ON CONFLICT (artist_id) DO UPDATE SET channel_id = excluded.channel_id,"
+                              " subscriber_count = excluded.subscriber_count, view_count = excluded.view_count,"
+                              " video_count = excluded.video_count, fetched_at = excluded.fetched_at, source = excluded.source,"
+                              " last_updated = excluded.last_updated",
                               (aid, d["channel_id"], d["subscriber_count"], d["view_count"], d["video_count"], stamp, SOURCE, stamp)))
             db.batch(stmts)
             updated += len(stmts)
