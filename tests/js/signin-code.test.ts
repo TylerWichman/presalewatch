@@ -149,6 +149,20 @@ describe("sign-in code", () => {
     assert.ok(pending);
   });
 
+  it("caps code tries at 50 a day per address, across requests, browsers, and IPs", async () => {
+    const t0 = Date.UTC(2026, 9, 6, 1, 0, 0); // well inside one UTC day
+    let pending = "";
+    const statuses: number[] = [];
+    for (let i = 0; i < 60; i++) {
+      // 70 seconds apart: under the 15-per-15-minutes limit, so only the daily cap can stop it.
+      Date.now = () => t0 + i * 70 * 1000;
+      if (i % CODE_ATTEMPTS === 0) pending = (await request("target@example.com")).pending;
+      statuses.push((await sendCode("000000", pending)).status);
+    }
+    assert.ok(statuses.slice(0, 50).every((s) => s === 400), "the first 50 are just wrong");
+    assert.ok(statuses.slice(50).every((s) => s === 429), "from the 51st on, refused");
+  });
+
   it("sends a session only to allowlisted redirects", async () => {
     const { pending } = await request("a@example.com");
     const res = await sendCode(codeFromMail(net.mail), pending, freshIp(), "https://evil.example/");

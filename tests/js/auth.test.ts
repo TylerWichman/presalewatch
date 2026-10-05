@@ -5,7 +5,7 @@ import { onRequestPost as requestLink, SIGNIN_MESSAGE, TOKEN_TTL } from "../../f
 import { onRequestPost as verifyLink } from "../../functions/api/auth/verify.ts";
 import { onRequestGet as me } from "../../functions/api/me.ts";
 import { sha256 } from "../../src/lib/crypto.ts";
-import { COOKIE, IDLE_TTL, SESSION_TTL } from "../../src/lib/session.ts";
+import { ABSOLUTE_TTL, COOKIE, IDLE_TTL } from "../../src/lib/session.ts";
 import { call, cookieFrom, fakeFetch, freshIp, makeEnv, signIn, tokenFromMail } from "./helpers.ts";
 
 let env: ReturnType<typeof makeEnv>;
@@ -150,7 +150,7 @@ describe("sessions", () => {
     const res = await call(verifyLink, env, "/api/auth/verify", { body: { token, confirm: true } });
     const set = res.headers.get("Set-Cookie")!;
     assert.match(set, new RegExp(`^${COOKIE}=[A-Za-z0-9_-]{43}; `));
-    for (const flag of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/", `Max-Age=${SESSION_TTL}`]) assert.ok(set.includes(flag), flag);
+    for (const flag of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/", `Max-Age=${IDLE_TTL}`]) assert.ok(set.includes(flag), flag);
     assert.ok(!set.includes("Domain="));
     const id = cookieFrom(res).split("=")[1];
     const rows = env.DB.rows<{ id_hash: string }>("SELECT id_hash FROM sessions");
@@ -185,23 +185,33 @@ describe("sessions", () => {
     assert.equal(env.DB.rows("SELECT * FROM sessions").length, 0);
   });
 
-  it("lasts 90 days from its last use, so an active session keeps going", async () => {
+  it("stays signed in while used at least every 90 days, extending the cookie each time", async () => {
     const cookie = await signIn(env, net.mail, "a@example.com");
     const t0 = realNow();
-    // Use it every 20 days (inside the 30-day idle limit) for well past 90 days.
-    for (let day = 20; day <= 200; day += 20) {
+    for (let day = 80; day <= 320; day += 80) {
       Date.now = () => t0 + day * 86400 * 1000;
       const res = await call(me, env, "/api/me", { method: "GET", cookie });
       assert.equal((await res.json()).signedIn, true, `day ${day}`);
-      assert.match(res.headers.get("Set-Cookie") ?? "", new RegExp(`Max-Age=${SESSION_TTL}`), "the cookie is extended too");
+      const maxAge = Number(/Max-Age=(\d+)/.exec(res.headers.get("Set-Cookie") ?? "")?.[1]);
+      assert.equal(maxAge, Math.min(IDLE_TTL, ABSOLUTE_TTL - day * 86400), `cookie extended on day ${day}`);
     }
-    const row = env.DB.rows<{ expires_at: number }>("SELECT expires_at FROM sessions")[0];
-    assert.equal(row.expires_at, Math.floor((t0 + 200 * 86400 * 1000) / 1000) + SESSION_TTL);
   });
 
-  it("ends after 30 days idle", () => {
-    assert.equal(IDLE_TTL, 30 * 86400);
-    assert.equal(SESSION_TTL, 90 * 86400);
+  it("ends 1 year after sign-in even when used every day", async () => {
+    const cookie = await signIn(env, net.mail, "a@example.com");
+    const t0 = realNow();
+    for (let day = 30; day * 86400 < ABSOLUTE_TTL; day += 30) {
+      Date.now = () => t0 + day * 86400 * 1000;
+      assert.equal((await (await call(me, env, "/api/me", { method: "GET", cookie })).json()).signedIn, true, `day ${day}`);
+    }
+    Date.now = () => t0 + (ABSOLUTE_TTL + 60) * 1000;
+    assert.equal((await (await call(me, env, "/api/me", { method: "GET", cookie })).json()).signedIn, false);
+    assert.equal(env.DB.rows("SELECT * FROM sessions").length, 0);
+  });
+
+  it("uses a 90-day idle limit and a 1-year cap", () => {
+    assert.equal(IDLE_TTL, 90 * 86400);
+    assert.equal(ABSOLUTE_TTL, 365 * 86400);
   });
 
   it("ignores forged or malformed cookies", async () => {

@@ -409,10 +409,10 @@ These protections are in place, and `tests/js/` covers them:
   15 per 15 minutes and 50 per day per address (429). Turnstile on the sign-in
   form is verified server-side, including hostname and action.
 - **Sessions:** 256-bit random IDs, stored hashed. Cookie `__Host-pw_session`,
-  `HttpOnly; Secure; SameSite=Lax; Path=/`. A session lasts 90 days from its
-  last use (each visit extends it and the cookie) and ends after 30 days idle. A
-  new session ID on every sign-in; revoked at once on logout and account
-  deletion.
+  `HttpOnly; Secure; SameSite=Lax; Path=/`. A session ends after 90 days
+  without use (each visit extends that, and the cookie) and in any case 1 year
+  after sign-in. A new session ID on every sign-in; revoked at once on logout and
+  account deletion.
 - **Redirects:** after sign-in, only `/` or `/alerts`.
 - **CSRF:** every state-changing request must carry `Origin: https://pouchit.net`
   and a JSON content type. The one exception is RFC 8058 one-click unsubscribe,
