@@ -239,8 +239,10 @@ describe("resend", () => {
   });
 
   it("still obeys the per-address sign-in limit", async () => {
+    // Start at the beginning of a 15-minute rate-limit window, so all 12 tries (6 minutes) fall in it.
+    const t0 = Date.UTC(2026, 9, 6, 1, 0, 0);
+    Date.now = () => t0;
     const { pending } = await request("a@example.com");
-    const t0 = realNow();
     const sent = () => net.mail.filter((m) => m.url.endsWith("/emails")).length;
     for (let i = 1; i <= 12; i++) {
       Date.now = () => t0 + i * (RESEND_WAIT + 1) * 1000;
