@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 
 import ticketmaster
 from common import parse_utc, safe_url
-from ingest.db import Database, id_map, now_iso, review, rows_in, set_mbid, upsert
+from ingest.db import D1_MAX_PARAMS, Database, id_map, now_iso, review, rows_in, set_mbid, upsert
 from ingest.resolve import event_status, is_mbid, name_key, parse_ticket_limit
 
 SOURCE = "ticketmaster"
@@ -133,7 +133,14 @@ def write(db: Database, parsed: list[dict], now: str) -> int:
         row = {**e, "venue_id": venue_ids.get(p["venue"]["ticketmaster_id"]) if p["venue"] else None,
                "first_seen_at": now, "last_seen_at": now, "source": SOURCE, "last_updated": now}
         update = tuple(c for c in row if c not in ("first_seen_at", "ticketmaster_id"))
-        stmts.append(upsert("events", ("ticketmaster_id",), row, update=update))
+        # last_seen_at changes every run, so it doesn't count as a change: an event whose details
+        # are the same isn't rewritten (5 rows with its indexes). It's refreshed below instead,
+        # with one write per event, since last_seen_at has no index.
+        stmts.append(upsert("events", ("ticketmaster_id",), row, update=update, volatile=("last_updated", "last_seen_at")))
+    for i in range(0, len(tm_ids), D1_MAX_PARAMS - 10):
+        chunk = tm_ids[i:i + D1_MAX_PARAMS - 10]
+        stmts.append((f"UPDATE events SET last_seen_at = ? WHERE ticketmaster_id IN ({', '.join('?' for _ in chunk)})"
+                      " AND last_seen_at IS NOT ?", (now, *chunk, now)))
     db.batch(stmts)
     written += len(stmts)
     event_ids = id_map(db, "events", "ticketmaster_id", tm_ids)

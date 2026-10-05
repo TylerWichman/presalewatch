@@ -188,8 +188,8 @@ class NamesakeFromAnotherEra(unittest.TestCase):
         db.run("INSERT INTO artists (name, name_key, mbid, mbid_source, wikidata_id, wikipedia_title, source, last_updated)"
                " VALUES ('Engelbert Humperdinck', 'engelbert humperdinck', ?, 'ticketmaster', 'Q55010',"
                " 'Engelbert Humperdinck (composer)', 't', ?)", (MB1, NOW))
-        db.run("INSERT INTO artist_pageviews (artist_id, day, views, article, source, last_updated)"
-               " VALUES (1, '2026-09-30', 900, 'Engelbert Humperdinck (composer)', 'wikimedia_pageviews', ?)", (NOW,))
+        db.run("INSERT INTO artist_pageviews_weekly (artist_id, week_start, views, days, article, source, last_updated)"
+               " VALUES (1, '2026-09-21', 900, 7, 'Engelbert Humperdinck (composer)', 'wikimedia_pageviews', ?)", (NOW,))
         composer = {"type": "Person", "life-span": {"begin": "1854-09-01", "end": "1921-09-27", "ended": True},
                     "relations": [{"type": "wikidata", "url": {"resource": "https://www.wikidata.org/wiki/Q55010"}}]}
         with mock.patch.object(musicbrainz_job, "get", side_effect=lambda http, path, params: composer if path.startswith("artist/")
@@ -197,7 +197,7 @@ class NamesakeFromAnotherEra(unittest.TestCase):
             musicbrainz_job.run(db, {"api_calls": 0, "rows_written": 0})
         a = db.query("SELECT mbid, mbid_rejected, wikidata_id, wikipedia_title, active_from FROM artists WHERE id = 1")[0]
         self.assertEqual(a, {"mbid": None, "mbid_rejected": MB1, "wikidata_id": None, "wikipedia_title": None, "active_from": None})
-        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews"), 0)
+        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews_weekly"), 0)
         self.assertIn("ended in 1921", db.scalar("SELECT details FROM match_review WHERE kind = 'artist_match'"))
         # Ticketmaster sends the same ID again the next day: it isn't re-attached. A different one is.
         from ingest.db import set_mbid
@@ -212,22 +212,46 @@ class Pageviews(unittest.TestCase):
         self.assertEqual(pageviews_job.parse({"items": [{"timestamp": "2026093000", "views": 120}, {"timestamp": "x", "views": 1}]}),
                          [{"day": "2026-09-30", "views": 120}])
 
-    def test_plan(self):
-        y = date(2026, 10, 1)
-        self.assertEqual(pageviews_job.plan("Radiohead", None, None, y), (date(2025, 10, 2), False))       # 12-month backfill
-        self.assertEqual(pageviews_job.plan("Radiohead", "Radiohead", "2026-09-28", y), (date(2026, 9, 29), False))
-        self.assertEqual(pageviews_job.plan("Radiohead", "Radiohead", "2026-10-01", y), (None, False))     # up to date
-        self.assertEqual(pageviews_job.plan("Radiohead (band)", "Radiohead", "2026-09-30", y), (date(2025, 10, 2), True))
+    def test_weeks(self):
+        self.assertEqual(pageviews_job.last_full_week(date(2026, 10, 2)), date(2026, 9, 21))   # Friday: last week ended Sep 27
+        self.assertEqual(pageviews_job.last_full_week(date(2026, 10, 4)), date(2026, 9, 28))   # Sunday: this week just ended
+        days = [{"day": f"2026-09-{d:02d}", "views": 10} for d in range(21, 31)]                # Mon Sep 21 .. Wed Sep 30
+        self.assertEqual(pageviews_job.weekly(days, date(2026, 9, 27)),
+                         [{"week_start": "2026-09-21", "views": 70, "days": 7}])               # the unfinished week is left out
 
-    def test_inserts_stay_under_d1_param_cap_and_upsert(self):
+    def test_plan(self):
+        w = date(2026, 9, 21)
+        self.assertEqual(pageviews_job.plan("Radiohead", None, None, w), (date(2025, 9, 29), False))          # 52-week backfill
+        self.assertEqual(pageviews_job.plan("Radiohead", "Radiohead", "2026-09-07", w), (date(2026, 9, 14), False))
+        self.assertEqual(pageviews_job.plan("Radiohead", "Radiohead", "2026-09-21", w), (None, False))      # up to date
+        self.assertEqual(pageviews_job.plan("Radiohead (band)", "Radiohead", "2026-09-21", w), (date(2025, 9, 29), True))
+
+    def test_inserts_stay_under_d1_param_cap_and_rewrite_nothing_unchanged(self):
         db = temp_db()
         db.run("INSERT INTO artists (name, name_key, source, last_updated) VALUES ('R', 'r', 't', ?)", (NOW,))
-        rows = [{"day": f"2026-{m:02d}-{d:02d}", "views": d} for m in range(1, 3) for d in range(1, 29)]
-        stmts = pageviews_job.insert_statements(1, "R", rows, NOW)
+        weeks = [{"week_start": f"2026-{1 + i // 4:02d}-{1 + (i % 4) * 7:02d}", "views": 100 + i, "days": 7} for i in range(40)]
+        stmts = pageviews_job.insert_statements(1, "R", weeks, NOW)
         self.assertTrue(all(len(p) <= D1_MAX_PARAMS for _, p in stmts))
+        base = db.rows_written
         db.batch(stmts)
-        db.batch(pageviews_job.insert_statements(1, "R", rows, NOW))
-        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews"), len(rows))
+        self.assertEqual(db.rows_written - base, 40)
+        db.batch(pageviews_job.insert_statements(1, "R", weeks, "2026-10-09T00:00:00Z"))
+        self.assertEqual(db.rows_written - base, 40)                # same values: nothing written
+        self.assertEqual(db.scalar("SELECT COUNT(*) FROM artist_pageviews_weekly"), 40)
+
+    def test_momentum_view_from_weekly_totals(self):
+        db = temp_db()
+        db.run("INSERT INTO artists (name, name_key, source, last_updated) VALUES ('R', 'r', 't', ?)", (NOW,))
+        # 26 weeks at 700 views (100 a day), then a last week of 2,100 (300 a day).
+        mondays = [date(2026, 3, 30) + pageviews_job.timedelta(weeks=i) for i in range(27)]
+        weeks = [{"week_start": m.isoformat(), "views": 2100 if i == 26 else 700, "days": 7} for i, m in enumerate(mondays)]
+        db.batch(pageviews_job.insert_statements(1, "R", weeks, NOW))
+        v = db.query("SELECT * FROM v_artist_pageview_momentum WHERE artist_id = 1")[0]
+        self.assertEqual(v["latest_day"], "2026-10-04")
+        self.assertAlmostEqual(v["views_avg_7d"], 300)
+        self.assertAlmostEqual(v["views_change_7d"], 2.0)          # 300 a day vs 100
+        self.assertAlmostEqual(v["views_avg_30d"], (300 + 3 * 100) / 4)
+        self.assertEqual(v["views_spike"], 1)
 
 
 class ListenBrainzAndYouTube(unittest.TestCase):

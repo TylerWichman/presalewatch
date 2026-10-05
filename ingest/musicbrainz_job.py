@@ -13,7 +13,7 @@ import urllib.parse
 from datetime import datetime, timedelta, timezone
 
 from common import ApiError, Http
-from ingest.db import Database, now_iso, reject_mbid, review, set_mbid, upsert
+from ingest.db import Database, now_iso, prune, reject_mbid, review, set_mbid, upsert
 from ingest.resolve import implausible_era, is_mbid, name_key, pick_search_result
 
 SOURCE = "musicbrainz"
@@ -124,7 +124,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
             stmts = [("UPDATE artists SET artist_type = ?, country = ?, active_from = ?, active_to = ?,"
                       " wikidata_id = COALESCE(wikidata_id, ?), musicbrainz_checked_at = ?, last_updated = ? WHERE id = ?",
                       (d["artist_type"], d["country"], d["active_from"], d["active_to"], qid, stamp, stamp, row["id"])),
-                     ("DELETE FROM artist_aliases WHERE artist_id = ? AND source = ?", (row["id"], SOURCE))]
+                     prune("artist_aliases", "alias", row["id"], SOURCE, [a["alias"] for a in d["aliases"]])]
             stmts += [upsert("artist_aliases", ("artist_id", "alias", "source"), {
                 "artist_id": row["id"], "alias": a["alias"], "alias_key": name_key(a["alias"]), "locale": a["locale"],
                 "source": SOURCE, "last_updated": stamp}) for a in d["aliases"]]

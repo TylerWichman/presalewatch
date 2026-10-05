@@ -39,6 +39,10 @@
     "listeners_per_seat_log10": [0.0, 4.0]
   },
   "refit_missing_value": 0.5,
+  "ingest": {
+    "_note": "D1's free tier allows 100,000 rows written a day for the whole database, index entries included. Ingestion stops for the day at daily_write_budget, leaving the rest for sign-ins, preferences, and the alert Worker.",
+    "daily_write_budget": 60000
+  },
   "market_population": {
     "_note": "Market = everyone within radius_km of the venue (2020 Census tracts), log-scaled from low (0) to high (1).",
     "radius_km": 80,

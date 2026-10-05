@@ -29,6 +29,28 @@ It lives in Cloudflare D1 (SQLite) next to the accounts tables. The schema is in
   Writing to D1 needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_D1_TOKEN` (a token with only
   D1:Edit; the workflow uses `CLOUDFLARE_BACKEND_TOKEN`).
 
+### Write budget
+
+D1's free tier allows **100,000 rows written a day** for the whole database, and sign-ins, alert
+preferences, and the alert Worker share it. D1 counts every index entry as a row, so inserting an
+event with four indexes costs five.
+
+- **Ingestion's share:** `ingest.daily_write_budget` in `config/model.json` (60,000), minus what
+  earlier runs already wrote that UTC day (from `ingest_runs`). When it's spent, the job in progress
+  stops after its current batch and is logged as `partial`, the remaining jobs are skipped, and the
+  next day's run picks up where it stopped: every job works from what's still due.
+- **Unchanged rows aren't rewritten.** Upserts only write when a value other than `last_updated`
+  differs, so `last_updated` means "last changed". Lists (Last.fm tags, similar artists,
+  MusicBrainz aliases) delete only entries that disappeared. An event's `last_seen_at` is
+  refreshed with a one-row update instead of rewriting the event and its indexes.
+- **Pageviews are weekly totals** (`artist_pageviews_weekly`), stored only once a week is over,
+  in a table whose primary key is the table itself (one write per row).
+- **Indexes:** only ones a query uses. Migration 0007 dropped seven that no query used or that
+  duplicated a UNIQUE constraint.
+- **Watching it:** `ingest_runs.rows_written` is D1's own count per job, and
+  `npx wrangler d1 insights presalewatch --sort-by writes --timePeriod 1d` lists the heaviest
+  queries.
+
 ### How artists and venues are matched
 
 The rule everywhere: accept a match only on strong evidence; anything weaker goes to
@@ -67,7 +89,8 @@ Checked October 2026, before anything was stored.
 - **Times:** ISO-8601 UTC text, like `2026-10-02T12:34:57Z`. Event dates are the
   venue's local date, `YYYY-MM-DD`.
 - **Bookkeeping:** every table records `source` (which API or person the row came
-  from) and `last_updated`.
+  from) and `last_updated`, the last time any of the row's values changed (an unchanged
+  refresh doesn't touch it).
 - **Missing data is NULL.** Nothing is estimated or filled in at this layer. If a
   number isn't known, it's empty.
 - **Upserts:** external IDs (Ticketmaster, SeatGeek, MusicBrainz, Wikidata) are unique,
@@ -241,9 +264,10 @@ whenever API data is missing.
 **New columns on `artist_metrics_snapshots`**: `listenbrainz_listeners` (people who've listened)
 and `listenbrainz_listens` (total plays), on rows whose `source` is `listenbrainz`.
 
-**`artist_pageviews`**: daily human views of the artist's English Wikipedia article (`day`,
-`views`, and the `article` title they were counted for). It's backfilled 12 months, then
-updated daily.
+**`artist_pageviews_weekly`** (migration 0007; replaced the daily `artist_pageviews`): human views
+of the artist's English Wikipedia article per Monday-to-Sunday week (`week_start`, `views`, `days`
+with data, and the `article` title they were counted for). Backfilled 52 weeks, at most 60 artists
+per run; after that a row is added when each week ends.
 
 **`artist_youtube_current`**: subscriber, view, and video counts for the artist's channel.
 **Current values only**: one row per artist, replaced on each refresh and deleted after 30
@@ -385,7 +409,8 @@ venues that didn't match, capacity drafts, and imported prices with no matching 
 `candidate_score` hold the best guess, and `status` is `open`, `accepted`, or `rejected`.
 
 **`ingest_runs`**: one row per ingestion run, with its source, start and finish times,
-status, API calls, and rows written.
+status (`ok`, `partial` when the daily write budget ran out, or `failed`), API calls, and rows
+written as D1 counts them (index entries included; unchanged rows count nothing).
 
 ## Derived features (views)
 
@@ -404,7 +429,7 @@ status, API calls, and rows written.
 | `v_venue_premium`, `v_venue_type_premium` | Median markup per venue and per venue type, kept separate for asks and sales |
 | `v_artist_premium` | Median markup per headliner, plus sellout rate over events where sellout is known |
 | `venue_market` | Each venue's metro population and its state's resale rules |
-| `v_artist_pageview_momentum` | Average daily Wikipedia views over the last 7, 30, and 90 days, and the change vs the period before each (0.5 = up 50%). A window counts only if 90% of its days have data. `views_spike` = 1 when the 7-day average is more than twice the 90-day average |
+| `v_artist_pageview_momentum` | Average daily Wikipedia views over the last 1, 4, and 13 complete weeks (columns `_7d`, `_30d`, `_90d`), and the change vs the same number of weeks before (0.5 = up 50%). A window counts only if 90% of its days have data. `views_spike` = 1 when last week's average is more than twice the 13-week average |
 | `v_artist_listenbrainz` | Latest ListenBrainz listener and listen totals per artist |
 | `v_event_demand_sources` | Listeners per venue seat **for each source as its own column** (Last.fm, ListenBrainz), plus the pageview momentum. YouTube is deliberately left out: its policies forbid metrics derived from its data |
 | `v_event_sellout_proxy` | **Proxy, not a sellout record.** Hours from public on-sale to the first time Ticketmaster showed the event as off sale before the show. Off sale doesn't always mean sold out (held tickets, sales moving elsewhere), so `is_proxy` is always 1. `uncertainty_hours` is how long the change could have gone unseen between checks. Cancelled, postponed, and rescheduled events are left out |

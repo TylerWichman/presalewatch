@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 
 import lastfm
 from common import ApiError, load_config
-from ingest.db import Database, now_iso, review, set_mbid, upsert
+from ingest.db import Database, now_iso, prune, review, set_mbid, upsert
 from ingest.resolve import choose_mbid, is_mbid, name_key, same_name
 
 SOURCE = "lastfm"
@@ -60,8 +60,8 @@ def statements(row: dict, info: dict, now: str, today: str, mbid_owner: int | No
         upsert("artist_metrics_snapshots", ("artist_id", "captured_on", "source"), {
             "artist_id": aid, "captured_on": today, "lastfm_listeners": info["listeners"],
             "lastfm_playcount": info["playcount"], "source": SOURCE, "last_updated": now}),
-        ("DELETE FROM artist_tags WHERE artist_id = ? AND source = ?", (aid, SOURCE)),
-        ("DELETE FROM artist_similar WHERE artist_id = ? AND source = ?", (aid, SOURCE)),
+        prune("artist_tags", "tag", aid, SOURCE, info["tags"]),
+        prune("artist_similar", "similar_name", aid, SOURCE, info["similar"]),
     ]
     out += [upsert("artist_tags", ("artist_id", "tag", "source"),
                    {"artist_id": aid, "tag": t, "rank": i + 1, "source": SOURCE, "last_updated": now})
