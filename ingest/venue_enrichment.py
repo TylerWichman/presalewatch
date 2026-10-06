@@ -612,7 +612,7 @@ def capacity_coverage(db: Database) -> dict:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp = now_iso()
+    stamp = now_iso(now)
     stats["rows_written"] += apply_manual(db, stamp)
     fetch = Fetch()
     outcomes: dict[str, int] = {}

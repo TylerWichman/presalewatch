@@ -65,7 +65,7 @@ def parse_details(data: dict) -> dict:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp = now_iso()
+    stamp = now_iso(now)
     http = client()
     retry_before = (now - timedelta(days=SEARCH_RETRY_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
     detail_before = (now - timedelta(days=DETAIL_TTL_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")

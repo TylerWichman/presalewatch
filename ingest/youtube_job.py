@@ -45,7 +45,7 @@ def parse(item: dict) -> dict:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp = now_iso()
+    stamp = now_iso(now)
     expired = (now - timedelta(days=MAX_AGE_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
     # Retention first, so a missing key or a failed run can't leave stale YouTube data behind.
     db.batch([

@@ -89,7 +89,7 @@ def resolve_artist_items(http: Http, mbids: list[str]) -> dict[str, list[str]]:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp = now_iso()
+    stamp = now_iso(now)
     http = client()
     try:
         # Artists: find items for MBIDs without one.

@@ -88,7 +88,7 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
         return
     cfg = load_config()["refresh"]
     rows = due(db, now, cfg["lastfm_ttl_hours"], cfg["lastfm_max_calls"])
-    stamp, today = now_iso(), now.strftime("%Y-%m-%d")
+    stamp, today = now_iso(now), now.strftime("%Y-%m-%d")
     pending, found = [], 0
     # Every MBID already held, plus ones assigned earlier in this run (not yet written).
     claimed: dict[str, int] = {r["mbid"]: r["id"] for r in db.query("SELECT id, mbid FROM artists WHERE mbid IS NOT NULL")}

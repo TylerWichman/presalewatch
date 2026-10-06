@@ -67,7 +67,7 @@ class Client:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp, today = now_iso(), now.strftime("%Y-%m-%d")
+    stamp, today = now_iso(now), now.strftime("%Y-%m-%d")
     cutoff = (now - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
     rows = db.query("SELECT id, mbid FROM artists WHERE mbid IS NOT NULL"
                     " AND (listenbrainz_checked_at IS NULL OR listenbrainz_checked_at < ?)", (cutoff,))

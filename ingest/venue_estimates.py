@@ -51,7 +51,7 @@ def clear_all(db: Database) -> None:
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     cfg = load_config().get("capacity_estimate") or {}
-    stamp = now_iso()
+    stamp = now_iso(now)
     if not cfg.get("enabled"):
         clear_all(db)
         print("  Estimates: off (config capacity_estimate.enabled); any existing estimates cleared")
