@@ -13,7 +13,7 @@ import { redirectPath } from "../../../src/lib/validate.ts";
 
 export const INVALID = "This link has expired. Request a new one.";
 
-export const onRequestPost = route(async ({ request, env }) => {
+export const onRequestPost = route(async ({ request, env, waitUntil }) => {
   const body = await readJson(request);
   const now = nowSeconds();
   if (!(await allow(env, LIMITS.verifyIp, clientIp(request), now))) throw new HttpError(429, "Too many attempts. Try again later.");
@@ -32,11 +32,11 @@ export const onRequestPost = route(async ({ request, env }) => {
 
   // Atomic single use: only one request can flip used_at from NULL.
   const used = await env.DB.prepare(
-    "UPDATE login_tokens SET used_at = ?2 WHERE token_hash = ?1 AND used_at IS NULL AND expires_at > ?2 RETURNING email",
-  ).bind(tokenHash, now).first<{ email: string }>();
+    "UPDATE login_tokens SET used_at = ?2 WHERE token_hash = ?1 AND used_at IS NULL AND expires_at > ?2 RETURNING email, pending_follow",
+  ).bind(tokenHash, now).first<{ email: string; pending_follow: string | null }>();
   if (!used) throw new HttpError(400, INVALID);
 
-  const sessionId = await completeSignIn(env, request, used.email, now);
+  const sessionId = await completeSignIn(env, request, used.email, now, { follow: used.pending_follow, waitUntil });
   return json({ ok: true, next: redirectPath(body.next) }, 200, [
     ["Set-Cookie", sessionCookie(sessionId)],
     ["Set-Cookie", clearPendingCookie()],

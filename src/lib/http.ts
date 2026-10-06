@@ -11,6 +11,8 @@ export interface Env {
   TURNSTILE_SECRET: string;
   UNSUBSCRIBE_SECRET: string;
   IP_HASH_SECRET: string;
+  /** Welcome-email footer. Blank means the welcome email isn't sent. */
+  POSTAL_ADDRESS?: string;
 }
 
 export interface Ctx {

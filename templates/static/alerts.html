@@ -18,6 +18,7 @@
     <h1>Sign in</h1>
     <p class="muted">Get email alerts for artists you follow and for high-profit presales. We'll email you a sign-in code and link. No password needed.</p>
     <p id="expired" class="msg err" role="alert" hidden>This link has expired. Enter your email to get a new one.</p>
+    <p id="follow-note" class="msg ok" hidden></p>
     <form id="signin-form" class="card" novalidate>
       <label for="email">Email address</label>
       <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
@@ -68,6 +69,10 @@
       <p id="follow-msg" class="msg" role="status" aria-live="polite"></p>
       <ul id="follows" class="follows"></ul>
       <p id="no-follows" class="muted small" hidden>You're not following anyone yet.</p>
+      <div id="suggestions" hidden>
+        <p class="small muted">Artists with presales coming up:</p>
+        <ul id="suggested" class="follows"></ul>
+      </div>
     </div>
 
     <div class="card">

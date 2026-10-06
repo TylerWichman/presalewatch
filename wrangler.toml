@@ -8,6 +8,9 @@ compatibility_date = "2026-09-26"
 [vars]
 APP_ORIGIN = "https://pouchit.net"
 EMAIL_FROM = "PouchIt <alerts@pouchit.net>"
+# Shown in the welcome email's footer. The welcome email isn't sent while this is empty.
+# TODO: fill in (same value as worker/wrangler.toml).
+POSTAL_ADDRESS = ""
 
 [[d1_databases]]
 binding = "DB"

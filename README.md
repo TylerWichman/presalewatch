@@ -336,8 +336,11 @@ Turnstile widget, Resend domain verification, and DMARC.
    The existing `CLOUDFLARE_API_TOKEN` stays Pages-only.
 
 6. **Postal address.** CAN-SPAM requires a valid physical postal address (a P.O.
-   box works) in every alert email. Put it in `POSTAL_ADDRESS` in
-   `worker/wrangler.toml`. The Worker refuses to send real email without it.
+   box works) in every alert and welcome email. Put the same value in
+   `POSTAL_ADDRESS` in both `worker/wrangler.toml` (alert digests) and
+   `wrangler.toml` (the welcome email sent on a user's first sign-in). Neither
+   sends without it: the Worker refuses to send real email, and the welcome email
+   is skipped (and sent on a later sign-in instead).
 
 7. **Go live.** The Worker ships with `DRY_RUN = "true"`, so it only logs what it
    would send, by user ID. Check the logs (Workers & Pages, presalewatch-alerts,

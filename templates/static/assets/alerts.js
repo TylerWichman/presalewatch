@@ -74,10 +74,14 @@ async function post(path, body) {
   return { ok: res.ok, data };
 }
 
-function setupSignin() {
+function setupSignin(follow) {
   const form = $("signin-form");
   const msg = $("signin-msg");
   const btn = $("signin-btn");
+  if (follow) {
+    $("follow-note").textContent = "You'll get alerts for " + follow + ".";
+    $("follow-note").hidden = false;
+  }
   if (new URLSearchParams(location.search).get("expired") === "1") {
     $("expired").hidden = false;
     history.replaceState(null, "", location.pathname);
@@ -91,7 +95,7 @@ function setupSignin() {
     if (!turnstileToken) return say(msg, "Please complete the check above, then try again.", "err");
     btn.disabled = true;
     try {
-      const out = await api("POST", "/api/auth/request", { email, turnstileToken, next: "/alerts" });
+      const out = await api("POST", "/api/auth/request", follow ? { email, turnstileToken, next: "/alerts", follow } : { email, turnstileToken, next: "/alerts" });
       say(msg, "");
       $("expired").hidden = true;
       showInbox(email);
@@ -188,6 +192,45 @@ function renderFollows(follows) {
     list.append(li);
   }
   $("no-follows").hidden = follows.length > 0;
+  $("suggestions").hidden = follows.length > 0 || !$("suggested").children.length;
+}
+
+// Six artists with presales coming up, highest edge first, for someone who follows nobody yet.
+function renderSuggestions(feed) {
+  const now = Date.now();
+  const best = new Map();
+  for (const e of feed.events || []) {
+    if (typeof e.artist !== "string" || (e.presale_end && Date.parse(e.presale_end) <= now)) continue;
+    const edge = typeof e.edge === "number" ? e.edge : -Infinity;
+    if (!best.has(e.artist) || edge > best.get(e.artist)) best.set(e.artist, edge);
+  }
+  const picks = [...best.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map((x) => x[0]);
+  const list = $("suggested");
+  list.textContent = "";
+  for (const name of picks) {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = name;
+    const add = document.createElement("button");
+    add.type = "button";
+    add.className = "secondary";
+    add.textContent = "Follow";
+    add.setAttribute("aria-label", "Follow " + name);
+    add.addEventListener("click", async () => {
+      add.disabled = true;
+      try {
+        await api("POST", "/api/follows", { artist: name });
+        const out = await api("GET", "/api/follows");
+        renderFollows(out.follows);
+        say($("follow-msg"), "Following " + name + ".", "ok");
+      } catch (err) {
+        say($("follow-msg"), err.message, "err");
+        add.disabled = false;
+      }
+    });
+    li.append(label, add);
+    list.append(li);
+  }
 }
 
 async function loadArtistSuggestions() {
@@ -195,6 +238,8 @@ async function loadArtistSuggestions() {
     const res = await fetch("/alerts.json", { credentials: "omit" });
     if (!res.ok) return;
     const feed = await res.json();
+    renderSuggestions(feed);
+    $("suggestions").hidden = $("follows").children.length > 0 || !$("suggested").children.length;
     const names = [...new Set((feed.events || []).map((e) => e.artist).filter((a) => typeof a === "string"))].sort((a, b) => a.localeCompare(b));
     const dl = $("artist-list");
     for (const name of names) {
@@ -203,6 +248,17 @@ async function loadArtistSuggestions() {
       dl.append(opt);
     }
   } catch (e) { /* suggestions are optional */ }
+}
+
+async function followFromCard(follow) {
+  try {
+    await api("POST", "/api/follows", { artist: follow });
+    const out = await api("GET", "/api/follows");
+    renderFollows(out.follows);
+    say($("follow-msg"), "Following " + follow + ".", "ok");
+  } catch (err) {
+    say($("follow-msg"), err.message, "err");
+  }
 }
 
 function setupSettings(me) {
@@ -259,14 +315,22 @@ function setupSettings(me) {
 }
 
 (async function init() {
+  // ?follow=<artist> comes from an event card's "Alert me" button.
+  const params = new URLSearchParams(location.search);
+  const follow = (params.get("follow") || "").trim().slice(0, 100) || null;
+  if (params.has("follow")) {
+    params.delete("follow");
+    history.replaceState(null, "", location.pathname + (params.toString() ? "?" + params : ""));
+  }
   let me = { signedIn: false };
   try { me = await api("GET", "/api/me"); } catch (e) { /* show sign-in */ }
   $("loading").hidden = true;
   if (me.signedIn) {
     $("settings").hidden = false;
     setupSettings(me);
+    if (follow) followFromCard(follow);
   } else {
     $("signin").hidden = false;
-    setupSignin();
+    setupSignin(follow);
   }
 })();

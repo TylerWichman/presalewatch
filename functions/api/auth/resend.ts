@@ -18,15 +18,15 @@ export const onRequestPost = route(async ({ request, env, waitUntil }) => {
   if (!binding) return json({ error: EXPIRED, restart: true }, 400);
   const bindingHash = await sha256(binding);
   const row = await env.DB.prepare(
-    "SELECT token_hash, email, created_at FROM login_tokens WHERE request_binding_hash = ?1 AND used_at IS NULL AND expires_at > ?2" +
+    "SELECT token_hash, email, created_at, pending_follow FROM login_tokens WHERE request_binding_hash = ?1 AND used_at IS NULL AND expires_at > ?2" +
       " ORDER BY created_at DESC LIMIT 1",
-  ).bind(bindingHash, now).first<{ token_hash: string; email: string; created_at: number }>();
+  ).bind(bindingHash, now).first<{ token_hash: string; email: string; created_at: number; pending_follow: string | null }>();
   if (!row) return json({ error: EXPIRED, restart: true }, 400);
   if (now - row.created_at < RESEND_WAIT) throw new HttpError(429, "Wait a few seconds before sending another email.");
 
   await env.DB.prepare("UPDATE login_tokens SET used_at = ?2 WHERE request_binding_hash = ?1 AND used_at IS NULL")
     .bind(bindingHash, now)
     .run();
-  await issue(env, row.email, binding, redirectPath(body.next), now, waitUntil);
+  await issue(env, row.email, binding, redirectPath(body.next), now, waitUntil, row.pending_follow);
   return json({ ok: true, message: SIGNIN_MESSAGE }, 200, { "Set-Cookie": pendingCookie(binding) });
 });

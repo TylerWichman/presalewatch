@@ -148,6 +148,11 @@ main { padding: 20px 0 40px; }
 
 .body { display: flex; flex-direction: column; flex: 1; padding: 14px 16px 16px; }
 .artist { margin: 0; font-size: 19px; line-height: 1.25; font-weight: 750; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.artist-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.alert-me { flex: none; height: 28px; padding: 0 11px; margin-top: 1px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.alert-me:hover { background: var(--accent-soft); }
+.alert-me:disabled { cursor: default; }
+.alert-me.on { background: var(--accent-soft); border-color: transparent; }
 .event-name { margin: 3px 0 0; font-size: 13.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .meta { margin: 10px 0 0; display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
 .meta div { display: flex; gap: 8px; align-items: flex-start; }
@@ -682,6 +687,48 @@ footer p { margin: 4px 0; }
     return "For " + events.length + " of " + total + " dates: " + shown + (rest > 0 ? " +" + rest + " more" : "");
   }
 
+  // ---- "Alert me": follow a card's artist ----------------------------------------------
+  // Signed in: follows at once. Signed out: sign-in, with the artist followed once signed in.
+  function artistKey(name) {
+    return name.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase().replace(/&/g, " and ")
+      .replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  }
+  var alertButtons = [];
+  var account = fetch("/api/me", { credentials: "same-origin" })
+    .then(function (r) { return r.ok ? r.json() : { signedIn: false }; })
+    .catch(function () { return { signedIn: false }; })
+    .then(function (me) {
+      var followed = {};
+      (me.follows || []).forEach(function (f) { followed[artistKey(f.artist)] = true; });
+      alertButtons.forEach(function (b) { if (followed[b.key]) markFollowing(b.btn); });
+      return { signedIn: Boolean(me.signedIn) };
+    });
+  function markFollowing(btn) {
+    btn.textContent = "Following";
+    btn.classList.add("on");
+    btn.disabled = true;
+  }
+  function alertMe(name, btn) {
+    btn.disabled = true;
+    account.then(function (acct) {
+      if (!acct.signedIn) {
+        location.href = "/alerts?follow=" + encodeURIComponent(name);
+        return;
+      }
+      return fetch("/api/follows", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artist: name }),
+      }).then(function (res) {
+        if (res.ok) return markFollowing(btn);
+        if (res.status === 401) { location.href = "/alerts?follow=" + encodeURIComponent(name); return; }
+        btn.textContent = "Try again";
+        btn.disabled = false;
+      });
+    }).catch(function () { btn.textContent = "Try again"; btn.disabled = false; });
+  }
+
   var cards = TOURS.map(function (tour) {
     var multi = tour.events.length > 1;
     var card = el("article", "card");
@@ -699,7 +746,15 @@ footer p { margin: 4px 0; }
     card.appendChild(media);
 
     var body = el("div", "body");
-    body.appendChild(el("h2", "artist", tour.a));
+    var head = el("div", "artist-row");
+    head.appendChild(el("h2", "artist", tour.a));
+    var alertBtn = el("button", "alert-me", "Alert me");
+    alertBtn.type = "button";
+    alertBtn.setAttribute("aria-label", "Alert me about " + tour.a + " presales");
+    alertBtn.addEventListener("click", function () { alertMe(tour.a, alertBtn); });
+    alertButtons.push({ key: artistKey(tour.a), btn: alertBtn });
+    head.appendChild(alertBtn);
+    body.appendChild(head);
     if (tour.name) body.appendChild(el("p", "event-name", tour.name));
     var edgeSlot = el("div");
     body.appendChild(edgeSlot);
