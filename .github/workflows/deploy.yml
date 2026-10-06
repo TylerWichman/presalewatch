@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write            # pushes refreshed data to the `data` branch (never to main)
+  issues: write              # opens an ops-alert issue when a run fails (see .github/scripts/ops-alert.sh)
 
 concurrency:
   group: deploy
@@ -129,3 +130,23 @@ jobs:
         run: |
           echo "Live site: https://pouchit.net (the hash URL above is a frozen snapshot of this one deploy)" >> "$GITHUB_STEP_SUMMARY"
           echo "Live site: https://pouchit.net"
+
+      # Any failed step (tests included) means the page wasn't refreshed: tell the owner. The next
+      # successful run closes the alert.
+      - name: Alert on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          bash .github/scripts/ops-alert.sh open "Page refresh failed" \
+            "A **Refresh and deploy** run ($TRIGGER) failed at $(date -u '+%Y-%m-%d %H:%M UTC'), so pouchit.net wasn't refreshed. Run: $RUN_URL"
+
+      - name: Clear the failure alert
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          bash .github/scripts/ops-alert.sh close "Page refresh failed" "This run succeeded: $RUN_URL"

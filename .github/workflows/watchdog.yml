@@ -1,0 +1,57 @@
+name: Live data watchdog
+
+# Hourly: checks that pouchit.net is reachable and its data is less than 8 hours old (the page
+# refreshes every 6 hours). If not, it opens a GitHub issue that @-mentions the repo owner (so
+# GitHub emails them) and closes it once things recover. The refresh workflow itself opens an
+# issue when a run fails; this catches the rest, like refreshes that never start.
+on:
+  schedule:
+    - cron: "41 * * * *"     # hourly, off the top of the hour
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+env:
+  SITE: https://pouchit.net
+  MAX_AGE_HOURS: "8"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check the live data's age
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          alert=.github/scripts/ops-alert.sh
+          now=$(date -u +%s)
+          if ! feed=$(curl -fsS --max-time 30 "$SITE/alerts.json"); then
+            bash "$alert" ensure "pouchit.net is unreachable" \
+              "The watchdog couldn't load $SITE/alerts.json at $(date -u '+%Y-%m-%d %H:%M UTC')."
+            exit 0
+          fi
+          bash "$alert" close "pouchit.net is unreachable" "$SITE answered at $(date -u '+%Y-%m-%d %H:%M UTC')."
+
+          generated=$(printf '%s' "$feed" | jq -r '.generated_at // empty')
+          if [ -n "$generated" ] && stamp=$(date -u -d "$generated" +%s 2>/dev/null); then
+            age=$(( (now - stamp) / 3600 ))
+          else
+            age=-1
+          fi
+          echo "Live data generated at ${generated:-unknown} (${age}h ago)"
+          if [ "$age" -lt 0 ] || [ "$age" -ge "$MAX_AGE_HOURS" ]; then
+            bash "$alert" ensure "Live data is more than ${MAX_AGE_HOURS} hours old" \
+              "pouchit.net was last refreshed at ${generated:-an unknown time} (${age}h ago); it should refresh every 6 hours. Check the **Refresh and deploy** runs: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/deploy.yml"
+          else
+            bash "$alert" close "Live data is more than ${MAX_AGE_HOURS} hours old" \
+              "Data refreshed at $generated (${age}h ago)."
+          fi
