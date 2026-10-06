@@ -16,15 +16,31 @@
 
   <section id="signin" hidden>
     <h1>Sign in</h1>
-    <p class="muted">Get email alerts for artists you follow and for high-profit presales. We'll email you a sign-in link. No password needed.</p>
+    <p class="muted">Get email alerts for artists you follow and for high-profit presales. We'll email you a sign-in code and link. No password needed.</p>
+    <p id="expired" class="msg err" role="alert" hidden>This link has expired. Enter your email to get a new one.</p>
     <form id="signin-form" class="card" novalidate>
       <label for="email">Email address</label>
       <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
       <div class="turnstile cf-turnstile" data-sitekey="0x4AAAAAAFJpsdv0jmtHdce7" data-action="signin"></div>
-      <button type="submit" id="signin-btn">Email me a sign-in link</button>
+      <button type="submit" id="signin-btn">Email me a sign-in code</button>
       <p id="signin-msg" class="msg" role="status" aria-live="polite"></p>
     </form>
     <p class="small muted">We only store your email address and alert settings. <a href="/privacy">Privacy</a></p>
+  </section>
+
+  <section id="inbox" hidden>
+    <h1>Check your inbox</h1>
+    <p class="muted">We sent a sign-in code and link to <b id="inbox-email"></b>. <a href="#" id="change-email">Wrong email? Change it</a></p>
+    <form id="code-form" class="card" novalidate>
+      <label for="code">6-digit code</label>
+      <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" required>
+      <p id="code-msg" class="msg" role="status" aria-live="polite"></p>
+      <div class="row">
+        <button type="submit" id="code-btn">Sign in</button>
+        <button type="button" id="resend" class="secondary" disabled>Resend</button>
+      </div>
+      <p class="small muted">Or open the link in the email on this device. Nothing after a minute? Check spam.</p>
+    </form>
   </section>
 
   <section id="settings" hidden>

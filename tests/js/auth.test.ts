@@ -86,11 +86,11 @@ describe("magic link request", () => {
 });
 
 describe("magic link verify", () => {
-  it("previews the masked address without using up the token", async () => {
+  it("previews the address without using up the token", async () => {
     await requestFor("person@example.com");
     const token = tokenFromMail(net.mail);
     const peek = await call(verifyLink, env, "/api/auth/verify", { body: { token } });
-    assert.deepEqual(await peek.json(), { ok: true, email: "p•••@example.com" });
+    assert.deepEqual(await peek.json(), { ok: true, email: "person@example.com" });
     const res = await call(verifyLink, env, "/api/auth/verify", { body: { token, confirm: true } });
     assert.equal(res.status, 200);
   });
@@ -150,7 +150,7 @@ describe("sessions", () => {
     const res = await call(verifyLink, env, "/api/auth/verify", { body: { token, confirm: true } });
     const set = res.headers.get("Set-Cookie")!;
     assert.match(set, new RegExp(`^${COOKIE}=[A-Za-z0-9_-]{43}; `));
-    for (const flag of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/", `Max-Age=${ABSOLUTE_TTL}`]) assert.ok(set.includes(flag), flag);
+    for (const flag of ["HttpOnly", "Secure", "SameSite=Lax", "Path=/", `Max-Age=${IDLE_TTL}`]) assert.ok(set.includes(flag), flag);
     assert.ok(!set.includes("Domain="));
     const id = cookieFrom(res).split("=")[1];
     const rows = env.DB.rows<{ id_hash: string }>("SELECT id_hash FROM sessions");
@@ -185,16 +185,33 @@ describe("sessions", () => {
     assert.equal(env.DB.rows("SELECT * FROM sessions").length, 0);
   });
 
-  it("expires at the absolute limit even when active", async () => {
+  it("stays signed in while used at least every 90 days, extending the cookie each time", async () => {
     const cookie = await signIn(env, net.mail, "a@example.com");
     const t0 = realNow();
-    // Stay active every few days until past the absolute limit.
-    for (let day = 3; day * 86400 < ABSOLUTE_TTL; day += 3) {
+    for (let day = 80; day <= 320; day += 80) {
+      Date.now = () => t0 + day * 86400 * 1000;
+      const res = await call(me, env, "/api/me", { method: "GET", cookie });
+      assert.equal((await res.json()).signedIn, true, `day ${day}`);
+      const maxAge = Number(/Max-Age=(\d+)/.exec(res.headers.get("Set-Cookie") ?? "")?.[1]);
+      assert.equal(maxAge, Math.min(IDLE_TTL, ABSOLUTE_TTL - day * 86400), `cookie extended on day ${day}`);
+    }
+  });
+
+  it("ends 1 year after sign-in even when used every day", async () => {
+    const cookie = await signIn(env, net.mail, "a@example.com");
+    const t0 = realNow();
+    for (let day = 30; day * 86400 < ABSOLUTE_TTL; day += 30) {
       Date.now = () => t0 + day * 86400 * 1000;
       assert.equal((await (await call(me, env, "/api/me", { method: "GET", cookie })).json()).signedIn, true, `day ${day}`);
     }
     Date.now = () => t0 + (ABSOLUTE_TTL + 60) * 1000;
     assert.equal((await (await call(me, env, "/api/me", { method: "GET", cookie })).json()).signedIn, false);
+    assert.equal(env.DB.rows("SELECT * FROM sessions").length, 0);
+  });
+
+  it("uses a 90-day idle limit and a 1-year cap", () => {
+    assert.equal(IDLE_TTL, 90 * 86400);
+    assert.equal(ABSOLUTE_TTL, 365 * 86400);
   });
 
   it("ignores forged or malformed cookies", async () => {

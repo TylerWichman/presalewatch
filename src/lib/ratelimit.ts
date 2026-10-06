@@ -15,6 +15,9 @@ export const LIMITS = {
   // Caps all sign-in emails so an attack can't use up the Resend daily quota needed for alerts.
   signinGlobal: [{ scope: "signin-all", window: 86400, max: 60 }],
   verifyIp: [{ scope: "verify-ip", window: 900, max: 20 }],
+  // Code tries, on top of the 5 per request: per IP, and per address across all its requests.
+  codeIp: [{ scope: "code-ip", window: 900, max: 20 }, { scope: "code-ip", window: 86400, max: 60 }],
+  codeEmail: [{ scope: "code-email", window: 900, max: 15 }, { scope: "code-email", window: 86400, max: 50 }],
   unsubscribeIp: [{ scope: "unsub-ip", window: 900, max: 20 }],
 } satisfies Record<string, Limit[]>;
 

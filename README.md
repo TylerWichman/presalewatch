@@ -311,7 +311,9 @@ Turnstile widget, Resend domain verification, and DMARC.
 
    `RESEND_API_KEY` is a Resend key with **Sending access** only, restricted to
    `pouchit.net`. `TURNSTILE_SECRET` is the widget's secret key (Cloudflare
-   dashboard, Turnstile, your widget, Settings).
+   dashboard, Turnstile, your widget, Settings). `IP_HASH_SECRET` keys the
+   rate-limit counters and the sign-in code hashes (each use is labeled, so the
+   values can't be mixed up).
 
 4. **Set the Worker secrets**, after the first merge has deployed the Worker (it
    starts in dry-run mode, so it sends nothing without them). `UNSUBSCRIBE_SECRET`
@@ -383,20 +385,34 @@ curl "http://localhost:8787/__scheduled"
 
 These protections are in place, and `tests/js/` covers them:
 
-- **Magic links:** 256-bit random tokens, stored only as SHA-256 hashes, single
-  use (atomic), expire in 15 minutes, and all of a user's other links stop
-  working once one is used. The token travels in the URL fragment, so it never
-  reaches server logs. Opening a link doesn't sign you in; the confirm button
-  does, so email link scanners can't use it up.
-- **No account enumeration:** the sign-in response is identical for any valid
-  address, and the email goes out in the background.
+- **Sign-in link and code:** each sign-in email carries a link and a 6-digit
+  code for the same request; using either one ends both. Both expire in 15
+  minutes, and all of a user's other requests stop working once one is used.
+- **Links:** 256-bit random tokens, stored only as SHA-256 hashes, single use
+  (atomic). The token travels in the URL fragment, so it never reaches server
+  logs. Opening a link doesn't sign you in; the "Sign in as …" button does, so
+  email link scanners can't use it up.
+- **Codes:** 6 digits from a secure random source (uniform), stored only as a
+  keyed hash (HMAC) bound to their request. A code works only in the browser that
+  asked for it: that browser holds a `__Host-pw_pending` cookie (`HttpOnly;
+  Secure; SameSite=Strict`, 15 minutes) whose hash is stored with the request.
+  Each try is counted before the code is compared, atomically, so no more than 5
+  guesses are ever checked per request, even in parallel; after 5 wrong tries the
+  request is dead. Resend is allowed once every 30 seconds and ends the old code
+  and link.
+- **No account enumeration:** sign-in and resend responses are identical for any
+  valid address, and the email goes out in the background.
 - **Rate limits** (in D1, keyed by HMAC so no raw IPs or emails are stored): 5 per
   15 minutes and 20 per day per IP (429); 3 per 15 minutes and 10 per day per
-  address (silently dropped); 60 sign-in emails per day overall. Turnstile on
-  the sign-in form is verified server-side, including hostname and action.
+  address (silently dropped); 60 sign-in emails per day overall; resends count
+  against the same limits. Code tries: 20 per 15 minutes and 60 per day per IP,
+  15 per 15 minutes and 50 per day per address (429). Turnstile on the sign-in
+  form is verified server-side, including hostname and action.
 - **Sessions:** 256-bit random IDs, stored hashed. Cookie `__Host-pw_session`,
-  `HttpOnly; Secure; SameSite=Lax; Path=/`. 30-day absolute and 7-day idle
-  expiry. A new session on every login; revoked on logout and account deletion.
+  `HttpOnly; Secure; SameSite=Lax; Path=/`. A session ends after 90 days
+  without use (each visit extends that, and the cookie) and in any case 1 year
+  after sign-in. A new session ID on every sign-in; revoked at once on logout and
+  account deletion.
 - **Redirects:** after sign-in, only `/` or `/alerts`.
 - **CSRF:** every state-changing request must carry `Origin: https://pouchit.net`
   and a JSON content type. The one exception is RFC 8058 one-click unsubscribe,

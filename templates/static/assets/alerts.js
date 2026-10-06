@@ -24,10 +24,64 @@ function say(el, text, kind) {
 
 // ---- Sign in ---------------------------------------------------------------
 
+const RESEND_WAIT = 30;
+
+function showSignin() {
+  $("inbox").hidden = true;
+  $("signin").hidden = false;
+  if (window.turnstile) window.turnstile.reset();
+}
+
+function showInbox(email) {
+  $("signin").hidden = true;
+  $("inbox").hidden = false;
+  $("inbox-email").textContent = email;
+  $("code").value = "";
+  say($("code-msg"), "");
+  $("code").focus();
+  startResendTimer();
+}
+
+let resendTimer = null;
+function startResendTimer() {
+  const btn = $("resend");
+  let left = RESEND_WAIT;
+  btn.disabled = true;
+  btn.textContent = "Resend (" + left + ")";
+  clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    left -= 1;
+    if (left > 0) {
+      btn.textContent = "Resend (" + left + ")";
+    } else {
+      clearInterval(resendTimer);
+      btn.textContent = "Resend";
+      btn.disabled = false;
+    }
+  }, 1000);
+}
+
+// The API's error message, plus whether the request is dead and the user must start over.
+async function post(path, body) {
+  const res = await fetch(path, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) { /* empty body */ }
+  return { ok: res.ok, data };
+}
+
 function setupSignin() {
   const form = $("signin-form");
   const msg = $("signin-msg");
   const btn = $("signin-btn");
+  if (new URLSearchParams(location.search).get("expired") === "1") {
+    $("expired").hidden = false;
+    history.replaceState(null, "", location.pathname);
+  }
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = $("email").value.trim();
@@ -38,12 +92,70 @@ function setupSignin() {
     btn.disabled = true;
     try {
       const out = await api("POST", "/api/auth/request", { email, turnstileToken, next: "/alerts" });
-      say(msg, out.message, "ok");
+      say(msg, "");
+      $("expired").hidden = true;
+      showInbox(email);
     } catch (err) {
       say(msg, err.message, "err");
     } finally {
       btn.disabled = false;
       if (window.turnstile) window.turnstile.reset();
+    }
+  });
+
+  $("change-email").addEventListener("click", (e) => {
+    e.preventDefault();
+    clearInterval(resendTimer);
+    showSignin();
+    $("email").focus();
+  });
+
+  const codeForm = $("code-form");
+  const codeMsg = $("code-msg");
+  let busy = false;
+  async function submitCode() {
+    const code = $("code").value;
+    if (!/^[0-9]{6}$/.test(code)) return say(codeMsg, "Enter the 6-digit code from the email.", "err");
+    if (busy) return;
+    busy = true;
+    $("code-btn").disabled = true;
+    try {
+      const out = await post("/api/auth/code", { code, next: "/alerts" });
+      if (out.ok) return location.replace(out.data.next === "/" ? "/" : "/alerts");
+      say(codeMsg, out.data.error || "Something went wrong. Please try again.", "err");
+      $("code").value = "";
+      if (out.data.restart) {
+        clearInterval(resendTimer);
+        $("resend").disabled = true;
+      }
+    } catch (err) {
+      say(codeMsg, "Something went wrong. Please try again.", "err");
+    } finally {
+      busy = false;
+      $("code-btn").disabled = false;
+    }
+  }
+  // Submits by itself once the sixth digit is in (typed or pasted).
+  $("code").addEventListener("input", () => {
+    const digits = $("code").value.replace(/[^0-9]/g, "").slice(0, 6);
+    if (digits !== $("code").value) $("code").value = digits;
+    if (digits.length === 6) submitCode();
+  });
+  codeForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    submitCode();
+  });
+
+  $("resend").addEventListener("click", async () => {
+    $("resend").disabled = true;
+    const out = await post("/api/auth/resend", { next: "/alerts" }).catch(() => ({ ok: false, data: {} }));
+    if (out.ok) {
+      say(codeMsg, "Sent a new code and link. The old ones no longer work.", "ok");
+      $("code").value = "";
+      startResendTimer();
+    } else {
+      say(codeMsg, out.data.error || "Something went wrong. Please try again.", "err");
+      if (!out.data.restart) startResendTimer();
     }
   });
 }

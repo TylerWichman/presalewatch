@@ -155,6 +155,14 @@ export function tokenFromMail(mail: SentMail[]): string {
   return match[1];
 }
 
+/** The 6-digit code from the most recent sign-in email. */
+export function codeFromMail(mail: SentMail[]): string {
+  const last = mail.filter((m) => m.url.endsWith("/emails")).at(-1);
+  const match = /sign-in code: ([0-9]{6})/.exec(last?.body.text ?? "");
+  if (!match) throw new Error("no sign-in code in mail");
+  return match[1];
+}
+
 import { onRequestPost as requestLink } from "../../functions/api/auth/request.ts";
 import { onRequestPost as verifyLink } from "../../functions/api/auth/verify.ts";
 

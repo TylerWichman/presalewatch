@@ -33,12 +33,17 @@ export const onRequestGet = route(async ({ request, env }) => {
   if (!session) return json({ signedIn: false });
   const user = await env.DB.prepare("SELECT email FROM users WHERE id = ?1").bind(session.userId).first<{ email: string }>();
   if (!user) return json({ signedIn: false });
-  return json({
-    signedIn: true,
-    email: user.email,
-    preferences: await loadPreferences(env, session.userId),
-    follows: await loadFollows(env, session.userId),
-  });
+  return json(
+    {
+      signedIn: true,
+      email: user.email,
+      preferences: await loadPreferences(env, session.userId),
+      follows: await loadFollows(env, session.userId),
+    },
+    200,
+    // Each visit extends the session; the cookie's lifetime follows.
+    session.renewedCookie ? { "Set-Cookie": session.renewedCookie } : undefined,
+  );
 });
 
 export const onRequestDelete = route(async ({ request, env }) => {
