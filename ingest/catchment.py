@@ -75,7 +75,7 @@ def run(db: Database, stats: dict, now=None) -> None:
         return
     index = TractIndex(load_tracts(fetch_tracts()))
     stats["api_calls"] += 1
-    stamp = now_iso()
+    stamp = now_iso(now)
     stmts = [("UPDATE venues SET catchment_population = ?, catchment_basis = ?, catchment_at = ? WHERE id = ?",
               (index.population_within(v["latitude"], v["longitude"], radius), basis, stamp, v["id"])) for v in venues]
     db.batch(stmts)

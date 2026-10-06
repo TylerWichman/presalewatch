@@ -198,5 +198,5 @@ def run(db: Database, stats: dict, now: datetime | None = None) -> None:
         calls += -(-len(recheck) // 50)
     parsed = [p for p in (parse(ev) for ev in raw.values()) if p]
     stats["api_calls"] += calls
-    stats["rows_written"] += write(db, parsed, now_iso())
+    stats["rows_written"] += write(db, parsed, now_iso(now))
     print(f"  Ticketmaster: {len(parsed)} events ({len(recheck)} re-checked for status), {calls} API calls")

@@ -105,7 +105,7 @@ def plan(title: str, stored_article: str | None, last_week: str | None, full_wee
 
 def run(db: Database, stats: dict, now: datetime | None = None) -> None:
     now = now or datetime.now(timezone.utc)
-    stamp = now_iso()
+    stamp = now_iso(now)
     full_week = last_full_week((now - timedelta(days=1)).date())
     through = full_week + timedelta(days=6)
     http = Http("Wikipedia pageviews", 0.2)

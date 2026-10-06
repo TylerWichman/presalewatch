@@ -35,8 +35,10 @@ D1_MAX_PARAMS = 100
 Statement = tuple[str, tuple]
 
 
-def now_iso() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
+def now_iso(at: datetime | None = None) -> str:
+    """ISO-8601 UTC timestamp for `at` (default: the current time). Jobs pass their run time, so a
+    run dated in a test stamps its rows with that date, not the real clock."""
+    return (at or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class WriteBudgetSpent(Exception):
