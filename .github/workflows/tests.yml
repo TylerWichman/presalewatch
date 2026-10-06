@@ -1,7 +1,8 @@
 name: Tests
 
-# Runs on pull requests to main: Python and JS unit tests, a TypeScript check, a dependency
-# audit, and a secret scan. No secrets, no data branch access, no deploy.
+# Runs on pull requests to main: Python and JS unit tests (Python also at future dates), a
+# TypeScript check, a dependency audit, and a secret scan. No secrets, no data branch access,
+# no deploy.
 # Third-party actions are pinned to exact commits.
 on:
   pull_request:
@@ -22,6 +23,11 @@ jobs:
 
       - name: Python unit tests
         run: python -m unittest -v
+
+      # The same tests with the clock moved 60 days, 1 year, and 2 years ahead, so a test that
+      # quietly depends on today's date fails here instead of later on the page refresh.
+      - name: Python unit tests at future dates
+        run: python tests/future_clock.py
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
