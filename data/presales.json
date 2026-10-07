@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-07T05:59:21Z",
+ "generated_at": "2026-10-07T13:23:48Z",
  "fees": {
   "seller_fee": 0.15,
   "primary_fee_pct": 0.25
@@ -8,7 +8,7 @@
  "ask_to_sale_discount": 0.15,
  "calibrated_at": null,
  "event_count": 874,
- "presale_count": 2656,
+ "presale_count": 2659,
  "presales": [
   {
    "id": "G5eVZ_KLLJEQL-0",
@@ -1299,13 +1299,13 @@
     "venue_capacity": 2700,
     "venue_capacity_source": "manual",
     "capacity_estimated": false,
-    "tour_date_count": 40,
+    "tour_date_count": 39,
     "catchment_population": 19913290,
     "signals": {
      "listeners": 0.9803,
      "engagement": 0.5747,
      "listeners_capacity": 0.7549,
-     "scarcity": 0.025,
+     "scarcity": 0.0256,
      "market": 0.999
     },
     "missing_signals": [],
@@ -1361,13 +1361,13 @@
     "venue_capacity": 2700,
     "venue_capacity_source": "manual",
     "capacity_estimated": false,
-    "tour_date_count": 40,
+    "tour_date_count": 39,
     "catchment_population": 19913290,
     "signals": {
      "listeners": 0.9803,
      "engagement": 0.5747,
      "listeners_capacity": 0.7549,
-     "scarcity": 0.025,
+     "scarcity": 0.0256,
      "market": 0.999
     },
     "missing_signals": [],
@@ -1423,13 +1423,13 @@
     "venue_capacity": 2700,
     "venue_capacity_source": "manual",
     "capacity_estimated": false,
-    "tour_date_count": 40,
+    "tour_date_count": 39,
     "catchment_population": 19913290,
     "signals": {
      "listeners": 0.9803,
      "engagement": 0.5747,
      "listeners_capacity": 0.7549,
-     "scarcity": 0.025,
+     "scarcity": 0.0256,
      "market": 0.999
     },
     "missing_signals": [],
@@ -1485,13 +1485,13 @@
     "venue_capacity": 2700,
     "venue_capacity_source": "manual",
     "capacity_estimated": false,
-    "tour_date_count": 40,
+    "tour_date_count": 39,
     "catchment_population": 19913290,
     "signals": {
      "listeners": 0.9803,
      "engagement": 0.5747,
      "listeners_capacity": 0.7549,
-     "scarcity": 0.025,
+     "scarcity": 0.0256,
      "market": 0.999
     },
     "missing_signals": [],
@@ -6415,6 +6415,68 @@
    "presale_description": "ARTIST PRESALE",
    "presale_url": null,
    "presale_link_text": null,
+   "presale_start": "2026-10-07T17:00:00Z",
+   "presale_end": "2026-10-09T05:00:00Z",
+   "onsale": "2026-10-09T17:00:00Z",
+   "face_min": null,
+   "face_max": null,
+   "fee_included": false,
+   "dynamic_pricing": false,
+   "mode": "predicted",
+   "confidence": "Med",
+   "tier": "High",
+   "high_estimated": true,
+   "demand_score": 0.7391,
+   "profit": null,
+   "profit_low": 0.224,
+   "profit_high": 1.04,
+   "edge_sort": 0.632,
+   "multiple_low": 1.8,
+   "multiple_high": 3.0,
+   "resale_median": null,
+   "resale_low": null,
+   "resale_avg": null,
+   "resale_listings": null,
+   "resale_captured_at": null,
+   "inputs": {
+    "face_used": null,
+    "lastfm_listeners": 2019524,
+    "lastfm_playcount": 75038738,
+    "venue_capacity": 839,
+    "venue_capacity_source": "estimate",
+    "capacity_estimated": true,
+    "tour_date_count": 14,
+    "catchment_population": 3311919,
+    "signals": {
+     "listeners": 0.9221,
+     "engagement": 0.7134,
+     "listeners_capacity": 0.8454,
+     "scarcity": 0.0714,
+     "market": 0.5896
+    },
+    "missing_signals": [],
+    "seatgeek_listings": null
+   }
+  },
+  {
+   "id": "vvG1IZ_KzPuiJM-1",
+   "event_id": "vvG1IZ_KzPuiJM",
+   "artist": "Vacations",
+   "artist_id": "K8vZ917pNN7",
+   "event_name": "Vacations",
+   "url": "https://www.ticketmaster.com/vacations-san-diego-california-03-20-2027/event/0A00653E2536C9B7",
+   "image": "https://s1.ticketm.net/dam/a/f9f/c80fae44-587a-4b21-b71f-7d7d054eff9f_RETINA_PORTRAIT_16_9.jpg",
+   "venue": "SOMA",
+   "city": "San Diego",
+   "state": "CA",
+   "event_date": "2027-03-20",
+   "event_time": "20:00:00",
+   "presale_name": "LIVE NATION PRESALE",
+   "presale_type": "Live Nation",
+   "code_source": "Live Nation code (app or email)",
+   "presale_description": "Available exclusively to Live Nation All Access members",
+   "presale_url": "https://www.livenation.com/allaccess",
+   "presale_link_text": "Join for Free to Unlock Presale",
    "presale_start": "2026-10-07T17:00:00Z",
    "presale_end": "2026-10-09T05:00:00Z",
    "onsale": "2026-10-09T17:00:00Z",
@@ -76424,7 +76486,7 @@
    "confidence": "Med",
    "tier": "Low",
    "high_estimated": false,
-   "demand_score": 0.1137,
+   "demand_score": 0.1141,
    "profit": null,
    "profit_low": -0.524,
    "profit_high": -0.184,
@@ -76443,13 +76505,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 26,
+    "tour_date_count": 25,
     "catchment_population": 782252,
     "signals": {
      "listeners": 0.0,
      "engagement": 0.2496,
      "listeners_capacity": null,
-     "scarcity": 0.0385,
+     "scarcity": 0.04,
      "market": 0.2603
     },
     "missing_signals": [
@@ -102327,6 +102389,68 @@
    }
   },
   {
+   "id": "vvG1YZ_f5Za5oP-1",
+   "event_id": "vvG1YZ_f5Za5oP",
+   "artist": "A.J. Ghent",
+   "artist_id": "K8vZ917oYQV",
+   "event_name": "A.J. Ghent",
+   "url": "https://www.ticketmaster.com/aj-ghent-dallas-texas-01-30-2027/event/0C006542C024B465",
+   "image": "https://s1.ticketm.net/dam/a/6e4/66f3def7-dfb2-40b4-b570-366450c956e4_RETINA_PORTRAIT_16_9.jpg",
+   "venue": "House of Blues Dallas ",
+   "city": "Dallas",
+   "state": "TX",
+   "event_date": "2027-01-30",
+   "event_time": "19:00:00",
+   "presale_name": "Citi® Cardmember Presale",
+   "presale_type": "Citi",
+   "code_source": "Citi card, no code",
+   "presale_description": "Exclusive Presale for Citi® Cardmembers",
+   "presale_url": null,
+   "presale_link_text": null,
+   "presale_start": "2026-10-07T15:00:00Z",
+   "presale_end": "2026-10-09T03:00:00Z",
+   "onsale": "2026-10-09T15:00:00Z",
+   "face_min": null,
+   "face_max": null,
+   "fee_included": false,
+   "dynamic_pricing": false,
+   "mode": "predicted",
+   "confidence": "Med",
+   "tier": "Low",
+   "high_estimated": false,
+   "demand_score": 0.099,
+   "profit": null,
+   "profit_low": -0.524,
+   "profit_high": -0.184,
+   "edge_sort": -0.354,
+   "multiple_low": 0.7,
+   "multiple_high": 1.2,
+   "resale_median": null,
+   "resale_low": null,
+   "resale_avg": null,
+   "resale_listings": null,
+   "resale_captured_at": null,
+   "inputs": {
+    "face_used": null,
+    "lastfm_listeners": 6,
+    "lastfm_playcount": 6,
+    "venue_capacity": 839,
+    "venue_capacity_source": "estimate",
+    "capacity_estimated": true,
+    "tour_date_count": 3,
+    "catchment_population": 7505017,
+    "signals": {
+     "listeners": 0.0,
+     "engagement": 0.0,
+     "listeners_capacity": 0.0,
+     "scarcity": 0.3333,
+     "market": 0.7763
+    },
+    "missing_signals": [],
+    "seatgeek_listings": null
+   }
+  },
+  {
    "id": "vv1AkZkftGkdvWrKV-2",
    "event_id": "vv1AkZkftGkdvWrKV",
    "artist": "Air Supply",
@@ -118851,7 +118975,7 @@
    }
   },
   {
-   "id": "vvG1YZ_f5Za5oP-1",
+   "id": "vvG1YZ_f5Za5oP-2",
    "event_id": "vvG1YZ_f5Za5oP",
    "artist": "A.J. Ghent",
    "artist_id": "K8vZ917oYQV",
@@ -135714,6 +135838,68 @@
      "listeners_capacity": 0.4292,
      "scarcity": 0.05,
      "market": 0.7362
+    },
+    "missing_signals": [],
+    "seatgeek_listings": null
+   }
+  },
+  {
+   "id": "vvG1YZ_f5Za5oP-3",
+   "event_id": "vvG1YZ_f5Za5oP",
+   "artist": "A.J. Ghent",
+   "artist_id": "K8vZ917oYQV",
+   "event_name": "A.J. Ghent",
+   "url": "https://www.ticketmaster.com/aj-ghent-dallas-texas-01-30-2027/event/0C006542C024B465",
+   "image": "https://s1.ticketm.net/dam/a/6e4/66f3def7-dfb2-40b4-b570-366450c956e4_RETINA_PORTRAIT_16_9.jpg",
+   "venue": "House of Blues Dallas ",
+   "city": "Dallas",
+   "state": "TX",
+   "event_date": "2027-01-30",
+   "event_time": "19:00:00",
+   "presale_name": "Citi® Cardmember Preferred Tickets",
+   "presale_type": "Citi",
+   "code_source": "Citi card, no code",
+   "presale_description": "For Citi® Cardmembers",
+   "presale_url": null,
+   "presale_link_text": null,
+   "presale_start": "2026-10-09T15:00:00Z",
+   "presale_end": "2027-01-03T04:00:00Z",
+   "onsale": "2026-10-09T15:00:00Z",
+   "face_min": null,
+   "face_max": null,
+   "fee_included": false,
+   "dynamic_pricing": false,
+   "mode": "predicted",
+   "confidence": "Med",
+   "tier": "Low",
+   "high_estimated": false,
+   "demand_score": 0.099,
+   "profit": null,
+   "profit_low": -0.524,
+   "profit_high": -0.184,
+   "edge_sort": -0.354,
+   "multiple_low": 0.7,
+   "multiple_high": 1.2,
+   "resale_median": null,
+   "resale_low": null,
+   "resale_avg": null,
+   "resale_listings": null,
+   "resale_captured_at": null,
+   "inputs": {
+    "face_used": null,
+    "lastfm_listeners": 6,
+    "lastfm_playcount": 6,
+    "venue_capacity": 839,
+    "venue_capacity_source": "estimate",
+    "capacity_estimated": true,
+    "tour_date_count": 3,
+    "catchment_population": 7505017,
+    "signals": {
+     "listeners": 0.0,
+     "engagement": 0.0,
+     "listeners_capacity": 0.0,
+     "scarcity": 0.3333,
+     "market": 0.7763
     },
     "missing_signals": [],
     "seatgeek_listings": null
@@ -159364,13 +159550,13 @@
     "venue_capacity": 1600,
     "venue_capacity_source": "wikipedia",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 8616733,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.8078
     },
     "missing_signals": [
@@ -159430,13 +159616,13 @@
     "venue_capacity": 2700,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1694164,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.4367
     },
     "missing_signals": [
@@ -159496,13 +159682,13 @@
     "venue_capacity": 839,
     "venue_capacity_source": "estimate",
     "capacity_estimated": true,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 8076855,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.7931
     },
     "missing_signals": [
@@ -159562,13 +159748,13 @@
     "venue_capacity": 2460,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3064103,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5719
     },
     "missing_signals": [
@@ -159628,13 +159814,13 @@
     "venue_capacity": 7141,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1310177,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.378
     },
     "missing_signals": [
@@ -159694,13 +159880,13 @@
     "venue_capacity": 2844,
     "venue_capacity_source": "wikipedia",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1414657,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.3955
     },
     "missing_signals": [
@@ -159760,13 +159946,13 @@
     "venue_capacity": 2750,
     "venue_capacity_source": "manual",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 19842562,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.9982
     },
     "missing_signals": [
@@ -159826,13 +160012,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1227106,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.3631
     },
     "missing_signals": [
@@ -159892,13 +160078,13 @@
     "venue_capacity": 1748,
     "venue_capacity_source": "wikipedia",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1418006,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.3961
     },
     "missing_signals": [
@@ -159958,13 +160144,13 @@
     "venue_capacity": 2963,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 920207,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.2974
     },
     "missing_signals": [
@@ -160024,13 +160210,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 2552094,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5302
     },
     "missing_signals": [
@@ -160090,13 +160276,13 @@
     "venue_capacity": 2500,
     "venue_capacity_source": "wikipedia",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 2619705,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5361
     },
     "missing_signals": [
@@ -160156,13 +160342,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1632198,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.4282
     },
     "missing_signals": [
@@ -160222,13 +160408,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1264837,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.37
     },
     "missing_signals": [
@@ -160288,13 +160474,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 6983422,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.7599
     },
     "missing_signals": [
@@ -160354,13 +160540,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1728505,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.4412
     },
     "missing_signals": [
@@ -160420,13 +160606,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1728505,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.4412
     },
     "missing_signals": [
@@ -160486,13 +160672,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 2444777,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5204
     },
     "missing_signals": [
@@ -160552,13 +160738,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 5931334,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.7226
     },
     "missing_signals": [
@@ -160816,13 +161002,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 612539,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.2045
     },
     "missing_signals": [
@@ -160882,13 +161068,13 @@
     "venue_capacity": 839,
     "venue_capacity_source": "estimate",
     "capacity_estimated": true,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 1077276,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.3333
     },
     "missing_signals": [
@@ -160948,13 +161134,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 7038184,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.7617
     },
     "missing_signals": [
@@ -161014,13 +161200,13 @@
     "venue_capacity": 839,
     "venue_capacity_source": "estimate",
     "capacity_estimated": true,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 2316665,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5081
     },
     "missing_signals": [
@@ -161080,13 +161266,13 @@
     "venue_capacity": 839,
     "venue_capacity_source": "estimate",
     "capacity_estimated": true,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 2316665,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5081
     },
     "missing_signals": [
@@ -161146,13 +161332,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 729159,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.2443
     },
     "missing_signals": [
@@ -161212,13 +161398,13 @@
     "venue_capacity": 3600,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 9341134,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.8263
     },
     "missing_signals": [
@@ -161278,13 +161464,13 @@
     "venue_capacity": 3600,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 9341134,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.8263
     },
     "missing_signals": [
@@ -161344,13 +161530,13 @@
     "venue_capacity": 3600,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 9341134,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.8263
     },
     "missing_signals": [
@@ -161410,13 +161596,13 @@
     "venue_capacity": 2579,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3781086,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.6199
     },
     "missing_signals": [
@@ -161476,13 +161662,13 @@
     "venue_capacity": 10000,
     "venue_capacity_source": "wikidata",
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3291990,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5883
     },
     "missing_signals": [
@@ -164655,13 +164841,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3383068,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5945
     },
     "missing_signals": [
@@ -164721,13 +164907,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3383068,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5945
     },
     "missing_signals": [
@@ -166045,13 +166231,13 @@
     "venue_capacity": null,
     "venue_capacity_source": null,
     "capacity_estimated": false,
-    "tour_date_count": 64,
+    "tour_date_count": 67,
     "catchment_population": 3383068,
     "signals": {
      "listeners": null,
      "engagement": null,
      "listeners_capacity": null,
-     "scarcity": 0.0156,
+     "scarcity": 0.0149,
      "market": 0.5945
     },
     "missing_signals": [
