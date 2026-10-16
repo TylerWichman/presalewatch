@@ -15,7 +15,7 @@ See [EDGE_SPEC.md](EDGE_SPEC.md) for the edge model and [SPEC.md](SPEC.md) for t
 | `ticketmaster.py`, `lastfm.py`, `seatgeek.py` | One module per data source |
 | `config/model.json` | Fees, weights, tier cutoffs, and multiple ranges |
 | `config/venues.csv` | Venue capacities, entered by hand. Seeded for NYC |
-| `db/`, `data/` | Generated tables and `presales.json`. Kept on the `data` branch, not `main` |
+| `db/`, `data/` | Generated tables and `presales.json`. Kept in the private `pouchit-data` repo, not here |
 | `ingest/` | Daily jobs filling the D1 intelligence database (see [docs/database.md](docs/database.md)). They don't affect the live page yet |
 
 The data pipeline uses only the Python standard library, so there is nothing to `pip install`.
@@ -131,11 +131,11 @@ and take about a quarter second each (Last.fm asks for at most ~5 requests a sec
 `fixtures/sample_events.json` is a saved raw API response for reference.
 
 A local run starts from empty tables. To start from the live data instead, copy
-it from the `data` branch first:
+it from the private `TylerWichman/pouchit-data` repo first (ask Tyler for access):
 
 ```powershell
-git fetch origin data
-git archive origin/data | tar -x -f -
+git clone --depth 1 https://github.com/TylerWichman/pouchit-data.git ..\pouchit-data
+Copy-Item -Recurse -Force ..\pouchit-data\db, ..\pouchit-data\data .
 ```
 
 `db/` and `data/` are ignored on `main`, so this never shows up as a change.
@@ -228,13 +228,16 @@ names. Cloudflare can't rename them in place, and visitors only ever see `pouchi
 ### How the refresh works
 
 The workflow runs every 6 hours and on demand from the Actions tab. Each run
-runs the tests, loads the saved tables from the `data` branch, runs the pipeline,
-saves the updated `db/` tables and `data/presales.json` back to the `data` branch,
+runs the tests, loads the saved tables from the private `pouchit-data` repo, runs the
+pipeline, saves the updated `db/` tables and `data/presales.json` back to that repo,
 builds the page, and uploads `site/` to Cloudflare Pages. It never commits to
 `main`, which is protected. A merge to `main` redeploys the latest saved data
 without fetching. If a step fails, the previous version of the site stays live.
 
-The `data` branch only ever holds `db/` and `data/`. Don't merge it into `main`.
+The saved data lives in a private repo because Ticketmaster's terms allow storing its
+event data only to provide the service, not republishing it. Keep it out of this public
+repo. The job reaches the private repo with the `DATA_DEPLOY_KEY` secret, a deploy key
+with write access to that repo only.
 
 Share `https://pouchit.net` (the custom domain; sign-in only works there, not on
 `presalewatch.pages.dev`). Each deploy log also prints a URL like
