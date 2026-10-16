@@ -1,4 +1,3 @@
 event,kind,basis,price_point,section_tier,standard,price,fees_included,observed_on,source,notes
-https://www.ticketmaster.com/example/event/1B00648D9DB09AA5,face,,single,GA floor,yes,79.50,no,2026-10-02,Ticketmaster checkout,
-1B00648D9DB09AA5,resale,ask,get_in,,yes,145,yes,2026-10-02,StubHub cheapest listing,
-1B00648D9DB09AA5,resale,sold,single,Sec 104,yes,210,yes,2026-10-05,StubHub sold listing,2 tickets
+1B00648D9DB09AA5,resale,ask,get_in,,yes,145.20,yes,2026-10-09,StubHub,day 7
+1B00648D9DB09AA5,resale,ask,get_in,,yes,131.75,yes,2026-10-16,StubHub,day 14

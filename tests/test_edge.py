@@ -213,6 +213,34 @@ class Scoring(unittest.TestCase):
         self.assertEqual(rows[0]["median_d7"], 200)
         self.assertAlmostEqual(rows[0]["multiple_d7"], 1.7)  # $200 ask * 0.85 / $100 face
 
+    def test_hand_logged_get_in_scored_separately(self):
+        cfg = load_config()
+        cfg["fees"]["primary_fee_pct"] = 0.25
+        tables = {
+            "events": [{"event_id": "e1", "artist": "A", "onsale_date": "2026-09-01T14:00:00Z", "face_min": "100",
+                        "face_max": "100", "fee_included": "0"}],
+            "predictions": [{"event_id": "e1", "mode": "predicted", "predicted_at": "2026-08-30T00:00:00Z", "tier": "Med",
+                             "demand_score": "0.5", "multiple_low": "1.2", "multiple_high": "1.8", "face": "100"}],
+        }
+        logged = {"e1": [{"price": 250.0, "observed_on": "2026-09-09", "source": "StubHub"},   # day 8: within a day
+                         {"price": 999.0, "observed_on": "2026-09-04", "source": "StubHub"}]}  # day 3: too early
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(common, "DB_DIR", Path(tmp)):
+            for name, rows in tables.items():
+                with open(Path(tmp) / f"{name}.csv", "w", newline="", encoding="utf-8") as fh:
+                    writer = csv.DictWriter(fh, fieldnames=list(rows[0]))
+                    writer.writeheader()
+                    writer.writerows(rows)
+            rows = calibrate.score(datetime(2026, 9, 10, tzinfo=timezone.utc), cfg, logged)
+        self.assertEqual(len(rows), 1)
+        self.assertFalse(rows[0].get("multiple_d7"))  # no SeatGeek median
+        self.assertAlmostEqual(rows[0]["getin_multiple_d7"], 2.0)  # $250 all-in / $125 all-in face
+        self.assertFalse(rows[0].get("getin_multiple_d14"))
+
+    def test_rank_correlation(self):
+        self.assertEqual(calibrate.spearman([1, 2, 3, 4], [10, 20, 30, 40]), 1.0)
+        self.assertEqual(calibrate.spearman([1, 2, 3, 4], [4, 3, 2, 1]), -1.0)
+        self.assertIsNone(calibrate.spearman([1, 2], [1, 2]))
+
 
 class Refit(unittest.TestCase):
     def test_recovers_signal_and_covers_range(self):

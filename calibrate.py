@@ -8,6 +8,14 @@ the SeatGeek median 7 and 14 days after on-sale:
 SeatGeek medians are asking prices, so they get the same discount edge.py
 applies in Live mode, and predicted multiples are scored on that sale basis.
 
+Hand-logged prices (observed_prices in the intelligence database, read when
+INTEL_DB is set) are scored separately, because they measure something else:
+the cheapest standard listing per ticket, all-in with fees, for 2 tickets,
+logged 7 and 14 days after general on-sale (see docs/logging_prices.md). Their
+multiple is that price over the all-in face cost, with no ask-to-sale discount.
+They never feed the median-based metrics or the refit; their report is tier
+order plus the rank correlation between demand score and actual multiple.
+
 Metrics (day 7): tier accuracy (do High events resell higher than Med and
 Low?), share of actual multiples inside the predicted range (target >= 70%),
 and mean absolute error on the multiple.
@@ -31,16 +39,56 @@ import sys
 from datetime import datetime, timedelta, timezone
 
 import edge
-from common import CONFIG_PATH, DB_DIR, iso, load_config, num, parse_utc, read_table, write_table
+from common import CONFIG_PATH, DB_DIR, env, iso, load_config, num, parse_utc, read_table, write_table
 
 SCORE_FIELDS = [
     "event_id", "artist", "onsale_date", "predicted_at", "tier", "demand_score", "multiple_low",
     "multiple_high", "listeners", "engagement", "listeners_capacity", "scarcity", "market", "face",
-    "median_d7", "multiple_d7", "median_d14", "multiple_d14", "scored_at",
+    "median_d7", "multiple_d7", "median_d14", "multiple_d14",
+    "getin_d7", "getin_multiple_d7", "getin_d14", "getin_multiple_d14", "getin_source", "scored_at",
 ]
 REPORT_PATH = DB_DIR / "calibration.json"
 # Tier boundaries in multiple space: at or above 1.8x is High, 1.2x-1.8x Med, below Low.
 MED_MULTIPLE, HIGH_MULTIPLE = 1.2, 1.8
+# A hand-logged price counts for day N if it was logged within this many days of on-sale + N.
+LOG_WINDOW_DAYS = 1
+# Only rows logged the way docs/logging_prices.md says.
+HAND_LOGGED_SQL = (
+    "SELECT e.ticketmaster_id AS event_id, o.price, o.observed_on, o.source FROM observed_prices o"
+    " JOIN events e ON e.id = o.event_id WHERE o.kind = 'resale' AND o.price_basis = 'ask'"
+    " AND o.price_point = 'get_in' AND o.standard_ticket = 1 AND o.fees_included = 1"
+)
+
+
+def hand_logged() -> dict[str, list[dict]]:
+    """Hand-logged cheapest-listing prices by Ticketmaster event ID, from the intelligence
+    database named by INTEL_DB ('d1' or 'sqlite:<path>'). Unset or unreachable means none."""
+    target = env("INTEL_DB")
+    if not target:
+        return {}
+    try:
+        from ingest.db import open_db
+        rows = open_db(target).query(HAND_LOGGED_SQL)
+    except (Exception, SystemExit) as err:  # noqa: BLE001 - calibration must still run without it
+        print(f"  warning: intelligence database unavailable, scoring without hand-logged prices: "
+              f"{type(err).__name__}: {str(err)[:150]}", file=sys.stderr)
+        return {}
+    out: dict[str, list[dict]] = {}
+    for r in rows:
+        out.setdefault(r["event_id"], []).append(r)
+    return out
+
+
+def closest_log(logs: list[dict], target: datetime) -> dict | None:
+    best, best_gap = None, None
+    for r in logs:
+        try:
+            gap = abs((datetime.fromisoformat(r["observed_on"]).date() - target.date()).days)
+        except (TypeError, ValueError):
+            continue
+        if gap <= LOG_WINDOW_DAYS and (best_gap is None or gap < best_gap):
+            best, best_gap = r, gap
+    return best
 
 
 def closest_snapshot(snaps: list[dict], target: datetime, window_h: float) -> dict | None:
@@ -56,7 +104,8 @@ def closest_snapshot(snaps: list[dict], target: datetime, window_h: float) -> di
     return best
 
 
-def score(now: datetime, cfg: dict) -> list[dict]:
+def score(now: datetime, cfg: dict, logged: dict[str, list[dict]] | None = None) -> list[dict]:
+    logged = logged or {}
     events = {r["event_id"]: r for r in read_table("events")}
     preds: dict[str, list[dict]] = {}
     for r in read_table("predictions"):
@@ -71,7 +120,7 @@ def score(now: datetime, cfg: dict) -> list[dict]:
     for eid, rows in preds.items():
         ev = events.get(eid)
         onsale = parse_utc((ev or {}).get("onsale_date"))
-        if not onsale or now < onsale + timedelta(days=7) or eid not in snaps:
+        if not onsale or now < onsale + timedelta(days=7) or (eid not in snaps and eid not in logged):
             continue
         before = [r for r in rows if (parse_utc(r["predicted_at"]) or now) <= onsale]
         if not before:
@@ -90,19 +139,70 @@ def score(now: datetime, cfg: dict) -> list[dict]:
         }
         changed = False
         for day in (7, 14):
-            if row.get(f"multiple_d{day}") or now < onsale + timedelta(days=day):
+            if now < onsale + timedelta(days=day):
                 continue
-            snap = closest_snapshot(snaps[eid], onsale + timedelta(days=day), window)
-            if snap:
+            snap = closest_snapshot(snaps.get(eid, []), onsale + timedelta(days=day), window)
+            if snap and not row.get(f"multiple_d{day}"):
                 row[f"median_d{day}"] = num(snap["median"])
                 row[f"multiple_d{day}"] = round(edge.sale_price(num(snap["median"]), cfg) / face, 4)
+                changed = True
+            log = closest_log(logged.get(eid, []), onsale + timedelta(days=day))
+            if log and not row.get(f"getin_multiple_d{day}"):
+                cost = edge.all_in_cost(face, cfg, (ev or {}).get("fee_included") == "1")
+                row[f"getin_d{day}"] = num(log["price"])
+                row[f"getin_multiple_d{day}"] = round(num(log["price"]) / cost, 4)
+                row["getin_source"] = log["source"]
                 changed = True
         if changed:
             row["scored_at"] = iso(now)
             scores[eid] = row
-    rows = [r for r in scores.values() if r.get("multiple_d7")]
+    rows = [r for r in scores.values() if r.get("multiple_d7") or r.get("getin_multiple_d7")]
     write_table("scores", sorted(rows, key=lambda r: r["event_id"]), SCORE_FIELDS)
     return rows
+
+
+def ranks(values: list[float]) -> list[float]:
+    """Rank positions, with ties sharing their average position."""
+    order = sorted(range(len(values)), key=lambda i: values[i])
+    out = [0.0] * len(values)
+    i = 0
+    while i < len(order):
+        j = i
+        while j + 1 < len(order) and values[order[j + 1]] == values[order[i]]:
+            j += 1
+        for k in range(i, j + 1):
+            out[order[k]] = (i + j) / 2
+        i = j + 1
+    return out
+
+
+def spearman(x: list[float], y: list[float]) -> float | None:
+    if len(x) < 3:
+        return None
+    rx, ry = ranks(x), ranks(y)
+    mx, my = sum(rx) / len(rx), sum(ry) / len(ry)
+    cov = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
+    var = math.sqrt(sum((a - mx) ** 2 for a in rx) * sum((b - my) ** 2 for b in ry))
+    return round(cov / var, 3) if var else None
+
+
+def hand_logged_metrics(rows: list[dict], cfg: dict) -> dict:
+    """Ranking checks only: a cheapest listing isn't on the scale of the median-based ranges."""
+    rows = [r for r in rows if num(r.get("getin_multiple_d7")) and num(r.get("demand_score")) is not None]
+    if not rows:
+        return {"scored": 0}
+    by_tier: dict[str, list[float]] = {}
+    for r in rows:
+        by_tier.setdefault(r["tier"], []).append(num(r["getin_multiple_d7"]))
+    order = [t["name"] for t in sorted(cfg["tiers"], key=lambda t: t["min_score"], reverse=True)]
+    means = {t: sum(v) / len(v) for t, v in by_tier.items()}
+    present = [means[t] for t in order if t in means]
+    return {
+        "scored": len(rows),
+        "tiers": {t: {"events": len(by_tier[t]), "mean_multiple": round(means[t], 3)} for t in order if t in by_tier},
+        "tier_order_holds": all(a > b for a, b in zip(present, present[1:])),
+        "rank_correlation": spearman([num(r["demand_score"]) for r in rows], [num(r["getin_multiple_d7"]) for r in rows]),
+    }
 
 
 def metrics(rows: list[dict], cfg: dict) -> dict:
@@ -209,14 +309,19 @@ def main() -> None:
 
     cfg = load_config()
     now = datetime.now(timezone.utc).replace(microsecond=0)
-    rows = score(now, cfg)
+    scored = score(now, cfg, hand_logged())
+    rows = [r for r in scored if r.get("multiple_d7")]
+    hand = hand_logged_metrics(scored, cfg)
     report = {"generated_at": iso(now), "calibrated_at": cfg.get("calibrated_at"),
-              **metrics(rows, cfg), "review_due": review_due(len(rows), now, cfg)}
+              **metrics(rows, cfg), "review_due": review_due(len(rows), now, cfg), "hand_logged": hand}
     need = cfg["calibration"]["min_scored_for_refit"]
     print(f"{len(rows)} predictions scored ({need} needed for a refit)")
     if rows:
         print(f"  in range: {report['share_in_range']:.0%} (target 70%), MAE {report['mae_multiple']}x, "
               f"tier order holds: {report['tier_order_holds']}")
+    if hand["scored"]:
+        print(f"{hand['scored']} hand-logged events scored: rank correlation {hand['rank_correlation']}, "
+              f"tier order holds: {hand['tier_order_holds']}")
     if report["review_due"] and not args.refit:
         print("  Review due: run `python calibrate.py --refit` and check the new tiers.")
 
