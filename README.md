@@ -154,6 +154,11 @@ the SeatGeek median 7 and 14 days after its public on-sale (`db/scores.csv`), an
 `db/calibration.json` reports tier accuracy, share of actuals inside the predicted
 range (target 70%), and mean absolute error.
 
+Resale prices logged by hand are scored too, separately, under `hand_logged` in
+the report: tier order and how well the demand score ranks events. They don't
+feed the refit. To keep them consistent, log them exactly as
+[docs/logging_prices.md](docs/logging_prices.md) describes.
+
 Once 50+ events are scored, the report flags a review monthly or every 25 new
 scores. Then run `python calibrate.py --refit`: it fits a log-linear regression of
 the actual multiple on the demand signals and rewrites the weights, tier cutoffs,
