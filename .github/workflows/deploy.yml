@@ -10,7 +10,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write            # pushes refreshed data to the `data` branch (never to main)
+  contents: read             # refreshed data goes to the private data repo, never to this public one
   issues: write              # opens an ops-alert issue when a run fails (see .github/scripts/ops-alert.sh)
 
 concurrency:
@@ -19,6 +19,7 @@ concurrency:
 
 env:
   CF_PROJECT: presalewatch
+  DATA_REPO: TylerWichman/pouchit-data   # private
   WRANGLER_VERSION: "4.144.0"   # keep in step with package.json
 
 jobs:
@@ -46,19 +47,22 @@ jobs:
           npm ci
           npm test
 
-      # Generated tables and presales.json live on the `data` branch, so the
-      # job never commits to main (which is protected).
-      - name: Load data branch
+      # Generated tables and presales.json live in a private repo (DATA_REPO), not in
+      # this public one: Ticketmaster's terms allow storing its event data only to
+      # provide the service, not republishing it. DATA_DEPLOY_KEY is a deploy key with
+      # write access to that repo only.
+      - name: Load saved data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.DATA_REPO }}
+          ssh-key: ${{ secrets.DATA_DEPLOY_KEY }}
+          path: _data
+
+      - name: Copy saved data into place
         run: |
-          if git fetch --depth=1 origin data; then
-            git worktree add --detach _data FETCH_HEAD
-            for d in db data; do
-              if [ -d "_data/$d" ]; then cp -r "_data/$d" .; fi
-            done
-          else
-            echo "No data branch yet; starting fresh"
-            git worktree add --orphan -b data _data
-          fi
+          for d in db data; do
+            if [ -d "_data/$d" ]; then cp -r "_data/$d" .; fi
+          done
 
       # Scheduled and manual runs refresh the data. A push just redeploys
       # the latest saved data, unless there is none yet.
@@ -79,7 +83,7 @@ jobs:
           python pipeline.py
           python calibrate.py
 
-      - name: Save data to the data branch
+      - name: Save data to the private data repo
         if: steps.pipeline.outcome == 'success'
         working-directory: _data
         run: |
@@ -93,7 +97,7 @@ jobs:
             exit 0
           fi
           git commit -q -m "Refresh presale data $(date -u +%Y-%m-%dT%H:%MZ)"
-          git push origin HEAD:data
+          git push origin HEAD:main
 
       - name: Build page
         env:
