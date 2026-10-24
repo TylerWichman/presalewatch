@@ -1,5 +1,5 @@
 {
-  "_note": "Security headers for every response. build.py writes these into site/_headers for static files (adding script and style hashes to the page CSP); the API middleware sends them on every API response.",
+  "_note": "Security headers for every response. build.py writes these into site/_headers for static files (adding script and style hashes to the page CSP); the API middleware sends them on every API response. static.cloudflareinsights.com (script) and cloudflareinsights.com (beacon) are Cloudflare Web Analytics, which Cloudflare Pages injects: cookieless page-view counts.",
   "common": {
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
     "X-Content-Type-Options": "nosniff",
@@ -11,10 +11,10 @@
   },
   "page_csp": {
     "default-src": ["'none'"],
-    "script-src": ["'self'", "https://challenges.cloudflare.com"],
+    "script-src": ["'self'", "https://challenges.cloudflare.com", "https://static.cloudflareinsights.com"],
     "style-src": ["'self'"],
     "img-src": ["'self'", "data:", "https://*.ticketm.net"],
-    "connect-src": ["'self'"],
+    "connect-src": ["'self'", "https://cloudflareinsights.com"],
     "frame-src": ["https://challenges.cloudflare.com"],
     "form-action": ["'self'"],
     "base-uri": ["'none'"],

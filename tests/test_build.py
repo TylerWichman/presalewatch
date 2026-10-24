@@ -13,6 +13,11 @@ class SecurityHeaders(unittest.TestCase):
         self.headers = build.headers_file(PAGE)
         self.csp = next(line for line in self.headers.splitlines() if "Content-Security-Policy" in line)
 
+    def test_cloudflare_analytics_allowed_and_nothing_wider(self):
+        self.assertIn("script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com", self.csp)
+        self.assertIn("connect-src 'self' https://cloudflareinsights.com", self.csp)
+        self.assertNotIn("*.cloudflareinsights.com", self.csp)
+
     def test_csp_is_strict(self):
         self.assertNotIn("unsafe-inline", self.csp)
         self.assertNotIn("unsafe-eval", self.csp)
