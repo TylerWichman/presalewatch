@@ -137,8 +137,8 @@ describe("magic link verify", () => {
     const token = tokenFromMail(net.mail);
     await call(verifyLink, env, "/api/auth/verify", { body: { token, confirm: true } });
     assert.equal(env.DB.rows("SELECT * FROM users").length, 1);
-    assert.deepEqual(env.DB.rows("SELECT follow_alerts, profit_alerts, profit_threshold FROM preferences").map((r) => ({ ...r })), [
-      { follow_alerts: 1, profit_alerts: 1, profit_threshold: 30 },
+    assert.deepEqual(env.DB.rows("SELECT follow_alerts FROM preferences").map((r) => ({ ...r })), [
+      { follow_alerts: 1 },
     ]);
   });
 });

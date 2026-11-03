@@ -37,16 +37,6 @@ export function artistKey(name: string): string {
     .trim();
 }
 
-export const THRESHOLD_MIN = 0;
-export const THRESHOLD_MAX = 500;
-
-export function threshold(value: unknown): number {
-  if (typeof value !== "number" || !Number.isInteger(value) || value < THRESHOLD_MIN || value > THRESHOLD_MAX) {
-    throw new InputError(`Profit threshold must be a whole number from ${THRESHOLD_MIN} to ${THRESHOLD_MAX}.`);
-  }
-  return value;
-}
-
 export function bool(value: unknown, name: string): boolean {
   if (typeof value !== "boolean") throw new InputError(`${name} must be true or false.`);
   return value;

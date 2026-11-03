@@ -16,7 +16,7 @@ export async function unsubscribe(env: Env, request: Request, userId: unknown, t
   // Compute a signature even for unknown users so both cases take the same path.
   const ok = await checkUnsubscribeToken(env.UNSUBSCRIBE_SECRET, u, user?.unsub_nonce ?? "none", t);
   if (!user || !ok) throw new HttpError(400, INVALID);
-  await env.DB.prepare("UPDATE preferences SET follow_alerts = 0, profit_alerts = 0, updated_at = ?2 WHERE user_id = ?1")
+  await env.DB.prepare("UPDATE preferences SET follow_alerts = 0, updated_at = ?2 WHERE user_id = ?1")
     .bind(u, nowSeconds())
     .run();
 }

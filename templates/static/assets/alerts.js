@@ -195,16 +195,16 @@ function renderFollows(follows) {
   $("suggestions").hidden = follows.length > 0 || !$("suggested").children.length;
 }
 
-// Six artists with presales coming up, highest edge first, for someone who follows nobody yet.
+// Six artists with presales coming up, soonest show first, for someone who follows nobody yet.
 function renderSuggestions(feed) {
   const now = Date.now();
-  const best = new Map();
+  const soonest = new Map();
   for (const e of feed.events || []) {
     if (typeof e.artist !== "string" || (e.presale_end && Date.parse(e.presale_end) <= now)) continue;
-    const edge = typeof e.edge === "number" ? e.edge : -Infinity;
-    if (!best.has(e.artist) || edge > best.get(e.artist)) best.set(e.artist, edge);
+    const date = typeof e.date === "string" ? e.date : "9999";
+    if (!soonest.has(e.artist) || date < soonest.get(e.artist)) soonest.set(e.artist, date);
   }
-  const picks = [...best.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map((x) => x[0]);
+  const picks = [...soonest.entries()].sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0])).slice(0, 6).map((x) => x[0]);
   const list = $("suggested");
   list.textContent = "";
   for (const name of picks) {
@@ -264,18 +264,14 @@ async function followFromCard(follow) {
 function setupSettings(me) {
   $("me-email").textContent = me.email;
   $("follow-alerts").checked = me.preferences.followAlerts;
-  $("profit-alerts").checked = me.preferences.profitAlerts;
-  $("threshold").value = String(me.preferences.profitThreshold);
   renderFollows(me.follows);
   loadArtistSuggestions();
 
   $("prefs-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const msg = $("prefs-msg");
-    const threshold = Number($("threshold").value);
-    if (!Number.isInteger(threshold) || threshold < 0 || threshold > 500) return say(msg, "Enter a whole number from 0 to 500.", "err");
     try {
-      await api("PUT", "/api/preferences", { followAlerts: $("follow-alerts").checked, profitAlerts: $("profit-alerts").checked, profitThreshold: threshold });
+      await api("PUT", "/api/preferences", { followAlerts: $("follow-alerts").checked });
       say(msg, "Saved.", "ok");
     } catch (err) {
       say(msg, err.message, "err");

@@ -16,7 +16,7 @@
 
   <section id="signin" hidden>
     <h1>Sign in</h1>
-    <p class="muted">Get email alerts for artists you follow and for high-profit presales. We'll email you a sign-in code and link. No password needed.</p>
+    <p class="muted">Get an email when an artist you follow has a new presale. We'll email you a sign-in code and link. No password needed.</p>
     <p id="expired" class="msg err" role="alert" hidden>This link has expired. Enter your email to get a new one.</p>
     <p id="follow-note" class="msg ok" hidden></p>
     <form id="signin-form" class="card" novalidate>
@@ -51,9 +51,6 @@
     <form id="prefs-form" class="card" novalidate>
       <h2>Email alerts</h2>
       <label class="check"><input type="checkbox" id="follow-alerts"> <span><b>Artists I follow</b><br><span class="muted small">A new presale for an artist on your list.</span></span></label>
-      <label class="check"><input type="checkbox" id="profit-alerts"> <span><b>High profit</b><br><span class="muted small">Any presale at or above your Profit % threshold. Until live resale data is available, this uses estimates with Med or High demand, labeled as estimates.</span></span></label>
-      <label for="threshold">Profit % threshold</label>
-      <div class="row"><input id="threshold" type="number" min="0" max="500" step="1" inputmode="numeric" required> <span class="muted">%</span></div>
       <p class="small muted">You get at most one digest after each data refresh, and never the same event twice.</p>
       <button type="submit">Save settings</button>
       <p id="prefs-msg" class="msg" role="status" aria-live="polite"></p>

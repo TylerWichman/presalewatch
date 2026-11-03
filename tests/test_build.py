@@ -33,9 +33,7 @@ class SecurityHeaders(unittest.TestCase):
 class AlertsFeed(unittest.TestCase):
     def row(self, **over):
         base = {"event_id": "E1", "artist": "A", "event_name": "A", "url": "https://www.ticketmaster.com/e", "venue": "V",
-                "city": "C", "state": "NY", "event_date": "2026-12-01", "mode": "predicted", "profit": None,
-                "profit_low": -0.1, "profit_high": 0.3, "edge_sort": 0.1, "tier": "Med", "confidence": "Low",
-                "presale_end": "2026-10-01T00:00:00Z"}
+                "city": "C", "state": "NY", "event_date": "2026-12-01", "presale_end": "2026-10-01T00:00:00Z"}
         return {**base, **over}
 
     def test_one_row_per_event_with_latest_presale_end(self):

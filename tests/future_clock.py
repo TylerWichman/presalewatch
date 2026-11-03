@@ -17,7 +17,6 @@ from __future__ import annotations
 import datetime as real_dt
 import importlib
 import io
-import pkgutil
 import sys
 import unittest
 from pathlib import Path
@@ -25,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-MODULES = ["common", "edge", "pipeline", "build", "calibrate", "lastfm"]
+MODULES = ["common", "pipeline", "build", "ticketmaster"]
 OFFSETS_DAYS = [60, 365, 730]
 
 
@@ -44,10 +43,7 @@ def patch_clock(when: real_dt.datetime) -> None:
         def today(cls):
             return when.date()
 
-    import ingest
-
-    names = MODULES + [f"ingest.{m.name}" for m in pkgutil.iter_modules(ingest.__path__)]
-    for name in names:
+    for name in MODULES:
         try:
             module = importlib.import_module(name)
         except Exception:

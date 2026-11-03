@@ -3,8 +3,8 @@ __pycache__/
 .playwright-mcp/
 *.tmp
 
-# Generated. The scheduled job keeps db/ and data/ on the `data` branch;
-# site/ is rebuilt on every run.
+# Generated. The scheduled job keeps data/ in the private pouchit-data repo;
+# site/ is rebuilt on every run. (db/ held the old profit-model tables.)
 db/
 data/
 _data/

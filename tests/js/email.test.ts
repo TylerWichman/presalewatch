@@ -22,7 +22,7 @@ describe("deliverability", () => {
   });
 
   it("every email has a plain-text part alongside the HTML", async () => {
-    const digest = await renderDigest({ user: user(), follows: [ev({ id: "F" })], profit: [ev()] }, { ...CTX, from: FROM });
+    const digest = await renderDigest({ user: user(), follows: [ev({ id: "F" })] }, { ...CTX, from: FROM });
     const signin = renderSignIn(FROM, "a@example.com", "https://pouchit.net/auth/confirm#token=" + "A".repeat(43), "482913");
     for (const m of [digest, signin]) {
       assert.equal(m.from, FROM);
@@ -46,7 +46,7 @@ describe("deliverability", () => {
 
 describe("email escaping", () => {
   it("escapes artist, event, and venue names from third-party data", async () => {
-    const msg = await renderDigest({ user: user(), follows: [], profit: [ev({ artist: XSS, name: XSS, venue: XSS, city: XSS })] }, CTX);
+    const msg = await renderDigest({ user: user(), follows: [ev({ artist: XSS, name: XSS, venue: XSS, city: XSS })] }, CTX);
     assert.ok(!msg.html.includes("<script>"));
     assert.ok(!msg.html.includes("<img src=x"));
     assert.ok(msg.html.includes(escapeHtml("<script>alert(1)</script>")));
@@ -61,26 +61,13 @@ describe("email escaping", () => {
   });
 
   it("replaces unsafe event links with the site link", async () => {
-    const msg = await renderDigest({ user: user(), follows: [], profit: [ev({ url: "javascript:alert(1)" })] }, CTX);
+    const msg = await renderDigest({ user: user(), follows: [ev({ url: "javascript:alert(1)" })] }, CTX);
     assert.ok(!msg.html.includes("javascript:"));
     assert.ok(msg.html.includes('href="https://pouchit.net/"'));
   });
 
-  it("labels estimates as estimates and Live as asking-price based", async () => {
-    const msg = await renderDigest({ user: user(), follows: [], profit: [ev(), ev({ id: "L", mode: "live", profit: 0.42 })] }, CTX);
-    assert.match(msg.text, /Estimate: \+22% to \+104%/);
-    assert.match(msg.text, /\+42% Profit %, based on asking prices/);
-    assert.match(msg.text, /Items marked Estimate are predictions/);
-  });
-
-  it("shows unrated events (no artist listening data) as not rated", async () => {
-    const msg = await renderDigest({ user: user(), follows: [ev({ tier: null, profitLow: null, profitHigh: null, edge: null })], profit: [] }, CTX);
-    assert.match(msg.text, /Not rated: no artist listening data/);
-    assert.ok(!msg.text.includes("Estimate: +0%"));
-  });
-
   it("includes unsubscribe links, one-click headers, and the postal address", async () => {
-    const msg = await renderDigest({ user: user(), follows: [], profit: [ev()] }, CTX);
+    const msg = await renderDigest({ user: user(), follows: [ev()] }, CTX);
     const token = await unsubscribeToken(CTX.unsubscribeSecret, user().id, user().unsub_nonce);
     assert.equal(msg.headers!["List-Unsubscribe"], `<https://pouchit.net/api/unsubscribe/one-click?u=${user().id}&t=${token}>`);
     assert.equal(msg.headers!["List-Unsubscribe-Post"], "List-Unsubscribe=One-Click");
@@ -91,7 +78,7 @@ describe("email escaping", () => {
 
   it("refuses header values with line breaks", async () => {
     assert.throws(() => renderSignIn("PouchIt <alerts@pouchit.net>", "a@example.com\r\nBcc: x@example.com", "https://pouchit.net/x"));
-    await assert.rejects(() => renderDigest({ user: user({ email: "a@example.com\nBcc: x@example.com" }), follows: [], profit: [ev()] }, CTX));
+    await assert.rejects(() => renderDigest({ user: user({ email: "a@example.com\nBcc: x@example.com" }), follows: [ev()] }, CTX));
   });
 });
 
@@ -108,14 +95,14 @@ describe("unsubscribe", () => {
     const [u] = env.DB.rows<{ id: string; unsub_nonce: string }>("SELECT id, unsub_nonce FROM users WHERE email = ?", email);
     return { ...u, token: await unsubscribeToken(env.UNSUBSCRIBE_SECRET, u.id, u.unsub_nonce) };
   }
-  const prefs = (id: string) => env.DB.rows("SELECT follow_alerts, profit_alerts FROM preferences WHERE user_id = ?", id)[0];
+  const prefs = (id: string) => env.DB.rows("SELECT follow_alerts FROM preferences WHERE user_id = ?", id)[0];
 
   it("turns off all alerts immediately, without signing in", async () => {
     await signIn(env, net.mail, "a@example.com");
     const a = await userRow("a@example.com");
     const res = await call(unsubscribePage, env, "/api/unsubscribe", { body: { u: a.id, t: a.token } });
     assert.equal(res.status, 200);
-    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0, profit_alerts: 0 });
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0 });
   });
 
   it("works as an RFC 8058 one-click POST with no Origin", async () => {
@@ -125,7 +112,7 @@ describe("unsubscribe", () => {
       origin: null, contentType: "application/x-www-form-urlencoded", body: "List-Unsubscribe=One-Click", query: `?u=${a.id}&t=${a.token}`,
     });
     assert.equal(res.status, 200);
-    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0, profit_alerts: 0 });
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 0 });
   });
 
   it("can't be forged or used on another user", async () => {
@@ -137,8 +124,8 @@ describe("unsubscribe", () => {
       const res = await call(unsubscribePage, env, "/api/unsubscribe", { body: { u, t } });
       assert.equal(res.status, 400);
     }
-    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 1, profit_alerts: 1 });
-    assert.deepEqual({ ...prefs(b.id) }, { follow_alerts: 1, profit_alerts: 1 });
+    assert.deepEqual({ ...prefs(a.id) }, { follow_alerts: 1 });
+    assert.deepEqual({ ...prefs(b.id) }, { follow_alerts: 1 });
   });
 
   it("a token from a different secret doesn't work", async () => {

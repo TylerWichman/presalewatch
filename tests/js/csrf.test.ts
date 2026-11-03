@@ -25,7 +25,7 @@ const ENDPOINTS: [string, Handler, string, string, unknown][] = [
   ["request link", requestLink, "POST", "/api/auth/request", { email: "a@example.com", turnstileToken: "good" }],
   ["verify link", verifyLink, "POST", "/api/auth/verify", { token: "A".repeat(43), confirm: true }],
   ["logout", logout, "POST", "/api/auth/logout", {}],
-  ["preferences", putPrefs, "PUT", "/api/preferences", { followAlerts: false, profitAlerts: false, profitThreshold: 10 }],
+  ["preferences", putPrefs, "PUT", "/api/preferences", { followAlerts: false }],
   ["follow", follow, "POST", "/api/follows", { artist: "Phoebe Bridgers" }],
   ["unfollow", unfollow, "DELETE", "/api/follows/1", undefined],
   ["delete account", deleteMe, "DELETE", "/api/me", undefined],

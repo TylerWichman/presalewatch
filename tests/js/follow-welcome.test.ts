@@ -107,7 +107,7 @@ describe("welcome email", () => {
     assert.equal(m.from, "PouchIt <alerts@pouchit.net>");
     assert.equal(m.subject, "You're set: alerts for Carly Rae Jepsen");
     assert.match(m.text, /You follow: Carly Rae Jepsen\./);
-    assert.match(m.text, /30% or more/);
+    assert.match(m.text, /a new presale for an artist you follow/);
     assert.match(m.text, /at most one email after each data refresh/);
     assert.match(m.text, /Manage my alerts: https:\/\/pouchit\.net\/alerts/);
     assert.ok(m.text.includes(POSTAL) && m.html.includes(POSTAL));
@@ -127,7 +127,7 @@ describe("welcome email", () => {
   it("escapes the artist name in the HTML", async () => {
     const m = await renderWelcome(
       { id: "u".repeat(22), email: "fan@example.com", unsub_nonce: "n".repeat(22) },
-      { follows: ['<img src=x onerror="alert(1)">'], followAlerts: true, profitAlerts: true, threshold: 30 },
+      { follows: ['<img src=x onerror="alert(1)">'], followAlerts: true },
       { origin: "https://pouchit.net", from: "PouchIt <alerts@pouchit.net>", unsubscribeSecret: "s".repeat(48), postalAddress: POSTAL },
     );
     assert.doesNotMatch(m.html, /<img/);

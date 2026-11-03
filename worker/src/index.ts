@@ -42,9 +42,9 @@ async function fetchFeed(env: WorkerEnv) {
 
 async function loadAlertUsers(env: WorkerEnv) {
   const users = await env.DB.prepare(
-    `SELECT u.id, u.email, u.unsub_nonce, p.follow_alerts, p.profit_alerts, p.profit_threshold
+    `SELECT u.id, u.email, u.unsub_nonce, p.follow_alerts
      FROM users u JOIN preferences p ON p.user_id = u.id
-     WHERE p.follow_alerts = 1 OR p.profit_alerts = 1
+     WHERE p.follow_alerts = 1
      ORDER BY u.created_at, u.id`,
   ).all<AlertUser>();
   const follows = await env.DB.prepare("SELECT user_id, artist_key FROM follows").all<{ user_id: string; artist_key: string }>();
@@ -66,7 +66,7 @@ async function loadAlertUsers(env: WorkerEnv) {
 
 function sentRows(env: WorkerEnv, digests: Digest[], now: number) {
   return digests.flatMap((d) =>
-    [...d.follows, ...d.profit].map((e) =>
+    d.follows.map((e) =>
       env.DB.prepare("INSERT INTO sent_alerts (user_id, event_id, sent_at) VALUES (?1, ?2, ?3) ON CONFLICT DO NOTHING").bind(d.user.id, e.id, now),
     ),
   );
@@ -74,7 +74,7 @@ function sentRows(env: WorkerEnv, digests: Digest[], now: number) {
 
 function unsentRows(env: WorkerEnv, digests: Digest[], now: number) {
   return digests.flatMap((d) =>
-    [...d.follows, ...d.profit].map((e) =>
+    d.follows.map((e) =>
       env.DB.prepare("DELETE FROM sent_alerts WHERE user_id = ?1 AND event_id = ?2 AND sent_at = ?3").bind(d.user.id, e.id, now),
     ),
   );

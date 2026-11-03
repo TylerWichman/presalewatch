@@ -28,7 +28,7 @@ async function followAs(cookie: string, artist: string) {
 const snapshot = (email: string) => {
   const [u] = env.DB.rows<{ id: string }>("SELECT id FROM users WHERE email = ?", email);
   return JSON.stringify({
-    prefs: env.DB.rows("SELECT follow_alerts, profit_alerts, profit_threshold FROM preferences WHERE user_id = ?", u.id),
+    prefs: env.DB.rows("SELECT follow_alerts FROM preferences WHERE user_id = ?", u.id),
     follows: env.DB.rows("SELECT id, artist FROM follows WHERE user_id = ?", u.id),
     sessions: env.DB.rows("SELECT COUNT(*) AS n FROM sessions WHERE user_id = ?", u.id),
   });
@@ -40,7 +40,7 @@ describe("authorization", () => {
       [listFollows, "GET", "/api/follows", undefined],
       [follow, "POST", "/api/follows", { artist: "X" }],
       [unfollow, "DELETE", "/api/follows/1", undefined],
-      [putPrefs, "PUT", "/api/preferences", { followAlerts: true, profitAlerts: true, profitThreshold: 30 }],
+      [putPrefs, "PUT", "/api/preferences", { followAlerts: true }],
       [deleteMe, "DELETE", "/api/me", undefined],
     ];
     for (const [handler, method, path, body] of cases) {
@@ -72,12 +72,12 @@ describe("authorization", () => {
     const before = snapshot("bob@example.com");
     const res = await call(putPrefs, env, "/api/preferences", {
       method: "PUT", cookie: alice,
-      body: { followAlerts: false, profitAlerts: false, profitThreshold: 5, user_id: "bob", userId: "bob" },
+      body: { followAlerts: false, user_id: "bob", userId: "bob" },
     });
     assert.equal(res.status, 200);
     assert.equal(snapshot("bob@example.com"), before);
     const mine = await (await call(me, env, "/api/me", { method: "GET", cookie: alice })).json();
-    assert.deepEqual(mine.preferences, { followAlerts: false, profitAlerts: false, profitThreshold: 5 });
+    assert.deepEqual(mine.preferences, { followAlerts: false });
   });
 
   it("deleting user A removes all of A's data and nothing of B's", async () => {
@@ -127,15 +127,8 @@ describe("input validation", () => {
     assert.equal(res.status, 400);
   });
 
-  it("validates the profit threshold and booleans", async () => {
-    for (const body of [
-      { followAlerts: true, profitAlerts: true, profitThreshold: -1 },
-      { followAlerts: true, profitAlerts: true, profitThreshold: 501 },
-      { followAlerts: true, profitAlerts: true, profitThreshold: 12.5 },
-      { followAlerts: true, profitAlerts: true, profitThreshold: "30" },
-      { followAlerts: "yes", profitAlerts: true, profitThreshold: 30 },
-      { profitThreshold: 30 },
-    ]) {
+  it("validates the alert setting", async () => {
+    for (const body of [{ followAlerts: "yes" }, { followAlerts: 1 }, {}]) {
       const res = await call(putPrefs, env, "/api/preferences", { method: "PUT", body, cookie: alice });
       assert.equal(res.status, 400, JSON.stringify(body));
     }

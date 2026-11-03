@@ -117,9 +117,9 @@ async function welcome(env: Env, userId: string, now: number, waitUntil?: (p: Pr
     .bind(userId, now)
     .first<{ email: string; unsub_nonce: string }>();
   if (!user) return;
-  const prefs = await env.DB.prepare("SELECT follow_alerts, profit_alerts, profit_threshold FROM preferences WHERE user_id = ?1")
+  const prefs = await env.DB.prepare("SELECT follow_alerts FROM preferences WHERE user_id = ?1")
     .bind(userId)
-    .first<{ follow_alerts: number; profit_alerts: number; profit_threshold: number }>();
+    .first<{ follow_alerts: number }>();
   const follows = await env.DB.prepare("SELECT artist FROM follows WHERE user_id = ?1 ORDER BY created_at, artist COLLATE NOCASE")
     .bind(userId)
     .all<{ artist: string }>();
@@ -128,8 +128,6 @@ async function welcome(env: Env, userId: string, now: number, waitUntil?: (p: Pr
     {
       follows: follows.results.map((f) => f.artist),
       followAlerts: Boolean(prefs?.follow_alerts ?? 1),
-      profitAlerts: Boolean(prefs?.profit_alerts ?? 1),
-      threshold: prefs?.profit_threshold ?? 30,
     },
     { origin: env.APP_ORIGIN, from: env.EMAIL_FROM, unsubscribeSecret: env.UNSUBSCRIBE_SECRET, postalAddress: postal },
   );

@@ -7,8 +7,8 @@ import { NOW } from "./fixtures.ts";
 function feed(generatedAt: string, events: Record<string, unknown>[]) {
   return { v: 1, generated_at: generatedAt, events };
 }
-const HOT = { id: "HOT", artist: "Hot Act", mode: "live", profit: 0.8, date: "2026-12-01", presale_end: "2026-10-05T00:00:00Z", url: "https://www.ticketmaster.com/e/HOT" };
-const FAV = { id: "FAV", artist: "Fave Band", mode: "predicted", profit_low: -0.2, profit_high: 0.2, tier: "Low", date: "2026-12-02", presale_end: "2026-10-05T00:00:00Z" };
+const HOT = { id: "HOT", artist: "Hot Act", date: "2026-12-01", presale_end: "2026-10-05T00:00:00Z", url: "https://www.ticketmaster.com/e/HOT" };
+const FAV = { id: "FAV", artist: "Fave Band", date: "2026-12-02", presale_end: "2026-10-05T00:00:00Z" };
 
 let base: ReturnType<typeof makeEnv>;
 let env: WorkerEnv;
@@ -30,8 +30,11 @@ beforeEach(async () => {
   net = fakeFetch();
   await signIn(base, net.mail, "alice@example.com");
   await signIn(base, net.mail, "bob@example.com");
-  const [bob] = base.DB.rows<{ id: string }>("SELECT id FROM users WHERE email = 'bob@example.com'");
-  base.DB.sqlite.prepare("INSERT INTO follows (user_id, artist, artist_key, created_at) VALUES (?, 'Fave Band', 'fave band', 0)").run(bob.id);
+  // Both follow Hot Act; only Bob follows Fave Band.
+  const follow = base.DB.sqlite.prepare("INSERT INTO follows (user_id, artist, artist_key, created_at) SELECT id, ?, ?, 0 FROM users WHERE email = ?");
+  follow.run("Hot Act", "hot act", "alice@example.com");
+  follow.run("Hot Act", "hot act", "bob@example.com");
+  follow.run("Fave Band", "fave band", "bob@example.com");
   logs = [];
   console.log = (msg: string) => logs.push(String(msg));
 });
@@ -119,7 +122,7 @@ describe("alert worker", () => {
   });
 
   it("skips users who unsubscribed", async () => {
-    base.DB.sqlite.exec("UPDATE preferences SET follow_alerts = 0, profit_alerts = 0");
+    base.DB.sqlite.exec("UPDATE preferences SET follow_alerts = 0");
     await setup(feed("g1", [HOT]));
     assert.equal((await run(env, NOW)).digests, 0);
   });

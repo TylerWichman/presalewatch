@@ -39,7 +39,7 @@ def drop_none(d: dict) -> dict:
 def compact(data: dict) -> dict:
     """Split presale rows into shared per-event fields and per-presale fields, with short keys.
 
-    Only listing facts reach the page: no edge, demand, or resale numbers.
+    Only listing facts reach the page.
     """
     events: list[dict] = []
     index: dict[str, int] = {}
@@ -99,13 +99,6 @@ def alerts_feed(data: dict) -> dict:
                 "city": r["city"],
                 "state": r["state"],
                 "date": r["event_date"],
-                "mode": r["mode"],
-                "profit": r["profit"],
-                "profit_low": r["profit_low"],
-                "profit_high": r["profit_high"],
-                "edge": r["edge_sort"],
-                "tier": r["tier"],
-                "confidence": r["confidence"],
             })
         end = r.get("presale_end")
         if end and end > ev.get("presale_end", ""):
