@@ -153,20 +153,15 @@ class PageFlag(unittest.TestCase):
                "inputs": {"face_used": None, "lastfm_listeners": 1, "lastfm_playcount": 1, "venue_capacity": 835, "capacity_estimated": True,
                           "tour_date_count": 1, "catchment_population": 20000000, "signals": {}, "missing_signals": [], "seatgeek_listings": None}}
 
-    def test_build_passes_the_estimated_flags(self):
+    def test_page_data_has_no_edge_or_demand_numbers(self):
         import build
         out = build.compact({"generated_at": NOW, "fees": {}, "live_min_listings": 10, "presales": [self.row_template()]})
         ev = out["events"][0]
-        self.assertEqual((ev["he"], ev["in"]["cest"], ev["in"]["pop"]), (True, True, 20000000))
-
-    def test_build_keeps_unrated_rows_without_numbers(self):
-        import build
-        row = dict(self.row_template(), tier="Unrated", confidence="Low", high_estimated=False, demand_score=None,
-                   profit_low=None, profit_high=None, edge_sort=None, multiple_low=None, multiple_high=None)
-        ev = build.compact({"generated_at": NOW, "fees": {}, "live_min_listings": 10, "presales": [row]})["events"][0]
-        self.assertEqual(ev["tr"], "Unrated")
-        for k in ("ds", "pl", "ph", "es", "he"):
+        self.assertEqual((ev["a"], ev["v"], len(out["rows"])), ("A", "V", 1))
+        for k in ("m", "cf", "tr", "he", "ds", "p", "pl", "ph", "es", "ml", "mh", "rm", "rl", "ra", "rn", "rc", "in"):
             self.assertNotIn(k, ev)
+        for k in ("fees", "min_listings", "ask_discount", "calibrated_at"):
+            self.assertNotIn(k, out)
 
 
 if __name__ == "__main__":

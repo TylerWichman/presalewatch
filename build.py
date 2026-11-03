@@ -37,14 +37,16 @@ def drop_none(d: dict) -> dict:
 
 
 def compact(data: dict) -> dict:
-    """Split presale rows into shared per-event fields and per-presale fields, with short keys."""
+    """Split presale rows into shared per-event fields and per-presale fields, with short keys.
+
+    Only listing facts reach the page: no edge, demand, or resale numbers.
+    """
     events: list[dict] = []
     index: dict[str, int] = {}
     rows = []
     for r in data["presales"]:
         if r["event_id"] not in index:
             index[r["event_id"]] = len(events)
-            inp = r["inputs"]
             events.append(drop_none({
                 "a": r["artist"],
                 "ai": r.get("artist_id"),  # groups a tour's dates into one card; older data falls back to the name
@@ -59,36 +61,7 @@ def compact(data: dict) -> dict:
                 "o": r["onsale"],
                 "f0": r["face_min"],
                 "f1": r["face_max"],
-                "fi": r["fee_included"] or None,
                 "dp": r["dynamic_pricing"] or None,
-                "m": r["mode"],
-                "cf": r["confidence"],
-                "tr": r["tier"],
-                "he": r.get("high_estimated") or None,  # High that relies on an estimated venue capacity
-                "ds": r["demand_score"],
-                "p": r["profit"],
-                "pl": r["profit_low"],
-                "ph": r["profit_high"],
-                "es": r["edge_sort"],
-                "ml": r["multiple_low"],
-                "mh": r["multiple_high"],
-                "rm": r["resale_median"],
-                "rl": r["resale_low"],
-                "ra": r["resale_avg"],
-                "rn": r["resale_listings"],
-                "rc": r["resale_captured_at"],
-                "in": drop_none({
-                    "face": inp["face_used"],
-                    "lis": inp.get("lastfm_listeners"),
-                    "plc": inp.get("lastfm_playcount"),
-                    "cap": inp["venue_capacity"],
-                    "cest": inp.get("capacity_estimated") or None,
-                    "tour": inp["tour_date_count"],
-                    "pop": inp.get("catchment_population"),
-                    "sig": inp["signals"],
-                    "miss": inp["missing_signals"] or None,
-                    "sgn": inp["seatgeek_listings"],
-                }),
             }))
         desc = r.get("presale_description") or ""
         if desc.strip().lower() == r["presale_name"].strip().lower():
@@ -106,10 +79,6 @@ def compact(data: dict) -> dict:
         }))
     return {
         "generated_at": data["generated_at"],
-        "fees": data["fees"],
-        "min_listings": data["live_min_listings"],
-        "ask_discount": data.get("ask_to_sale_discount"),
-        "calibrated_at": data.get("calibrated_at"),
         "events": events,
         "rows": rows,
     }
