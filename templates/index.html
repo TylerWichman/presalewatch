@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PouchIt · Presale Edge</title>
-<meta name="description" content="Upcoming US concert presales ranked by expected resale profit after fees.">
+<title>PouchIt · Concert Presales</title>
+<meta name="description" content="Upcoming US concert presales: when they open and how to get access.">
 <meta name="theme-color" content="#16122b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c3aed'/%3E%3Cpath d='M9 11h14v3a2 2 0 0 0 0 4v3H9v-3a2 2 0 0 0 0-4z' fill='%23fff'/%3E%3C/svg%3E">
 <style>
@@ -62,10 +62,6 @@
     --hero: linear-gradient(135deg, #0b0916 0%, #1d1240 55%, #34123f 100%);
     --seg-on: #150f2b;
     --btn-bg: linear-gradient(135deg, #7c3aed, #db2777);
-    --neg: #f87171;
-    --neg-soft: #3b1818;
-    --tip-bg: #f1effa;
-    --tip-text: #17142a;
     color-scheme: dark;
   }
 }
@@ -180,14 +176,13 @@ main { padding: 20px 0 40px; }
 .more:hover { text-decoration: underline; }
 
 .dates { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 2px; font-size: 13.5px; }
-.date { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 10px; align-items: baseline; padding: 5px 8px; border-radius: 8px; }
+.date { display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: baseline; padding: 5px 8px; border-radius: 8px; }
 .date.best { background: var(--accent-soft); }
 .date.off, .date.extra { display: none; }
 .card.dates-open .date.extra { display: grid; }
 .card.dates-open .date.off { display: none; }
 .date-day { font-weight: 650; font-variant-numeric: tabular-nums; }
 .date-place { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.date-edge { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .date-link { font-weight: 600; text-decoration: none; white-space: nowrap; }
 .date-link:hover { text-decoration: underline; }
 .ps.off { display: none; }
@@ -210,48 +205,15 @@ main { padding: 20px 0 40px; }
 footer { border-top: 1px solid var(--border); padding: 22px 0 36px; font-size: 13px; color: var(--faint); }
 footer p { margin: 4px 0; }
 
-/* Edge */
+/* Filters + chips */
 .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
-.toggle { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); cursor: pointer; font-weight: 550; user-select: none; white-space: nowrap; }
-.toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--live); }
-.edge-strip { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
-.edge-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
-.edge { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.edge.range { font-size: 17px; }
-.pos { color: var(--live); }
-.neg { color: var(--neg); }
-.edge-side { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
 .chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-.tier-High { background: var(--live-soft); color: var(--live); }
-.tier-Med { background: var(--soon-soft); color: var(--soon); }
-.tier-Low { background: var(--later-soft); color: var(--later); }
-.tier-Unrated { background: transparent; color: var(--muted); border: 1px dashed var(--border); }
-.edge.unrated { font-size: 14px; font-weight: 550; letter-spacing: 0; white-space: normal; color: var(--muted); }
-.date-edge.unrated { color: var(--muted); }
-.conf { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: help; text-align: right; }
-.conf:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 999px; }
-.chip.is-live { background: var(--live-soft); color: var(--live); }
-.chip.is-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.chip.is-est { background: var(--later-soft); color: var(--later); border: 1px dashed color-mix(in srgb, var(--later) 45%, transparent); }
-.conf small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
 .prices b { font-variant-numeric: tabular-nums; }
 .flag { margin-left: 4px; height: 20px; font-size: 11px; background: var(--soon-soft); color: var(--soon); vertical-align: 1px; }
 .ps-type { height: 19px; padding: 0 7px; font-size: 11px; background: var(--accent-soft); color: var(--accent); margin-right: 6px; vertical-align: 1px; }
 .ps-code { margin-top: 3px; font-size: 12.5px; color: var(--muted); }
-.method { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 28px; }
-.method section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
-.method h3 { margin: 0 0 6px; font-size: 14px; }
-.method p { margin: 0; color: var(--muted); font-size: 13px; }
-.method code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; color: var(--text); }
 .stale .dot { background: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.2); }
 .stale b { color: #fde68a; }
-#tip { position: fixed; left: 0; top: 0; z-index: 50; width: max-content; max-width: min(320px, calc(100vw - 16px)); padding: 10px 12px; border-radius: 10px; background: var(--tip-bg); color: var(--tip-text); font-size: 12.5px; line-height: 1.5; box-shadow: 0 8px 28px rgba(0,0,0,.25); pointer-events: none; opacity: 0; transition: opacity .12s; }
-#tip.show { opacity: 1; }
-#tip h4 { margin: 0 0 4px; font-size: 12.5px; }
-#tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin: 0; }
-#tip dt { opacity: .7; }
-#tip dd { margin: 0; font-variant-numeric: tabular-nums; }
-#tip p { margin: 6px 0 0; opacity: .75; }
 @media (max-width: 640px) {
   .filters .select { flex: 1 1 140px; }
   .filters .select select { width: 100%; max-width: none; }
@@ -268,11 +230,10 @@ footer p { margin: 4px 0; }
       </h1>
       <a class="account-link" href="/alerts">Sign in · My alerts</a>
     </div>
-    <p class="tagline">Upcoming US concert presales, ranked by edge: the expected resale profit after fees.</p>
+    <p class="tagline">Upcoming US concert presales: when they open and how to get access.</p>
     <div class="stats">
       <div id="updated-wrap"><span class="dot"></span>Last updated <b id="updated"></b></div>
-      <div><b id="total-events"></b> events · <b id="total-presales"></b> presales · <b id="total-live"></b> with live resale</div>
-      <div id="fees"></div>
+      <div><b id="total-events"></b> events · <b id="total-presales"></b> presales</div>
       <div>All times Eastern (ET)</div>
     </div>
   </div>
@@ -292,27 +253,8 @@ footer p { margin: 4px 0; }
       <button type="button" data-when="all" aria-pressed="true">All</button>
     </div>
     <div class="filters">
-      <div class="select"><select id="sort" aria-label="Sort by">
-        <option value="edge">Sort: Highest edge</option>
-        <option value="soon">Sort: Opening soonest</option>
-      </select></div>
-      <div class="select"><select id="min-edge" aria-label="Minimum edge">
-        <option value="">Any edge</option>
-        <option value="0">Edge ≥ 0%</option>
-        <option value="0.25">Edge ≥ +25%</option>
-        <option value="0.5">Edge ≥ +50%</option>
-        <option value="1">Edge ≥ +100%</option>
-      </select></div>
-      <div class="select"><select id="tier" aria-label="Demand tier">
-        <option value="">All demand</option>
-        <option value="High">High demand</option>
-        <option value="Med">Med demand</option>
-        <option value="Low">Low demand</option>
-        <option value="Unrated">Unrated</option>
-      </select></div>
       <div class="select"><select id="state" aria-label="State"><option value="">All states</option></select></div>
       <div class="select"><select id="platform" aria-label="Presale platform"><option value="">All platforms</option></select></div>
-      <label class="toggle"><input type="checkbox" id="live-only"> Live only</label>
       <div class="count" id="count" aria-live="polite"></div>
     </div>
   </div>
@@ -323,34 +265,18 @@ footer p { margin: 4px 0; }
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty">
       <h2>No presales match</h2>
-      <p id="empty-hint">Try a different spelling, a lower minimum edge, or a wider time range.</p>
+      <p>Try a different spelling or a wider time range.</p>
       <button type="button" id="reset">Reset filters</button>
-    </div>
-    <div class="method">
-      <section>
-        <h3>Edge = Profit %</h3>
-        <p><code>(resale × (1 − seller fee) − (face + primary fees)) ÷ (face + primary fees)</code>, per ticket. It ranks by upside only and doesn't account for the odds of actually getting tickets. The events with the highest edge are usually the hardest to buy.</p>
-      </section>
-      <section>
-        <h3>Live vs Estimated</h3>
-        <p><b>Live</b> is based on asking prices: the median SeatGeek listing once <span id="min-listings">10</span>+ listings exist, less <span id="ask-discount">15%</span> because resale usually sells below the ask. <b>Estimated</b> predicts a resale multiple of face from a demand score (Last.fm listeners and plays per listener, listeners per venue seat, tour size, market) and shows a range. Confidence is Med when Last.fm knows the artist and Low when it doesn't; without Last.fm data an event can't be rated High demand. A <b>High demand · est.</b> label means the rating relies on an estimated venue capacity, used only when the show would still rate High in a 3,000-seat room. Estimated events sort by the midpoint of their range.</p>
-      </section>
-      <section>
-        <h3 id="calib-title">Estimates are uncalibrated</h3>
-        <p id="calib">Tier weights and multiple ranges are placeholder guesses until enough predictions have been scored against real resale prices. Hover or tap a Live or Estimated label to see the inputs behind each number.</p>
-      </section>
     </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap">
-    <p>Presales and face values from the Ticketmaster Discovery API, artist listener counts from <a href="https://www.last.fm" rel="noopener noreferrer" target="_blank">Last.fm</a>. Venue capacities from Wikidata, Wikipedia, and <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">© OpenStreetMap contributors</a>; market size from the US Census. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
-    <p>PouchIt is an independent demo and is not affiliated with Ticketmaster, Live Nation, SeatGeek, or Last.fm. Nothing here is financial advice. <a href="/privacy">Privacy</a></p>
+    <p>Presales and face values from the Ticketmaster Discovery API. Refreshed every 6 hours. Times and prices can change, so always confirm on Ticketmaster before a sale.</p>
+    <p>PouchIt is an independent demo and is not affiliated with Ticketmaster or Live Nation. <a href="/privacy">Privacy</a></p>
   </div>
 </footer>
-
-<div id="tip" role="tooltip"></div>
 
 <script id="presale-data" type="application/json">__PRESALE_DATA__</script>
 <script>
@@ -358,8 +284,6 @@ footer p { margin: 4px 0; }
   "use strict";
 
   var DATA = JSON.parse(document.getElementById("presale-data").textContent);
-  var FEES = DATA.fees;
-  var ASK_DISCOUNT = DATA.ask_discount || 0;
   var DAY = 864e5;
   var SOON_MS = DAY; // "soon" styling when opening within 24h
 
@@ -469,14 +393,7 @@ footer p { margin: 4px 0; }
     if (h < 48) return h + "h ago";
     return Math.round(h / 24) + "d ago";
   }
-  function pct(x) {
-    var n = Math.round(Math.abs(x) * 100);
-    return (n === 0 ? "" : x > 0 ? "+" : "−") + n + "%";
-  }
-  function sign(x) { return x > 0.0005 ? "pos" : x < -0.0005 ? "neg" : ""; }
   function money(x) { return "$" + (x >= 100 ? Math.round(x).toLocaleString() : (Math.round(x * 100) / 100).toFixed(x % 1 ? 2 : 0)); }
-  function mult(x) { return (Math.round(x * 100) / 100) + "×"; }
-  function big(n) { return n >= 1e6 ? (Math.round(n / 1e5) / 10) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n); }
   function norm(s) {
     return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
   }
@@ -525,116 +442,12 @@ footer p { margin: 4px 0; }
     return a;
   }
 
-  // ---- Inputs tooltip -------------------------------------------------------
-  var SIGNAL_NAMES = { listeners: "Last.fm listeners", engagement: "Plays per listener", listeners_capacity: "Listeners per seat", scarcity: "Tour scarcity", market: "Market" };
-  function tipContent(ev) {
-    var inp = ev["in"] || {};
-    var box = document.createDocumentFragment();
-    var items = [];
-    if (ev.m === "live") {
-      box.appendChild(el("h4", null, "Live: " + pct(ev.p) + " based on asking prices"));
-      items.push(["Median ask", money(ev.rm) + " (" + ev.rn + " listings)"]);
-      items.push(["Sale price used", money(ev.rm * (1 - ASK_DISCOUNT)) + " (ask less " + Math.round(ASK_DISCOUNT * 100) + "%)"]);
-      if (ev.rl != null) items.push(["Lowest / avg", money(ev.rl) + " / " + (ev.ra != null ? money(ev.ra) : "—")]);
-      items.push(["Face used", money(inp.face) + (ev.fi ? " (fees included)" : "")]);
-      items.push(["Resale multiple", mult(ev.ml)]);
-      if (ev.rc) items.push(["Captured", relAgo(Date.parse(ev.rc)) + " · SeatGeek"]);
-    } else if (ev.tr === "Unrated") {
-      box.appendChild(el("h4", null, "Not rated"));
-      box.appendChild(el("p", null, "Last.fm has no listening data for this artist, so there's no demand score or estimated range. Market and tour size alone can't show that people want the tickets."));
-      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() + (inp.cest ? " (estimated)" : "") : "unknown"]);
-      items.push(["Market", inp.pop != null ? popText(inp.pop) : "unknown"]);
-      items.push(["Face used", inp.face != null ? money(inp.face) : "not listed"]);
-      items.push(["SeatGeek", inp.sgn != null ? inp.sgn + " listings (need " + DATA.min_listings + ")" : "no listings found"]);
-    } else {
-      box.appendChild(el("h4", null, "Estimated · " + ev.cf + " confidence"));
-      items.push(["Demand score", ev.ds.toFixed(2) + " → " + ev.tr + " tier"]);
-      items.push(["Resale multiple", mult(ev.ml) + "–" + mult(ev.mh) + " face"]);
-      items.push(["Last.fm", inp.lis != null ? big(inp.lis) + " listeners" + (inp.plc != null ? ", " + Math.round(inp.plc / inp.lis) + " plays each" : "") : "artist not found"]);
-      items.push(["Venue capacity", inp.cap != null ? inp.cap.toLocaleString() + (inp.cest ? " (estimated)" : "") : "unknown"]);
-      items.push(["Tour dates", inp.tour != null ? String(inp.tour) : "unknown"]);
-      items.push(["Market", inp.pop != null ? popText(inp.pop) : "unknown"]);
-      items.push(["Face used", inp.face != null ? money(inp.face) : "not listed (range is face-independent)"]);
-      items.push(["SeatGeek", inp.sgn != null ? inp.sgn + " listings (need " + DATA.min_listings + ")" : "no listings found"]);
-    }
-    items.push(["Fees", Math.round(FEES.seller_fee * 100) + "% seller, " + (ev.fi ? "included in face" : Math.round(FEES.primary_fee_pct * 100) + "% primary")]);
-    var dl = el("dl");
-    items.forEach(function (it) { dl.appendChild(el("dt", null, it[0])); dl.appendChild(el("dd", null, it[1])); });
-    box.appendChild(dl);
-    if (ev.m !== "live" && ev.tr !== "Unrated" && inp.miss) {
-      box.appendChild(el("p", null, "Not available: " + inp.miss.map(function (k) { return SIGNAL_NAMES[k] || k; }).join(", ") + ". Left out of the score." +
-        (inp.miss.indexOf("listeners") !== -1 ? " Without Last.fm data, confidence is Low and demand can't be rated High." : "")));
-    }
-    return box;
-  }
-  var tip = document.getElementById("tip");
-  var tipOwner = null;
-  function showTip(btn, ev) {
-    tipOwner = btn;
-    tip.textContent = "";
-    tip.appendChild(tipContent(ev));
-    tip.style.left = "0px"; tip.style.top = "0px";  // measure at full width, not squeezed at the edge
-    tip.classList.add("show");
-    var r = btn.getBoundingClientRect();
-    var w = tip.offsetWidth, h = tip.offsetHeight;
-    tip.style.left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8) + "px";
-    var top = r.bottom + 6;
-    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
-    tip.style.top = top + "px";
-  }
-  function hideTip() { tipOwner = null; tip.classList.remove("show"); }
-  window.addEventListener("scroll", hideTip, { passive: true });
-
-  function edgeStrip(ev) {
-    var strip = el("div", "edge-strip");
-    var left = el("div");
-    var unrated = ev.m !== "live" && ev.tr === "Unrated";
-    left.appendChild(el("span", "edge-label", ev.m === "live" || unrated ? "Edge" : "Estimated edge"));
-    if (ev.m === "live") {
-      left.appendChild(el("span", "edge " + sign(ev.p), pct(ev.p)));
-    } else if (ev.tr === "Unrated") {
-      left.appendChild(el("span", "edge unrated", "Not rated: no artist listening data"));
-    } else {
-      var rng = el("span", "edge range");
-      rng.appendChild(el("span", sign(ev.pl), pct(ev.pl)));
-      rng.appendChild(document.createTextNode(" to "));
-      rng.appendChild(el("span", sign(ev.ph), pct(ev.ph)));
-      left.appendChild(rng);
-    }
-    strip.appendChild(left);
-
-    var side = el("div", "edge-side");
-    var btn = el("button", "conf");
-    btn.type = "button";
-    btn.setAttribute("aria-label", ev.m === "live" ? "Live edge, show inputs" : unrated ? "Not rated, show inputs" : "Estimated edge, show inputs");
-    btn.appendChild(el("span", "chip " + (ev.m === "live" ? "is-live" : "is-est"), ev.m === "live" ? "Live" : unrated ? "Inputs" : "Estimated"));
-    btn.appendChild(el("small", null, ev.m === "live" ? "based on asking prices" : ev.tr === "Unrated" ? "show inputs" : ev.cf + " confidence"));
-    btn.addEventListener("mouseenter", function () { showTip(btn, ev); });
-    btn.addEventListener("mouseleave", hideTip);
-    btn.addEventListener("focus", function () { showTip(btn, ev); });
-    btn.addEventListener("blur", hideTip);
-    btn.addEventListener("click", function () { if (tipOwner === btn) hideTip(); else showTip(btn, ev); });
-    side.appendChild(btn);
-    if (ev.m !== "live") {
-      var tierChip = el("span", "chip tier-" + ev.tr, ev.tr === "Unrated" ? "Unrated" : ev.tr + " demand" + (ev.he ? " · est." : ""));
-      if (ev.he) tierChip.title = "Estimated: this High rating relies on an estimated venue capacity (no source lists this venue's size)";
-      side.appendChild(tierChip);
-    }
-    strip.appendChild(side);
-    return strip;
-  }
-
   function pricesLine(ev) {
     var row = el("div", "prices");
     row.appendChild(icon("tag"));
     var text = el("span");
     text.appendChild(document.createTextNode("Face "));
     text.appendChild(el("b", null, ev.f0 != null ? (ev.f1 != null && ev.f1 !== ev.f0 ? money(ev.f0) + "–" + money(ev.f1) : money(ev.f0)) : "not listed yet"));
-    if (ev.m === "live") {
-      text.appendChild(document.createTextNode(" · Resale "));
-      text.appendChild(el("b", null, money(ev.rm)));
-      text.appendChild(document.createTextNode(" median ask (" + ev.rn.toLocaleString() + " listings)"));
-    }
     if (ev.dp) text.appendChild(el("span", "chip flag", "Dynamic pricing"));
     row.appendChild(text);
     return row;
@@ -656,16 +469,6 @@ footer p { margin: 4px 0; }
     return ev.d && ev.d.slice(0, 4) !== String(new Date().getFullYear()) ? s + ", " + ev.d.slice(0, 4) : s;
   }
   function placeText(ev) { return [ev.c, ev.s].filter(Boolean).join(", "); }
-  function edgeText(ev) {
-    if (ev.m === "live") return pct(ev.p);
-    return ev.tr === "Unrated" ? "Unrated" : pct(ev.pl) + " to " + pct(ev.ph);
-  }
-  // Unrated events have no edge; they sort below every rated one.
-  function edgeKey(ev) { return ev.es == null ? -Infinity : ev.es; }
-  function popText(n) {
-    return (n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : Math.round(n / 1e3) + "K") + " people within 80 km";
-  }
-
   // Presales that are identical across a tour's dates (same name, window, and code) are
   // shown once, with the dates they cover.
   function mergePresales(events) {
@@ -756,12 +559,10 @@ footer p { margin: 4px 0; }
     head.appendChild(alertBtn);
     body.appendChild(head);
     if (tour.name) body.appendChild(el("p", "event-name", tour.name));
-    var edgeSlot = el("div");
-    body.appendChild(edgeSlot);
     var meta = el("div", "meta");
     body.appendChild(meta);
 
-    // Tour dates: each with its own edge and ticket link.
+    // Tour dates: each with its own ticket link.
     var dates = null, datesMore = null;
     if (multi) {
       dates = el("ul", "dates");
@@ -771,9 +572,6 @@ footer p { margin: 4px 0; }
         var placeEl = el("span", "date-place", ev.c || ev.v || "Venue TBA");
         placeEl.title = [ev.v, placeText(ev)].filter(Boolean).join(" · ");
         li.appendChild(placeEl);
-        var edge = el("span", "date-edge " + (ev.m === "live" ? sign(ev.p) : ev.es == null ? "unrated" : sign(ev.es)), edgeText(ev));
-        edge.title = (ev.m === "live" ? "Live Profit %" : ev.es == null ? "Not rated: no artist listening data" : "Estimated range") + (ev.v ? " · " + ev.v : "");
-        li.appendChild(edge);
         var u = safeUrl(ev.u);
         li.appendChild(u ? link(u, "date-link", "Tickets ↗") : el("span", "date-link"));
         ev.dateLi = li;
@@ -832,7 +630,7 @@ footer p { margin: 4px 0; }
     foot.appendChild(onsale);
     var btn = el("a", "btn");
     btn.target = "_blank"; btn.rel = "noopener noreferrer";
-    btn.appendChild(document.createTextNode(multi ? "Best date tickets" : "Get Tickets"));
+    btn.appendChild(document.createTextNode(multi ? "Next date tickets" : "Get Tickets"));
     btn.appendChild(icon("arrow", 15));
     foot.appendChild(btn);
     body.appendChild(foot);
@@ -844,12 +642,12 @@ footer p { margin: 4px 0; }
     var c = {
       tour: tour, multi: multi, el: card, rows: rows, badge: topBadge, more: more, primary: null, extraCount: 0,
       dates: dates, datesMore: datesMore, extraDates: 0, shownDates: 0,
-      media: media, edgeSlot: edgeSlot, meta: meta, onsaleText: onsaleText, btn: btn, best: null, drawnBest: null
+      media: media, meta: meta, onsaleText: onsaleText, btn: btn, best: null, drawnBest: null
     };
     return c;
   });
 
-  // The edge, venue, date, and prices at the top of a card describe its best matching date.
+  // The venue, date, and prices at the top of a card describe its next matching date.
   function drawBest(c, ev, matchCount) {
     if (c.drawnBest === ev && c.drawnCount === matchCount) return;
     c.drawnBest = ev; c.drawnCount = matchCount;
@@ -857,9 +655,6 @@ footer p { margin: 4px 0; }
     if (url) { c.media.href = url; c.btn.href = url; c.btn.hidden = false; }
     else { c.media.removeAttribute("href"); c.btn.hidden = true; }
     c.media.setAttribute("aria-label", c.tour.a + " on Ticketmaster");
-
-    c.edgeSlot.textContent = "";
-    c.edgeSlot.appendChild(edgeStrip(ev));
 
     c.meta.textContent = "";
     if (c.multi) {
@@ -874,7 +669,7 @@ footer p { margin: 4px 0; }
     }
     var where = el("div"); where.appendChild(icon("pin"));
     var whereText = el("span");
-    if (c.multi) whereText.appendChild(document.createTextNode("Best date: "));
+    if (c.multi) whereText.appendChild(document.createTextNode("Next date: "));
     whereText.appendChild(el("b", null, ev.v || "Venue TBA"));
     var place = placeText(ev);
     if (place) whereText.appendChild(document.createTextNode(" · " + place));
@@ -896,15 +691,11 @@ footer p { margin: 4px 0; }
   }
 
   // ---- Filters -------------------------------------------------------------
-  var DEFAULT = { q: "", when: "all", st: "", sort: "edge", min: "", tier: "", plat: "", live: false };
+  var DEFAULT = { q: "", when: "all", st: "", plat: "" };
   var state = Object.assign({}, DEFAULT);
   var qInput = document.getElementById("q");
   var stateSel = document.getElementById("state");
-  var sortSel = document.getElementById("sort");
-  var minSel = document.getElementById("min-edge");
-  var tierSel = document.getElementById("tier");
   var platSel = document.getElementById("platform");
-  var liveBox = document.getElementById("live-only");
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg button"));
   var countEl = document.getElementById("count");
   var emptyEl = document.getElementById("empty");
@@ -927,12 +718,8 @@ footer p { margin: 4px 0; }
   function apply() {
     var now = Date.now();
     var terms = norm(state.q).split(" ").filter(Boolean);
-    var min = state.min === "" ? null : Number(state.min);
     function dateMatches(ev) {
       if (state.st && ev.s !== state.st) return false;
-      if (state.live && ev.m !== "live") return false;
-      if (min != null && (ev.es == null || ev.es < min)) return false;
-      if (state.tier && ev.tr !== state.tier) return false;
       return terms.every(function (t) { return ev.text.indexOf(t) !== -1; });
     }
     visible = [];
@@ -952,13 +739,12 @@ footer p { margin: 4px 0; }
       });
       if (!best) return;
       c.primary = best; c.key = bestKey; c.matching = matching;
-      // Best date: highest edge among dates with a qualifying presale.
-      c.best = active.reduce(function (a, b) { return edgeKey(b) > edgeKey(a) ? b : a; });
+      // Next date: the earliest show with a qualifying presale (tour dates are in date order).
+      c.best = c.tour.events.filter(function (e) { return active.indexOf(e) !== -1; })[0];
       visible.push(c);
     });
     visible.sort(function (a, b) {
-      // Edge sort: highest best-date edge first (estimates by range midpoint); ties go to the sooner presale.
-      if (state.sort === "edge" && edgeKey(a.best) !== edgeKey(b.best)) return edgeKey(a.best) < edgeKey(b.best) ? 1 : -1;
+      // Live presales closing soonest first, then upcoming ones opening soonest.
       return a.key[0] - b.key[0] || a.key[1] - b.key[1] || a.tour.a.localeCompare(b.tour.a);
     });
 
@@ -968,7 +754,7 @@ footer p { margin: 4px 0; }
       dateTotal += c.matching.length;
       drawBest(c, c.best, c.matching.length);
 
-      // Dates: matching ones in date order, best highlighted; the rest hidden.
+      // Dates: matching ones in date order, next one highlighted; the rest hidden.
       if (c.dates) {
         var shownDates = 0, extraDates = 0;
         c.tour.events.forEach(function (ev) {
@@ -1017,9 +803,6 @@ footer p { margin: 4px 0; }
     countEl.textContent = (n === cards.length ? n.toLocaleString() + noun(n) : "Showing " + n.toLocaleString() + " of " + cards.length.toLocaleString() + noun(cards.length))
       + " · " + dateTotal.toLocaleString() + " date" + (dateTotal === 1 ? "" : "s");
     emptyEl.classList.toggle("show", n === 0);
-    document.getElementById("empty-hint").textContent = state.live && liveCount === 0
-      ? "No event has " + DATA.min_listings + "+ resale listings yet, so every edge is still an estimate."
-      : "Try a different spelling, a lower minimum edge, or a wider time range.";
     tick();
     saveHash();
   }
@@ -1050,11 +833,11 @@ footer p { margin: 4px 0; }
   }
 
   // ---- URL hash (shareable filter state) ------------------------------------
-  var HASH_KEYS = { q: "q", when: "when", st: "state", sort: "sort", min: "min", tier: "tier", plat: "plat", live: "live" };
+  var HASH_KEYS = { q: "q", when: "when", st: "state", plat: "plat" };
   function saveHash() {
     var parts = [];
     Object.keys(HASH_KEYS).forEach(function (k) {
-      if (state[k] !== DEFAULT[k]) parts.push(HASH_KEYS[k] + "=" + encodeURIComponent(state[k] === true ? "1" : state[k]));
+      if (state[k] !== DEFAULT[k]) parts.push(HASH_KEYS[k] + "=" + encodeURIComponent(state[k]));
     });
     var h = parts.length ? "#" + parts.join("&") : "";
     try {
@@ -1069,11 +852,7 @@ footer p { margin: 4px 0; }
       if (k === "q") state.q = v;
       if (k === "when" && /^(live|today|week|all)$/.test(v)) state.when = v;
       if (k === "state" && /^[A-Z]{2}$/.test(v)) state.st = v;
-      if (k === "sort" && /^(edge|soon)$/.test(v)) state.sort = v;
-      if (k === "min" && /^-?\d+(\.\d+)?$/.test(v)) state.min = v;
-      if (k === "tier" && /^(High|Med|Low)$/.test(v)) state.tier = v;
       if (k === "plat") state.plat = v;
-      if (k === "live") state.live = v === "1";
     });
   }
 
@@ -1098,8 +877,7 @@ footer p { margin: 4px 0; }
   function syncControls() {
     if (state.st && !counts[state.st]) state.st = "";
     if (state.plat && !platCounts[state.plat]) state.plat = "";
-    qInput.value = state.q; stateSel.value = state.st; sortSel.value = state.sort;
-    minSel.value = state.min; tierSel.value = state.tier; platSel.value = state.plat; liveBox.checked = state.live;
+    qInput.value = state.q; stateSel.value = state.st; platSel.value = state.plat;
     searchWrap.classList.toggle("has-value", !!qInput.value);
     segButtons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.when === state.when)); });
   }
@@ -1116,16 +894,14 @@ footer p { margin: 4px 0; }
   segButtons.forEach(function (b) {
     b.addEventListener("click", function () { state.when = b.dataset.when; syncControls(); apply(); });
   });
-  [[stateSel, "st"], [sortSel, "sort"], [minSel, "min"], [tierSel, "tier"], [platSel, "plat"]].forEach(function (pair) {
+  [[stateSel, "st"], [platSel, "plat"]].forEach(function (pair) {
     pair[0].addEventListener("change", function () { state[pair[1]] = pair[0].value; apply(); });
   });
-  liveBox.addEventListener("change", function () { state.live = liveBox.checked; apply(); });
   document.getElementById("reset").addEventListener("click", function () {
     state = Object.assign({}, DEFAULT); syncControls(); apply();
   });
   window.addEventListener("hashchange", function () { loadHash(); syncControls(); apply(); });
 
-  var liveCount = EVENTS.filter(function (e) { return e.m === "live"; }).length;
   var generated = Date.parse(DATA.generated_at);
   var updatedEl = document.getElementById("updated");
   var STALE_MS = 12 * 36e5;  // refreshes run every 6h, so 12h means at least one was missed
@@ -1136,16 +912,6 @@ footer p { margin: 4px 0; }
   }
   document.getElementById("total-events").textContent = EVENTS.length.toLocaleString();
   document.getElementById("total-presales").textContent = DATA.rows.length.toLocaleString();
-  document.getElementById("total-live").textContent = liveCount.toLocaleString();
-  document.getElementById("fees").textContent = "Fees: " + Math.round(FEES.seller_fee * 100) + "% seller, " + Math.round(FEES.primary_fee_pct * 100) + "% primary";
-  document.getElementById("min-listings").textContent = DATA.min_listings;
-  document.getElementById("ask-discount").textContent = Math.round(ASK_DISCOUNT * 100) + "%";
-  if (DATA.calibrated_at) {
-    document.getElementById("calib-title").textContent = "Estimates are calibrated monthly";
-    document.getElementById("calib").textContent = "Tier weights and ranges were last refit against scored resale outcomes on " +
-      fmtEventDate.format(Date.parse(DATA.calibrated_at)) + ". They are still estimates. Hover or tap a Live or Estimated label to see the inputs behind each number.";
-  }
-
   loadHash();
   syncControls();
   renderUpdated();

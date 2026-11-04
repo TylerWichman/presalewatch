@@ -6,19 +6,12 @@ import { clearCookie, getSession, requireSession } from "../../src/lib/session.t
 
 export interface Preferences {
   followAlerts: boolean;
-  profitAlerts: boolean;
-  profitThreshold: number;
 }
 
 export async function loadPreferences(env: Env, userId: string): Promise<Preferences> {
-  const p = await env.DB.prepare(
-    "SELECT follow_alerts, profit_alerts, profit_threshold FROM preferences WHERE user_id = ?1",
-  ).bind(userId).first<{ follow_alerts: number; profit_alerts: number; profit_threshold: number }>();
-  return {
-    followAlerts: Boolean(p?.follow_alerts ?? 1),
-    profitAlerts: Boolean(p?.profit_alerts ?? 1),
-    profitThreshold: p?.profit_threshold ?? 30,
-  };
+  const p = await env.DB.prepare("SELECT follow_alerts FROM preferences WHERE user_id = ?1")
+    .bind(userId).first<{ follow_alerts: number }>();
+  return { followAlerts: Boolean(p?.follow_alerts ?? 1) };
 }
 
 export async function loadFollows(env: Env, userId: string): Promise<{ id: number; artist: string }[]> {

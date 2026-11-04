@@ -1,91 +1,19 @@
 # PouchIt
 
-A shareable page listing upcoming US concert presales, ranked by **edge**:
-the expected resale return per dollar spent, after seller and primary fees.
-Free accounts get email alerts (see [Accounts and alerts](#accounts-and-alerts)).
-Live at https://pouchit.net.
-See [EDGE_SPEC.md](EDGE_SPEC.md) for the edge model and [SPEC.md](SPEC.md) for the original MVP.
+A shareable page listing upcoming US concert presales: who's playing, when each
+presale opens, and how to get access. Free accounts get email alerts for artists
+they follow (see [Accounts and alerts](#accounts-and-alerts)).
+Live at https://pouchit.net. See [SPEC.md](SPEC.md) for the original MVP.
 
 | File | What it does |
 | --- | --- |
-| `pipeline.py` | Pulls Ticketmaster, Last.fm, and SeatGeek; computes edge; updates `db/*.csv`; writes `data/presales.json` |
-| `calibrate.py` | Scores past predictions against real resale; `--refit` retunes the model |
+| `pipeline.py` | Pulls upcoming presales from Ticketmaster and writes `data/presales.json` |
+| `ticketmaster.py` | The Ticketmaster Discovery API: fetching and cleaning events and presales |
 | `build.py` | Renders `site/`: the main page (data inlined), `alerts.json`, account pages, and `_headers` |
-| `edge.py` | The Profit % formula, demand score, and tiers (pure functions) |
-| `ticketmaster.py`, `lastfm.py`, `seatgeek.py` | One module per data source |
-| `config/model.json` | Fees, weights, tier cutoffs, and multiple ranges |
-| `config/venues.csv` | Venue capacities, entered by hand. Seeded for NYC |
-| `db/`, `data/` | Generated tables and `presales.json`. Kept in the private `pouchit-data` repo, not here |
-| `ingest/` | Daily jobs filling the D1 intelligence database (see [docs/database.md](docs/database.md)). They don't affect the live page yet |
+| `data/` | Generated `presales.json`. Kept in the private `pouchit-data` repo, not here |
 
 The data pipeline uses only the Python standard library, so there is nothing to `pip install`.
 The accounts API and alerts are TypeScript on Cloudflare; see [Accounts and alerts](#accounts-and-alerts).
-
-## How edge works
-
-```
-Profit % = (resale × (1 − seller fee) − (face + primary fees)) ÷ (face + primary fees)
-```
-
-Fees default to 15% seller and 25% of face for primary (`config/model.json`).
-
-- **Live (Mode A):** when SeatGeek has 10+ listings and Ticketmaster lists a face
-  value, resale is the median listing less `ask_to_sale_discount` (default 15%),
-  giving an exact Profit %. Listings are asking prices and tickets usually sell
-  below the ask, so the page labels Live edges "based on asking prices".
-  Calibration applies the same discount to the SeatGeek medians it scores against.
-  **Paused:** SeatGeek's free tier returns events with an empty `stats` object (no
-  listing count or prices), so `refresh.seatgeek_enabled` is `false` in
-  `config/model.json` and scheduled runs skip SeatGeek. Every row is an estimate
-  until a resale source with prices is available.
-- **Estimated (Mode B):** otherwise a demand score picks a High/Med/Low tier and a
-  resale multiple range, shown as a margin range such as "+22% to +104%". The score
-  is a weighted average of these signals, each scaled 0 to 1 (`config/model.json`):
-
-  | Signal | Source | Weight |
-  | --- | --- | --- |
-  | Listeners (log scale, 10K to 3.2M) | Last.fm | 0.15 |
-  | Plays per listener (log scale, 3 to 100) | Last.fm | 0.10 |
-  | **Listeners per venue seat** (log scale) | Last.fm + venue capacity | **0.50** |
-  | Scarcity, 1 ÷ tour dates | Ticketmaster | 0.10 |
-  | Market: people within 80 km of the venue (log scale, 250K to 20M) | 2020 Census | 0.075 |
-
-  Listeners per seat dominates: a big audience for a small room is what drives resale
-  prices, so raw popularity counts for less. A missing signal is left out and the
-  other weights are rescaled to add up to 1, so a gap doesn't pull the score toward
-  a made-up middle value. Confidence is Med. (Weights are relative: the five add up to
-  0.925, and the score divides by the total.)
-
-  **Tiers are percentiles.** Each run ranks the rated events that have a venue capacity
-  by score: the **top 10% are High, the next 40% Med**, the rest Low. A venue with an
-  estimated capacity is ranked as if it had 3,000 seats. With fewer than 50 such events
-  the fixed cutoffs in `config/model.json` apply instead (High 0.70, Med 0.45). Settings
-  are in `tiering`.
-
-  **No Last.fm data means Unrated.** Without listener data the score would rest on
-  market and tour size alone, which can't show that people want the tickets, so the
-  event gets no tier and no estimated range. The page shows it as "Unrated" and sorts
-  it below rated events.
-
-  **High demand needs a venue capacity too.** Without it the rescaled weights fall on
-  market and raw popularity, which overrate big-market shows and big artists in big
-  rooms, so such events are capped at Med.
-
-  **Where the capacity comes from**, in order: the hand-entered value in
-  `config/venues.csv`; a measured capacity from the intelligence database (Wikidata,
-  Wikipedia, or OpenStreetMap; see [docs/database.md](docs/database.md)); then, when
-  `capacity_estimate.enabled` is on, an **estimated** capacity for small venues no source
-  covers. An estimate counts for less: it can make an event High only if the show would
-  still rate High in a 3,000-seat room, and the page labels that rating **High demand ·
-  est.** Rooms inside resorts and casinos never get an estimate: hotel, resort, and casino
-  names are filtered out, and rooms whose names don't say so (The Cosmopolitan, Fontainebleau)
-  are listed in `capacity_estimate.hand_fill_venues`, which also puts them at the top of the
-  hand-fill list.
-
-Edge doesn't adjust for the odds of actually getting tickets. Ticketmaster rarely
-publishes price ranges before on-sale, so most rows start as estimates. The pipeline
-backfills face values for recent events after their presales end, which Mode A and
-calibration both need.
 
 ## Windows setup
 
@@ -99,72 +27,36 @@ calibration both need.
 2. Get a free API key at [developer.ticketmaster.com](https://developer.ticketmaster.com/)
    (My Apps → your app → **Consumer Key**).
 
-3. Optional, for demand signals: a Last.fm API key from
-   [last.fm/api/account/create](https://www.last.fm/api/account/create). Without it the
-   pipeline still runs, but every row is a Low-confidence estimate. (SeatGeek is paused;
-   see Live mode above.)
-
-4. In the project folder, create a file named `.env` containing:
+3. In the project folder, create a file named `.env` containing:
 
    ```
    TM_API_KEY=your_consumer_key_here
-   LASTFM_API_KEY=
-   SEATGEEK_CLIENT_ID=
    ```
 
-   `.env` is in `.gitignore`, so it never gets committed. Environment variables
-   with the same names work too.
+   `.env` is in `.gitignore`, so it never gets committed. An environment variable
+   with the same name works too.
 
 ## Run locally
 
 ```powershell
 python pipeline.py
-python calibrate.py
 python build.py
 start site\index.html
 python -m unittest
 ```
 
 A Ticketmaster fetch uses about a dozen API calls (the free tier allows ~5,000/day).
-Last.fm lookups are cached for 7 days per artist, including artists Last.fm doesn't know,
-and take about a quarter second each (Last.fm asks for at most ~5 requests a second).
 `fixtures/sample_events.json` is a saved raw API response for reference.
 
-A local run starts from empty tables. To start from the live data instead, copy
-it from the private `TylerWichman/pouchit-data` repo first (ask Tyler for access):
+To build the page from the live data without fetching, copy it from the private
+`TylerWichman/pouchit-data` repo first (ask Tyler for access):
 
 ```powershell
 git clone --depth 1 https://github.com/TylerWichman/pouchit-data.git ..\pouchit-data
-Copy-Item -Recurse -Force ..\pouchit-data\db, ..\pouchit-data\data .
+Copy-Item -Recurse -Force ..\pouchit-data\data .
 ```
 
-`db/` and `data/` are ignored on `main`, so this never shows up as a change.
-
-### Adding venue capacities
-
-Every venue seen is listed in `db/venues.csv`; ones without a capacity have a blank
-there. To add one, copy its row into `config/venues.csv`, fill in `capacity`, and open a
-pull request. Market size isn't entered by hand: it's the population within 80 km of the
-venue, from the 2020 Census.
-
-## Calibration
-
-`calibrate.py` runs after every pipeline run. Each estimated event is scored on
-the SeatGeek median 7 and 14 days after its public on-sale (`db/scores.csv`), and
-`db/calibration.json` reports tier accuracy, share of actuals inside the predicted
-range (target 70%), and mean absolute error.
-
-Resale prices logged by hand are scored too, separately, under `hand_logged` in
-the report: tier order and how well the demand score ranks events. They don't
-feed the refit. To keep them consistent, log them exactly as
-[docs/logging_prices.md](docs/logging_prices.md) describes.
-
-Once 50+ events are scored, the report flags a review monthly or every 25 new
-scores. Then run `python calibrate.py --refit`: it fits a log-linear regression of
-the actual multiple on the demand signals and rewrites the weights, tier cutoffs,
-and ranges in `config/model.json`. (With percentile tiers on, the fitted cutoffs are
-only the fallback for small runs.) Copy the data down first (see above), check
-the printed tiers, then open a pull request with the new `config/model.json`.
+`data/` is ignored on `main`, so this never shows up as a change.
 
 To edit the page, change `templates/index.html` and rerun `python build.py`.
 Don't edit `site/index.html` directly, because the build overwrites it.
@@ -189,8 +81,6 @@ One-time setup:
    | Name | Value |
    | --- | --- |
    | `TM_API_KEY` | your Ticketmaster key |
-   | `LASTFM_API_KEY` | optional, enables listener counts (the demand signal) |
-   | `SEATGEEK_CLIENT_ID` | optional; SeatGeek is paused (no prices on the free tier) |
    | `CLOUDFLARE_API_TOKEN` | the token from step 1 |
    | `CLOUDFLARE_ACCOUNT_ID` | the ID from step 2 |
 
@@ -198,8 +88,6 @@ One-time setup:
 
    ```powershell
    gh secret set TM_API_KEY
-   gh secret set LASTFM_API_KEY
-   gh secret set SEATGEEK_CLIENT_ID
    gh secret set CLOUDFLARE_API_TOKEN
    gh secret set CLOUDFLARE_ACCOUNT_ID
    ```
@@ -228,8 +116,8 @@ names. Cloudflare can't rename them in place, and visitors only ever see `pouchi
 ### How the refresh works
 
 The workflow runs every 6 hours and on demand from the Actions tab. Each run
-runs the tests, loads the saved tables from the private `pouchit-data` repo, runs the
-pipeline, saves the updated `db/` tables and `data/presales.json` back to that repo,
+runs the tests, runs the pipeline, saves `data/presales.json` to the private
+`pouchit-data` repo,
 builds the page, and uploads `site/` to Cloudflare Pages. It never commits to
 `main`, which is protected. A merge to `main` redeploys the latest saved data
 without fetching. If a step fails, the previous version of the site stays live.
@@ -252,8 +140,7 @@ site stops updating, re-enable it from the Actions tab or push any commit.
 
 ## Accounts and alerts
 
-Signed-in users can follow artists, set a Profit % threshold for "high profit"
-alerts (default 30%), turn each alert type on or off, and delete their account.
+Signed-in users can follow artists, turn alerts on or off, and delete their account.
 After each data refresh they get at most one digest email, and never the same
 event twice.
 
@@ -272,22 +159,14 @@ event twice.
 - **Sign in:** `/alerts` asks for an email and a Turnstile check. The API emails a
   one-time link, `https://pouchit.net/auth/confirm#token=...`. Opening it shows
   "Sign in as t•••@example.com?" and a button; pressing it starts a session.
-- **High profit:** Live Profit % at or above the threshold. For events without
-  Live data, the midpoint of the estimated range at or above the threshold, with
-  Med or High demand. Estimates are labeled as estimates in the email. Up to 25
-  per digest, highest first.
 - **Artists you follow:** any event whose artist matches a follow, ignoring case,
-  accents, and punctuation. Each event appears once per digest.
+  accents, and punctuation. Each event appears once per digest, up to 50, soonest show first.
 - **The Worker** runs at :20 past every hour. It fetches `https://pouchit.net/alerts.json`,
   and if `generated_at` changed since the last complete run, it builds digests,
   records each (user, event) in `sent_alerts`, sends through Resend's batch API,
   and removes those records again if a send fails, so the next run retries. It
   sends at most `MAX_EMAILS_PER_RUN` (80) per run to stay under Resend's free
   100/day; anyone past the cap gets their digest the next hour.
-
-Without Live resale data, an estimated event qualifies as high profit at the 30%
-default only when it's rated High demand (range midpoint about +63%); the Med-demand
-midpoint is about +2%. High demand needs Last.fm data. Follow alerts work regardless.
 
 ### One-time setup
 
@@ -430,7 +309,7 @@ These protections are in place, and `tests/js/` covers them:
   which is authorized by its signed token and can only turn alerts off.
 - **Input:** validated and length-limited on the server (email pattern with no
   CR/LF; artist names 1-100 characters with control and bidi characters
-  rejected; threshold a whole number 0-500; bodies up to 4 KB). Only
+  rejected; the alert setting must be true or false; bodies up to 4 KB). Only
   parameterized D1 queries; a test fails on string-built SQL.
 - **Authorization:** every query is filtered by the session's user ID, and the
   API never accepts a user ID from the browser. Tests check that user A can't

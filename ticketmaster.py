@@ -1,4 +1,4 @@
-"""Ticketmaster Discovery API: upcoming US concert presales, face values, venues, and tour sizes.
+"""Ticketmaster Discovery API: upcoming US concert presales, face values, and venues.
 
 Used by pipeline.py (step 1 of the pipeline).
 """
@@ -21,19 +21,6 @@ MIN_INTERVAL = 0.25      # seconds between requests (limit is 5/sec)
 # presales) overlap it, so also scan events that went on sale recently.
 LOOKBACK_DAYS = 5
 MAX_CURSOR_STEPS = 6     # safety cap on forward paging (~6000 events)
-
-LASTFM_ARTIST_RE = re.compile(r"last\.fm/music/([^/?#]+)")
-
-
-def lastfm_name(attraction: dict) -> str | None:
-    """The artist's Last.fm name from Ticketmaster's external links, when it has one."""
-    for link in (attraction.get("externalLinks") or {}).get("lastfm") or []:
-        m = LASTFM_ARTIST_RE.search(link.get("url") or "")
-        if m:
-            name = urllib.parse.unquote_plus(m.group(1)).strip()
-            if name:
-                return name
-    return None
 
 # (type, pattern on the normalized presale name, where the code comes from).
 # Order matters: the first match wins.
@@ -134,19 +121,6 @@ def fetch_raw(now: datetime) -> tuple[dict[str, dict], int]:
     return raw, client.calls
 
 
-def fetch_by_ids(ids: list[str]) -> dict[str, dict]:
-    """Raw events by ID, in batches (used to backfill face values after presales end)."""
-    api_key = env("TM_API_KEY")
-    client = Http("Ticketmaster", MIN_INTERVAL)
-    out: dict[str, dict] = {}
-    for i in range(0, len(ids), 50):
-        query = urllib.parse.urlencode({"id": ",".join(ids[i:i + 50]), "size": 50, "apikey": api_key})
-        data = client.get_json(f"{API_URL}?{query}")
-        for ev in data.get("_embedded", {}).get("events", []):
-            out[ev["id"]] = ev
-    return out
-
-
 def price_fields(ev: dict) -> dict:
     """The events-table fields that can change after the presale window."""
     face_min, face_max, fee_included = face_range(ev)
@@ -230,8 +204,6 @@ def parse_event(ev: dict, now: datetime) -> dict | None:
     start = ev.get("dates", {}).get("start", {})
     artist = attraction.get("name") or ev.get("name", "").strip()
 
-    tour_dates = (attraction.get("upcomingEvents") or {}).get("_total")
-
     return {
         "event": {
             "event_id": ev["id"],
@@ -241,28 +213,11 @@ def parse_event(ev: dict, now: datetime) -> dict | None:
             "url": safe_url(ev.get("url")),
             "image": pick_image(ev.get("images")),
             "venue": venue.get("name"),
-            "venue_id": venue.get("id"),
             "city": venue.get("city", {}).get("name"),
             "state": venue.get("state", {}).get("stateCode"),
-            "market_ids": ";".join(str(m.get("id")) for m in venue.get("markets") or [] if m.get("id")),
             "event_date": None if start.get("dateTBA") or start.get("dateTBD") else start.get("localDate"),
             "event_time": None if start.get("noSpecificTime") or start.get("timeTBA") else start.get("localTime"),
-            "presale_start": presales[0]["start"],
-            "presale_type": presales[0]["type"],
             **price_fields(ev),
         },
         "presales": presales,
-        "artist": {
-            "artist_id": attraction.get("id") or f"name:{norm(artist)}",
-            "name": artist,
-            "lastfm_lookup": lastfm_name(attraction),
-            "tour_date_count": tour_dates if isinstance(tour_dates, int) and tour_dates > 0 else None,
-        },
-        "venue": {
-            "venue_id": venue.get("id"),
-            "name": venue.get("name"),
-            "city": venue.get("city", {}).get("name"),
-            "state": venue.get("state", {}).get("stateCode"),
-            "market_ids": [str(m.get("id")) for m in venue.get("markets") or [] if m.get("id")],
-        },
     }

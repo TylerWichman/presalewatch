@@ -4,11 +4,10 @@ Read this before starting any work in this repo.
 
 ## 1. What PouchIt is
 
-PouchIt alerts people to exclusive ticket drops and presales that are
-often resold for a profit.
+PouchIt alerts people to exclusive ticket drops and presales.
 
 The current stage is an MVP: a shareable web page that lists upcoming US
-concert presales ranked by edge, plus free accounts with email alerts.
+concert presales, plus free accounts with email alerts.
 
 ## 2. MVP scope
 
@@ -16,10 +15,9 @@ In scope:
 
 - The presale listing page
 - The core data behind it (which presales exist, when they open, and how to get access)
-- The edge (Profit %) model and its calibration
 - Accounts and email alerts: magic-link sign-in (no passwords), following
-  artists, a Profit % threshold for "high profit" alerts, per-type on/off,
-  account deletion, and one digest email per data refresh
+  artists, turning alerts on or off, account deletion, and one digest email
+  per data refresh
 
 Out of scope for now:
 
@@ -35,28 +33,21 @@ sessions, user data, or email must keep the protections listed in the README
 
 ## 3. Product rules
 
-- **Inspiration:** OddsJam's arbitrage tool
-  (https://oddsjam.com/betting-tools/arbitrage). Aim for a clean,
-  data-dense table of opportunities.
-- **Edge / profit %:** the edge (profit %) calculation must **not** include
-  any adjustment for the probability of actually securing tickets. It
-  shows the upside only.
+- The page is a board of upcoming presales: who, when it opens, and how to
+  get access. Keep it clean and easy to scan.
 
 ## 4. Repo map
 
 | Path | What it does |
 | --- | --- |
-| `pipeline.py` | Pulls presales (Ticketmaster), resale (SeatGeek, paused), and artist data (Last.fm), computes edge, and saves `data/presales.json` |
-| `edge.py`, `calibrate.py` | The Profit % model, and scoring it against real resale prices |
+| `pipeline.py`, `ticketmaster.py` | Pulls upcoming presales from Ticketmaster and saves `data/presales.json` |
 | `build.py` | Builds `site/`: the main page with data built in, `alerts.json`, the account pages, and security headers |
 | `templates/index.html` | The main page design. Edit this file to change the page |
 | `templates/static/` | Account pages: sign in / My alerts, sign-in confirm, unsubscribe, privacy |
 | `functions/api/` | The accounts API (Cloudflare Pages Functions) |
 | `worker/` | The hourly job that emails alert digests (Cloudflare Worker) |
 | `src/lib/` | Code shared by the API and the Worker: auth, sessions, matching, email |
-| `migrations/` | Database tables (Cloudflare D1): accounts, plus the artist/venue intelligence database |
-| `ingest/` | Daily jobs that fill the intelligence database from Ticketmaster, Last.fm, MusicBrainz, Wikidata, Wikipedia pageviews, ListenBrainz, and YouTube |
-| `docs/database.md` | Every table, field, and view in the intelligence database, and each source's terms |
+| `migrations/` | Database tables (Cloudflare D1) for accounts. Older migrations also created artist/venue tables that are no longer used |
 | `tests/` | Python tests (`tests/*.py`) and API/alert tests (`tests/js/`) |
 | `fixtures/sample_events.json` | A saved example of what the Ticketmaster API sends back, for reference |
 | `.github/workflows/deploy.yml` | The automatic job that refreshes the data and publishes the site |
@@ -67,9 +58,8 @@ sessions, user data, or email must keep the protections listed in the README
 `data/` and `site/` are created when you run the scripts. They aren't stored
 in the repo. Don't edit `site/index.html` by hand; the next build overwrites it.
 
-**Where the data comes from:** the Ticketmaster Discovery API (`TM_API_KEY`),
-plus optional Last.fm (`LASTFM_API_KEY`) and SeatGeek keys. Spotify is not used:
-since February 2026 it no longer gives development apps popularity or follower data. User accounts live in Cloudflare D1.
+**Where the data comes from:** the Ticketmaster Discovery API (`TM_API_KEY`).
+User accounts live in Cloudflare D1.
 
 ## 5. How to run
 

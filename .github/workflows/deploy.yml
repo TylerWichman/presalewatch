@@ -47,7 +47,7 @@ jobs:
           npm ci
           npm test
 
-      # Generated tables and presales.json live in a private repo (DATA_REPO), not in
+      # presales.json lives in a private repo (DATA_REPO), not in
       # this public one: Ticketmaster's terms allow storing its event data only to
       # provide the service, not republishing it. DATA_DEPLOY_KEY is a deploy key with
       # write access to that repo only.
@@ -60,9 +60,7 @@ jobs:
 
       - name: Copy saved data into place
         run: |
-          for d in db data; do
-            if [ -d "_data/$d" ]; then cp -r "_data/$d" .; fi
-          done
+          if [ -d _data/data ]; then cp -r _data/data .; fi
 
       # Scheduled and manual runs refresh the data. A push just redeploys
       # the latest saved data, unless there is none yet.
@@ -71,24 +69,14 @@ jobs:
         if: github.event_name != 'push' || hashFiles('data/presales.json') == ''
         env:
           TM_API_KEY: ${{ secrets.TM_API_KEY }}
-          SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
-          SEATGEEK_CLIENT_SECRET: ${{ secrets.SEATGEEK_CLIENT_SECRET }}
-          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-          # Venue capacities (measured, and estimated when enabled) from the intelligence database.
-          # If D1 can't be reached, the pipeline warns and scores without them.
-          INTEL_DB: d1
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_D1_TOKEN: ${{ secrets.CLOUDFLARE_BACKEND_TOKEN }}
-        run: |
-          python pipeline.py
-          python calibrate.py
+        run: python pipeline.py
 
       - name: Save data to the private data repo
         if: steps.pipeline.outcome == 'success'
         working-directory: _data
         run: |
           rm -rf db data
-          cp -r ../db ../data .
+          cp -r ../data .
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           git add -A
@@ -103,9 +91,6 @@ jobs:
         env:
           # Lets build.py verify no key ends up in the page.
           TM_API_KEY: ${{ secrets.TM_API_KEY }}
-          SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
-          SEATGEEK_CLIENT_SECRET: ${{ secrets.SEATGEEK_CLIENT_SECRET }}
-          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
         run: python build.py
 
       - name: Create Cloudflare Pages project if missing
