@@ -4,7 +4,7 @@ __pycache__/
 *.tmp
 
 # Generated. The scheduled job keeps data/ in the private pouchit-data repo;
-# site/ is rebuilt on every run. (db/ held the old profit-model tables.)
+# site/ is rebuilt on every run.
 db/
 data/
 _data/

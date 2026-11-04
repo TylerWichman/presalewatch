@@ -62,10 +62,10 @@ class PageData(unittest.TestCase):
         rows = pipeline.presale_rows([ticketmaster.parse_event(raw_event(), NOW)])
         out = build.compact({"generated_at": "g", "presales": rows})
         self.assertEqual(set(out), {"generated_at", "events", "rows"})
+        self.assertEqual(set(out["events"][0]), {"a", "ai", "n", "u", "v", "c", "s", "d", "t", "o"})
         self.assertEqual((out["events"][0]["a"], out["events"][0]["v"], len(out["rows"])), ("Big Star", "V", 1))
         feed = build.alerts_feed({"generated_at": "g", "presales": rows})
-        for key in ("mode", "profit", "edge", "tier", "confidence"):
-            self.assertNotIn(key, feed["events"][0])
+        self.assertEqual(set(feed["events"][0]), {"id", "artist", "name", "url", "venue", "city", "state", "date", "presale_end"})
 
 
 if __name__ == "__main__":

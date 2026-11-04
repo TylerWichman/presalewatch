@@ -21,7 +21,6 @@ In scope:
 
 Out of scope for now:
 
-- Profit, resale, or demand estimates (removed in November 2026; the page just lists presales)
 - Sales, payments, and paid plans
 - Marketing emails, and any email other than sign-in links and the alerts a user turned on
 - Anything beyond the page and alerts
@@ -34,9 +33,8 @@ sessions, user data, or email must keep the protections listed in the README
 
 ## 3. Product rules
 
-- **Inspiration:** OddsJam's arbitrage tool
-  (https://oddsjam.com/betting-tools/arbitrage). Aim for a clean,
-  data-dense list of presales.
+- The page is a board of upcoming presales: who, when it opens, and how to
+  get access. Keep it clean and easy to scan.
 
 ## 4. Repo map
 
